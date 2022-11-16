@@ -7,6 +7,8 @@ Ongoing game project made in Godot engine. Inspired by games like [Dwarf Fortres
 
 Project consists of various systems and tools for making a tile-based game. The aim is to setup all the tools (MapEditor/TurnManager/ect.) so it allows for creating various games with their use.
 
+More development related info in "DEV_INFO.txt" file.
+
 Building
 --------
 1) Open in [Godot](https://godotengine.org/)
