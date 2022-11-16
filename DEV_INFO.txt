@@ -1,0 +1,45 @@
+--------------------------SCENE STRUCTURE---------------------------------------------
+
+- SimulationManager
+	- MapManager
+	- EntityManager
+	- ViewCamera
+
+----------------------------GAME LOGIC------------------------------------------------
+
+SimulationManager 
+	Manages all simulation related tasks in a game
+
+MapManager
+	Loads/Unloads map chunks
+
+EntityManager
+	Loads/unloads entities into the game(including the player)
+
+ViewCamera
+	Manages game camera
+
+----------------------------INHERITANCE-----------------------------------------------
+
+SimulationRequests -> SimulationManager
+Savemanager -> MapManager
+EntityBase -> [ALL ENTITITIES (including the player)]
+
+-----------------------------RESOURCES------------------------------------------------
+
+SAVE SYSTEM:
+	SaveData - Stores whole save
+		MapData - Stores the map
+		EntityData - Stores entity data
+
+----------------------------CONNECTIONS-----------------------------------------------
+
+1) Calling functions from parent down to its children, never upwards.
+2) Only signals can go upwards the hierarchy.
+3) Getting data from upward hierarchy must be done through GLOBALREF singleton (example: entity trying to get info about the map)
+
+-----------------------------NEXT GOALS-----------------------------------------------
+
+1) Finish TSUpdate script to properly generate tiles from materials
+2) Finishing MapEditor
+3) Write documentation for the project
