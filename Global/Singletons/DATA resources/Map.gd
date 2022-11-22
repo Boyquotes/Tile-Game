@@ -40,7 +40,7 @@ static func GET_CHUNK_TILE_POSITIONS(chunkPos:Vector2) -> Array:
 static func GET_CHUNK_ON_POSITION(pos:Vector2,isMap:bool = true) -> Vector2:
 	var chunkMultiplier:int = 1
 	if not isMap:
-		chunkMultiplier = DATA.BASE_SCALE
+		chunkMultiplier = DATA.Map.BASE_SCALE
 	
 	var x = floor( pos[0]/(CHUNK_SIZE*chunkMultiplier) )
 	var y = floor( pos[1]/(CHUNK_SIZE*chunkMultiplier) )
@@ -49,7 +49,7 @@ static func GET_CHUNK_ON_POSITION(pos:Vector2,isMap:bool = true) -> Vector2:
 
 
 static func GET_TILE_ON_POSITION(pos:Vector2) -> Vector2:
-	var x = floor( pos[0]/(DATA.BASE_SCALE) )
-	var y = floor( pos[1]/(DATA.BASE_SCALE) )
+	var x = floor( pos[0]/(DATA.Map.BASE_SCALE) )
+	var y = floor( pos[1]/(DATA.Map.BASE_SCALE) )
 	
 	return Vector2(x,y)

@@ -6,8 +6,10 @@ extends TileSet
 
 ### BINDS DICT START
 const BINDS = {
-5: [ 5, 6 ],
-6: [ 5, 6 ]
+0: [ 0, 1, 2, 3 ],
+1: [ 0, 1, 2, 3 ],
+2: [ 0, 1, 2, 3 ],
+3: [ 0, 1, 2, 3 ]
 }
 ### BINDS DICT END
 func _is_tile_bound(drawn_id, neighbor_id):

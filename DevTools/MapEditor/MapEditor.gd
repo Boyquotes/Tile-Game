@@ -34,9 +34,9 @@ func _draw():
 
 # Draws a square to indicate current cell pointed by mouse cursor
 func _draw_selection_square(mousePos:Vector2):
-	var size = Vector2(DATA.BASE_SCALE,DATA.BASE_SCALE)
+	var size = Vector2(DATA.Map.BASE_SCALE,DATA.Map.BASE_SCALE)
 	var cellPos:Vector2 = DATA.Map.GET_TILE_ON_POSITION(mousePos)
-	var pos:Vector2 = cellPos * DATA.BASE_SCALE
+	var pos:Vector2 = cellPos * DATA.Map.BASE_SCALE
 	
 	var rect = Rect2(pos,size)
 	CellLabel.text = "Cell: " + str(cellPos)
@@ -46,7 +46,7 @@ func _draw_selection_square(mousePos:Vector2):
 
 # Draws a square to indicate current chunk pointed by mouse cursor
 func _draw_selection_chunk(mousePos:Vector2):
-	var chunkScale:int = DATA.BASE_SCALE * DATA.Map.CHUNK_SIZE
+	var chunkScale:int = DATA.Map.BASE_SCALE * DATA.Map.CHUNK_SIZE
 	var size:Vector2 = Vector2(chunkScale, chunkScale)
 	var chunkPos:Vector2 = DATA.Map.GET_CHUNK_ON_POSITION(mousePos, false)
 	

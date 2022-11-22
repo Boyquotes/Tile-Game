@@ -8,9 +8,8 @@ extends Script
 ### ----------------------------------------------------
 
 # Adds autotiles according to types declared in DATA
+# data = {Autotile:{setName:setDir}, Single:{setName:setDir}}
 static func add_tile_types(tileSet:TileSet, data:Dictionary, bitmask_flags:Array) -> TileSet:
-	# data = {Autotile:{setName:setDir}, Single:{setName:setDir}}
-	
 	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Autotile")
 	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Single")
 	

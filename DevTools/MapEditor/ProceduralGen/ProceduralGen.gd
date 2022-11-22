@@ -35,7 +35,7 @@ func initialize(TileMaps) -> bool:
 	# Check ALL_TS
 	for TSName in ALL_TS:
 		if not TSName in TMInfo:
-			Logger.logMS(["ALL_TS - TSName: ",TSName,", doesn't exist in available TileMaps."],true)
+			Logger.logMS(["ALL_TS - TSName: ",TSName,", doesn't exist in available TileMaps. (ProcedGen)"],true)
 			return false
 	
 	# Populate PROCED_RATE dictionary

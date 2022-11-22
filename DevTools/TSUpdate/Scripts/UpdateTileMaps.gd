@@ -1,5 +1,11 @@
 ### ----------------------------------------------------
 ### Script automatically updates all TileMaps
+### Requires predefined directory structure in order to work:
+### > DATA.TILEMAPS_DIR
+### 	> TileMapName
+### 		> TypeOfTile (Autotile or Single)
+### 			> SetName
+### 				> BG.png and Outline.png
 ### ----------------------------------------------------
 tool
 extends "res://DevTools/TSUpdate/Scripts/Setup/TSData.gd"
@@ -35,6 +41,7 @@ func update_TileMaps() -> void:
 	Logger.logMS(["Finished updating TileMaps.\n"])
 
 
+# Creates a tileset, fills it with generated tiles
 func _get_TileSet(TMName:String,TMData:Dictionary) -> TileSet:
 	var tileSetDir = TILEMAPS_DIR+TMName+"/TileSet.tres"
 	if not LibK.Files.file_exist(tileSetDir):
@@ -59,6 +66,7 @@ func _get_TileSet(TMName:String,TMData:Dictionary) -> TileSet:
 	return tileSet
 
 
+# Updates TileMap
 func _update_TileMap(TMName:String, tileSet:TileSet) -> void:
 	# Check if TileMap exists
 	var tileMapPath = TILEMAPS_DIR+TMName+"/"+TMName+".tscn"
@@ -71,6 +79,10 @@ func _update_TileMap(TMName:String, tileSet:TileSet) -> void:
 	
 	# Update TileMap settings (settings below will be updated)
 	tileMap.cell_size = TILE_SIZE
+	
+	# Add autotile bounding script
+	TSMerge.generate_merge_script(LibK.TS.get_autotile_ids(tileSet),
+	TILEMAPS_DIR + TMName + "/Binding.gd", TILEMAPS_DIR+TMName+"/TileSet.tres")
 	
 	# Pack and save TileMap
 	var scene = PackedScene.new()

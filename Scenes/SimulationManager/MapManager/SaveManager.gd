@@ -10,11 +10,21 @@ class_name SaveManager
 ### ----------------------------------------------------
 
 var SaveData:SaveDataRes
-export (String) var SaveFolderPath = "res://Resources/SaveData/SavedMaps/"
 
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
+
+func _enter_tree() -> void:
+	# Load all TileMaps
+	var dirList:Array = LibK.Files.get_file_list(DATA.TILEMAPS_DIR,true)
+	var nameList:Array = LibK.Files.get_file_list(DATA.TILEMAPS_DIR)
+	
+	for index in range(dirList.size()):
+		var TMScene:PackedScene = load(dirList[index] + "/" + nameList[index] + ".tscn")
+		var TMInstance = TMScene.instance()
+		add_child(TMInstance)
+
 
 ### SAVE MANAGEMENT ###
 func set_blank_save():
@@ -24,7 +34,7 @@ func set_blank_save():
 
 
 func save_current_SaveData() -> bool:
-	var path = SaveFolderPath + SaveData.SaveName + ".res"
+	var path = DATA.SAVE_FLODER_PATH + SaveData.SaveName + ".res"
 	var result = ResourceSaver.save(path,SaveData,ResourceSaver.FLAG_COMPRESS)
 	
 	Logger.logMS(["Saved: ", SaveData.SaveName, " ",result])
@@ -33,12 +43,12 @@ func save_current_SaveData() -> bool:
 
 
 func load_SaveData(SaveName:String) -> bool:
-	if not LibK.Files.file_exist(SaveFolderPath + SaveName + ".res"):
+	if not LibK.Files.file_exist(DATA.SAVE_FLODER_PATH + SaveName + ".res"):
 		Logger.logMS(["Save called: ", SaveName, " doesn't exist!"], true)
 		return false
 	
 	set_blank_save()
-	var saveFilePath:String = SaveFolderPath + SaveName + ".res"
+	var saveFilePath:String = DATA.SAVE_FLODER_PATH + SaveName + ".res"
 	
 	var SD = ResourceLoader.load(saveFilePath)
 	if SD is SaveDataRes:
@@ -52,7 +62,7 @@ func load_SaveData(SaveName:String) -> bool:
 
 
 func delete_save(SaveName:String) -> bool:
-	var saveFilePath:String = SaveFolderPath + SaveName + ".res"
+	var saveFilePath:String = DATA.SAVE_FLODER_PATH + SaveName + ".res"
 	
 	var dir = Directory.new()
 	var result = dir.remove(saveFilePath)
