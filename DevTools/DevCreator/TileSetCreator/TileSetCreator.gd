@@ -13,7 +13,6 @@ static func add_tile_types(tileSet:TileSet, data:Dictionary, bitmask_flags:Array
 	
 	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Autotile")
 	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Single")
-	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Universal")
 	
 	return tileSet
 
@@ -42,19 +41,23 @@ static func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array
 		for M_TYPE in DATA.Materials.TYPES.values():
 			var M_COLOR:Color = DATA.Materials.DB[M_TYPE]["Color"]
 			var texture:Texture = _blend_textures(textureBG,textureOutline,M_COLOR)
+			var tileName:String = DATA.Materials.TYPES.keys()[M_TYPE] + setName
+			var tileMode:int = TileSet.SINGLE_TILE
+			if tileType == "Autotile": tileMode = TileSet.AUTO_TILE
 			
-			ResourceSaver.save("res://Temp/"+str(M_TYPE)+".png",texture)
-			Logger.logMS(["Added tile type: ",DATA.Materials.TYPES.keys()[M_TYPE],", to ",setName])
+			tileSet = _add_tile(tileSet, tileName, texture, tileMode, bitmask_flags)
+			#ResourceSaver.save("res://Temp/"+str(tileName)+setName+".png",texture)
+			Logger.logMS(["Added tile type: ",tileName,", to ",setName])
 	
 	return tileSet
 
 
 # Adds new tile to a tileset or/and updates it
-func _add_tile(tileSet:TileSet,tName:String, texture:Texture, tileMode:int,
+static func _add_tile(tileSet:TileSet,tName:String, texture:Texture, tileMode:int,
 bitmask_flags:Array) -> TileSet:
 	# Check if tile exists if not create new
 	var tileID:int = tileSet.find_tile_by_name(tName)
-	if tileID == null:
+	if tileID == -1:
 		tileID = LibK.TS._get_next_id(tileSet.get_tiles_ids())
 		tileSet.create_tile(tileID)
 		Logger.logMS(["Created new tile: ",tName])

@@ -1,5 +1,5 @@
 ### ----------------------------------------------------
-###
+### Script automatically updates all TileMaps
 ### ----------------------------------------------------
 tool
 extends "res://DevTools/TSUpdate/Scripts/Setup/TSData.gd"
@@ -10,7 +10,7 @@ extends "res://DevTools/TSUpdate/Scripts/Setup/TSData.gd"
 
 export (Script) var TSMerge = preload("res://DevTools/TSUpdate/Scripts/BindingGenerator.gd")
 
-var TILE_SIZE:Vector2 = Vector2(DATA.BASE_SCALE, DATA.BASE_SCALE)
+var TILE_SIZE:Vector2 = Vector2(DATA.Map.BASE_SCALE, DATA.Map.BASE_SCALE)
 
 ### ----------------------------------------------------
 # FUNCTIONS
@@ -44,7 +44,7 @@ func _get_TileSet(TMName:String,TMData:Dictionary) -> TileSet:
 	
 	var tileSet:TileSet = load(tileSetDir)
 	
-	# Update tiles of material types
+	# Update tiles of material types (autotile and single tile excluding universal)
 	Logger.logMS(["Updating tile types for ",TMName])
 	tileSet = DevCreator.TileSetC.add_tile_types(tileSet,TMData[TMName],BITMASK_FLAGS)
 	Logger.logMS(["Finished updating tile types for ",TMName])
@@ -102,7 +102,7 @@ func _update_tile_texture_offset(tileSet:TileSet) -> TileSet:
 		if tileMode == TileSet.SINGLE_TILE:
 			continue
 		
-		if tileSize[0] > DATA.BASE_SCALE or tileSize[1] > DATA.BASE_SCALE:
+		if tileSize[0] > DATA.Map.BASE_SCALE or tileSize[1] > DATA.Map.BASE_SCALE:
 			var offsetSizeX:int = DATA.BASE_SCALE - int(tileSize[0])
 			var offsetSizeY:int = DATA.BASE_SCALE - int(tileSize[1])
 			tileSet.tile_set_texture_offset(tileID,Vector2(offsetSizeX, offsetSizeY))
