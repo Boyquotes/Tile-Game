@@ -49,14 +49,10 @@ static func get_TMdata() -> Dictionary:
 		if LibK.Files.dir_exist(singleDir):
 			TMdata[nameList[index]]["Single"] = create_tile_data(singleDir)
 		
-		# Check if any universal tiles exist
-		var universalDir = dirList[index] + "/Universal"
-		if LibK.Files.dir_exist(universalDir):
-			TMdata[nameList[index]]["Universal"] = create_tile_data(universalDir)
-	
 	return TMdata
 
 
+# Creates dict of directories inside of a folder {dirName : directory}
 static func create_tile_data(dir:String) -> Dictionary:
 	var data:Dictionary = {}
 	var dirList:Array = LibK.Files.get_file_list(dir,true)

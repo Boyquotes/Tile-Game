@@ -31,7 +31,7 @@ static func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array
 		
 		var textureOutlinePath:String = data[tileType][setName]+"/Outline.png"
 		if not LibK.Files.file_exist(textureOutlinePath):
-			Logger.logMS(["File doesnt exist (textureBGPath): ",textureOutlinePath],true)
+			Logger.logMS(["File doesnt exist (textureOutlinePath): ",textureOutlinePath],true)
 			continue
 		
 		var textureBG = load(textureBGPath)
@@ -45,7 +45,7 @@ static func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array
 			if tileType == "Autotile": tileMode = TileSet.AUTO_TILE
 			
 			tileSet = _add_tile(tileSet, tileName, texture, tileMode, bitmask_flags)
-			#ResourceSaver.save("res://Temp/"+str(tileName)+setName+".png",texture)
+			# ResourceSaver.save("res://Temp/"+str(tileName)+setName+str(tileMode)+".png",texture)
 			Logger.logMS(["Added tile type: ",tileName,", to ",setName])
 	
 	return tileSet
@@ -79,7 +79,7 @@ bitmask_flags:Array) -> TileSet:
 
 
 # Blends two separate textures to create one texture
-# Interpolates BG texture with addColor 50/50
+# Interpolates BG texture with addColor 20/80
 # Puts Outline texture on top of interpolated BG texture
 static func _blend_textures(textureBG:Texture,textureOutline:Texture,addColor:Color) -> Texture:
 	var texture:ImageTexture = ImageTexture.new()
@@ -101,7 +101,7 @@ static func _blend_textures(textureBG:Texture,textureOutline:Texture,addColor:Co
 		for y in range(BGImage.get_height()):
 			# Interpolate bg with addColor
 			var BGPixel:Color = BGImage.get_pixel(x,y)
-			if BGPixel.a != 0: BGPixel = BGPixel.linear_interpolate(addColor,0.5) 
+			if BGPixel.a != 0: BGPixel = BGPixel.linear_interpolate(addColor,0.4) 
 			
 			# Put outline on
 			var OutlinePixel:Color = OutlineImage.get_pixel(x,y)

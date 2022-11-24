@@ -200,7 +200,7 @@ func _on_SaveEdit_text_entered(SaveName: String) -> void:
 
 
 func _on_LoadEdit_text_entered(SaveName: String) -> void:
-	if not LibK.Files.file_exist($MapManager.SaveFolderPath+SaveName+".res"):
+	if not LibK.Files.file_exist(DATA.SAVE_FLODER_PATH+SaveName+".res"):
 		Logger.logMS(["Save called: ", SaveName, " doesn't exist!"], true)
 		return
 	
