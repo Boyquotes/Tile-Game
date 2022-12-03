@@ -7,14 +7,15 @@ extends Script
 # VARIABLES
 ### ----------------------------------------------------
 
-enum TYPES {Wood,Stone,Metal,Dirt,Grass,DarkGrass}
+# https://www.rapidtables.com/web/color/RGB_Color.html
+enum TYPES {WoodenPlank,Stone,Steel,Dirt,Grass,DarkGrass}
 const DB:Dictionary = {
-	TYPES.Wood:  	{"Color":Color.coral},
-	TYPES.Stone: 	{"Color":Color.dimgray},
-	TYPES.Metal: 	{"Color":Color.cornflower},
-	TYPES.Dirt:  	{"Color":Color.indigo},
-	TYPES.Grass: 	{"Color":Color.forestgreen},
-	TYPES.DarkGrass:{"Color":Color.seagreen},
+	TYPES.WoodenPlank:{"Color":Color('#816109')},
+	TYPES.Stone: 	  {"Color":Color('#444444')},
+	TYPES.Steel: 	  {"Color":Color('#708090')},
+	TYPES.Dirt:  	  {"Color":Color('#483D8B')},
+	TYPES.Grass: 	  {"Color":Color('#228B22')},
+	TYPES.DarkGrass:  {"Color":Color('#006400')},
 }
 
 ### ----------------------------------------------------

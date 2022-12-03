@@ -8,13 +8,14 @@
 ### 				> BG.png and Outline.png
 ### ----------------------------------------------------
 tool
-extends "res://DevTools/TSUpdate/Scripts/Setup/TSData.gd"
+extends "res://DevTools/TSUpdate/Scripts/Dependencies/TSData.gd"
 
 ### ----------------------------------------------------
 # VARIABLES
 ### ----------------------------------------------------
 
-export (Script) var TSMerge = preload("res://DevTools/TSUpdate/Scripts/BindingGenerator.gd")
+const TSMerge:Script = preload("res://DevTools/TSUpdate/Scripts/Dependencies/BindingGenerator.gd")
+const TSCreator:Script = preload("res://DevTools/TSUpdate/Scripts/Dependencies/TileSetCreator.gd")
 
 var TILE_SIZE:Vector2 = Vector2(DATA.Map.BASE_SCALE, DATA.Map.BASE_SCALE)
 
@@ -24,9 +25,9 @@ var TILE_SIZE:Vector2 = Vector2(DATA.Map.BASE_SCALE, DATA.Map.BASE_SCALE)
 
 func _run() -> void:
 	Logger.logMS(["----------------------------------------------------"])
-	Logger.logMS(["Starting UpdateTileMaps scritp.\n"])
+	Logger.logMS(["Starting UpdateTileMaps script.\n"])
 	update_TileMaps()
-	Logger.logMS(["Finished UpdateTileMaps scritp."])
+	Logger.logMS(["Finished UpdateTileMaps script."])
 	Logger.logMS(["----------------------------------------------------\n"])
 
 
@@ -34,10 +35,7 @@ func _run() -> void:
 func update_TileMaps() -> void:
 	Logger.logMS(["Updating TileMaps..."])
 	var TMData:Dictionary = get_TMdata()
-	
-	for TMName in TMData:
-		_update_TileMap(TMName, _get_TileSet(TMName,TMData))
-
+	for TMName in TMData: _update_TileMap(TMName, _get_TileSet(TMName,TMData))
 	Logger.logMS(["Finished updating TileMaps.\n"])
 
 
@@ -53,15 +51,15 @@ func _get_TileSet(TMName:String,TMData:Dictionary) -> TileSet:
 	
 	# Update tiles of material types (autotile and single tile excluding universal)
 	Logger.logMS(["Updating tile types for ",TMName])
-	tileSet = DevCreator.TileSetC.add_tile_types(tileSet,TMData[TMName],BITMASK_FLAGS)
+	tileSet = TSCreator.add_tile_types(tileSet,TMData[TMName],BITMASK_FLAGS)
 	Logger.logMS(["Finished updating tile types for ",TMName])
 	
-	# Update TileSet
+	# Update offset based on tile size
 	tileSet = _update_tile_texture_offset(tileSet)
 	
 	# Save TileSet
 	var result:int = ResourceSaver.save(tileSetDir,tileSet)
-	Logger.logMS(["Updated TileSet for ", TMName, " ", result])
+	Logger.logMS(["Updated TileSet for ", TMName, " ", result,"\n"])
 	
 	return tileSet
 
@@ -121,3 +119,5 @@ func _update_tile_texture_offset(tileSet:TileSet) -> TileSet:
 			Logger.logMS(["Updated tile offset: ", tileSet.tile_get_name(tileID)])
 	
 	return tileSet
+
+
