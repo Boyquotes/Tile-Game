@@ -47,7 +47,7 @@ static func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array
 			if tileType == "Autotile": tileMode = TileSet.AUTO_TILE
 			
 			tileSet = LibK.TS._add_tile(tileSet, tileName, texture, tileMode, bitmask_flags)
-			Logger.logMS(["Added tile type: ",tileName,", to ",setName])
+			Logger.logMS(["Added tile: ",tileName,", to ",setName])
 	
 	return tileSet
 
@@ -93,8 +93,6 @@ static func _remove_old_tiles(tileSet:TileSet) -> TileSet:
 	var tileNames:Array = LibK.TS.get_tile_names(tileSet)
 	var tileIDs:Array = tileSet.get_tiles_ids()
 	var tilesToDelete:Array = []
-	
-	#tileSet = LibK.TS._add_tile(tileSet, "abcd%GEN%", Texture.new(), TileSet.SINGLE_TILE, [])
 	
 	for index in range(tileIDs.size()):
 		var tileName:String = tileNames[index]

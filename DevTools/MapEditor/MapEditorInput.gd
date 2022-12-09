@@ -31,42 +31,30 @@ var isLoading:bool = false
 # FUNCTIONS
 ### ----------------------------------------------------
 
-# INPUT #
 func _input(event: InputEvent) -> void:
-	if not inputActive:
-		return
+	if not inputActive: return
 	
 	update()
 	update_MapManager_chunks()
 	
-	# Save/Load
 	saveInput(event)
 	loadInput(event)
 	
-	if isSaving or isLoading:
-		return
+	if isSaving or isLoading: return
 	
-	# TileMap switching
-	if event.is_action_pressed("E"):
-		switch_TM_selection(1)
-	elif event.is_action_pressed("Q"):
-		switch_TM_selection(-1)
+	TM_selection_input(event)
+	TL_selection_input(event)
 	
-	# Tile switching
-	if event.is_action_pressed("X"):
-		switch_TL_selection(1)
-	elif event.is_action_pressed("Z"):
-		switch_TL_selection(-1)
-	
-	# Placing tile
-	if event is InputEventMouseButton or event is InputEventMouseMotion:
-		if event.button_mask == BUTTON_MASK_LEFT:
-			set_selected_tile(TLIndex)
-		if event.button_mask == BUTTON_MASK_RIGHT:
-			set_selected_tile(-1)
+	set_tile_input(event)
+
+### ----------------------------------------------------
+# Selecting TileMap
+### ----------------------------------------------------
+func TM_selection_input(event: InputEvent):
+	if   event.is_action_pressed(INPUT.TR["E"]): switch_TM_selection(1)
+	elif event.is_action_pressed(INPUT.TR["Q"]): switch_TM_selection(-1)
 
 
-# Changes selected TileMap
 func switch_TM_selection(value:int):
 	TMIndex += value
 	
@@ -80,21 +68,6 @@ func switch_TM_selection(value:int):
 	switch_TL_selection(0)
 
 
-# Changes selected item (tile) in TileList
-func switch_TL_selection(value:int):
-	TLIndex += value
-	
-	if TLIndex > (TileList.get_item_count() - 1): TLIndex = 0
-	if TLIndex < 0: TLIndex = (TileList.get_item_count() - 1)
-	
-	for ID in range(TileList.get_item_count()):
-		TileList.set_item_disabled(ID,true)
-	
-	TileList.set_item_disabled(TLIndex,false)
-	TileList.select(TLIndex)
-
-
-# TILE LIST #
 # Fills item list with TileMap tiles
 func fill_item_list():
 	TileList.clear()
@@ -127,25 +100,42 @@ func _get_tile_texture(tileID:int,tileSet:TileSet) -> Texture:
 		atlas_texture.set_region( Rect2(Vector2(0,0),tileSet.autotile_get_size(tileID)) )
 	
 	return atlas_texture
+### ----------------------------------------------------
+
+### ----------------------------------------------------
+# Selecting Tile
+### ----------------------------------------------------
+func TL_selection_input(event: InputEvent):
+	if   event.is_action_pressed(INPUT.TR["X"]): switch_TL_selection(1)
+	elif event.is_action_pressed(INPUT.TR["Z"]): switch_TL_selection(-1)
 
 
-# MAP MANAGER #
-# Renders chunks as in normal game based on camera position (as simulated entity)
-func update_MapManager_chunks():
-	var camChunk:Vector2 = DATA.Map.GET_CHUNK_ON_POSITION($Cam.global_position, false)
-	var chunksToRender:Array = []
-	var posToRender:Array = LibK.Vectors.GET_POS_RANGE_V2(1,camChunk,false)
+func switch_TL_selection(value:int):
+	TLIndex += value
 	
-	for pos in posToRender:
-		chunksToRender.append([pos,$Cam.currentElevation])
+	if TLIndex > (TileList.get_item_count() - 1): TLIndex = 0
+	if TLIndex < 0: TLIndex = (TileList.get_item_count() - 1)
 	
-	$MapManager.update_visable_map(chunksToRender,$Cam.currentElevation)
+	for ID in range(TileList.get_item_count()):
+		TileList.set_item_disabled(ID,true)
+	
+	TileList.set_item_disabled(TLIndex,false)
+	TileList.select(TLIndex)
+### ----------------------------------------------------
+
+
+### ----------------------------------------------------
+# Placing Tile
+### ----------------------------------------------------
+func set_tile_input(event:InputEvent):
+	if event is InputEventMouseButton or event is InputEventMouseMotion:
+		if event.button_mask == BUTTON_MASK_LEFT:  set_selected_tile(TLIndex)
+		if event.button_mask == BUTTON_MASK_RIGHT: set_selected_tile(-1)
 
 
 func set_selected_tile(tileID:int):
 	var tileMap:TileMap = AllTileMaps[TMIndex]
-	
-	var packedPos:Array = [tileMap.world_to_map(get_global_mouse_position()),$Cam.currentElevation]
+	var packedPos:Array = [tileMap.world_to_map(get_global_mouse_position()), $Cam.currentElevation]
 	var TMName = tileMap.get_name()
 	
 	if tileID == -1:
@@ -156,43 +146,58 @@ func set_selected_tile(tileID:int):
 	var tileName = tileMap.tile_set.tile_get_name(tileID)
 	$MapManager.SaveData.MapData.set_TData_on(TMName,packedPos,tileName)
 	$MapManager.refresh_tile(packedPos)
+### ----------------------------------------------------
 
 
-# SAVE/LOAD #
+### ----------------------------------------------------
+# Update chunks
+### ----------------------------------------------------
+
+# Renders chunks as in normal game based on camera position (as simulated entity)
+func update_MapManager_chunks():
+	var camChunk:Vector2 = DATA.Map.GET_CHUNK_ON_POSITION($Cam.global_position, false)
+	var chunksToRender:Array = []
+	var posToRender:Array = LibK.Vectors.GET_POS_RANGE_V2(1,camChunk,false)
+	
+	for pos in posToRender:
+		chunksToRender.append([pos,$Cam.currentElevation])
+	
+	$MapManager.update_visable_map(chunksToRender,$Cam.currentElevation)
+### ----------------------------------------------------
+
+
+### ----------------------------------------------------
+# Save / Load
+### ----------------------------------------------------
 func saveInput(event:InputEvent) -> void:
-	if isLoading:
-		return
+	if isLoading: return
 	
-	if not isSaving:
-		if event.is_action_pressed("LCtrl"):
-			$Cam.inputActive = false
-			isSaving = true
-			$UICanvas/Control/SaveEdit.show()
-			$UICanvas/Control/SaveEdit.grab_focus()
+	if event.is_action_pressed(INPUT.TR["LCtrl"]) and not isSaving:
+		$Cam.inputActive = false
+		isSaving = true
+		$UICanvas/Control/SaveEdit.show()
+		$UICanvas/Control/SaveEdit.grab_focus()
 	
-	if isSaving:
-		if event.is_action_pressed("ESC"):
-			$Cam.inputActive = true
-			isSaving = false
-			$UICanvas/Control/SaveEdit.hide()
+	if event.is_action_pressed(INPUT.TR["ESC"]) and isSaving:
+		$Cam.inputActive = true
+		isSaving = false
+		$UICanvas/Control/SaveEdit.hide()
 
 
 func loadInput(event:InputEvent) -> void:
-	if isSaving:
-		return
+	if isSaving: return
 	
-	if not isLoading:
-		if event.is_action_pressed("LAlt"):
-			$Cam.inputActive = false
-			isLoading = true
-			$UICanvas/Control/LoadEdit.show()
-			$UICanvas/Control/LoadEdit.grab_focus()
+	if event.is_action_pressed(INPUT.TR["LAlt"]) and not isLoading:
+		$Cam.inputActive = false
+		isLoading = true
+		$UICanvas/Control/LoadEdit.show()
+		$UICanvas/Control/LoadEdit.grab_focus()
 	
-	if isLoading:
-		if event.is_action_pressed("ESC"):
-			$Cam.inputActive = true
-			isLoading = false
-			$UICanvas/Control/LoadEdit.hide()
+	if event.is_action_pressed(INPUT.TR["ESC"]) and isLoading:
+		$Cam.inputActive = true
+		isLoading = false
+		$UICanvas/Control/LoadEdit.hide()
+
 
 func _on_SaveEdit_text_entered(SaveName: String) -> void:
 	$MapManager.SaveData.SaveName = SaveName
@@ -200,10 +205,11 @@ func _on_SaveEdit_text_entered(SaveName: String) -> void:
 
 
 func _on_LoadEdit_text_entered(SaveName: String) -> void:
-	if not LibK.Files.file_exist(DATA.SAVE_FLODER_PATH+SaveName+".res"):
+	if not LibK.Files.file_exist(DATA.SAVE_FLODER_PATH + SaveName + ".res"):
 		Logger.logMS(["Save called: ", SaveName, " doesn't exist!"], true)
 		return
 	
 	$MapManager.load_SaveData(SaveName)
 	update_MapManager_chunks()
 	$MapManager.refresh_all_chunks()
+### ----------------------------------------------------

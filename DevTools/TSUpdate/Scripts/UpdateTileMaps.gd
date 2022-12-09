@@ -33,10 +33,8 @@ func _run() -> void:
 
 # Main function executing all updates
 func update_TileMaps() -> void:
-	Logger.logMS(["Updating TileMaps..."])
 	var TMData:Dictionary = get_TMdata()
 	for TMName in TMData: _update_TileMap(TMName, _get_TileSet(TMName,TMData))
-	Logger.logMS(["Finished updating TileMaps.\n"])
 
 
 # Creates a tileset, fills it with generated tiles
@@ -50,16 +48,16 @@ func _get_TileSet(TMName:String,TMData:Dictionary) -> TileSet:
 	var tileSet:TileSet = load(tileSetDir)
 	
 	# Update tiles of material types (autotile and single tile excluding universal)
-	Logger.logMS(["Updating tile types for ",TMName])
+	Logger.logMS(["Adding tile types for ",TMName])
 	tileSet = TSCreator.add_tile_types(tileSet,TMData[TMName],BITMASK_FLAGS)
-	Logger.logMS(["Finished updating tile types for ",TMName])
+	Logger.logMS(["Finished adding tile types for ",TMName])
 	
 	# Update offset based on tile size
 	tileSet = _update_tile_texture_offset(tileSet)
 	
 	# Save TileSet
 	var result:int = ResourceSaver.save(tileSetDir,tileSet)
-	Logger.logMS(["Updated TileSet for ", TMName, " ", result,"\n"])
+	Logger.logMS(["Saved TileSet for ", TMName, " ", result])
 	
 	return tileSet
 
@@ -86,7 +84,7 @@ func _update_TileMap(TMName:String, tileSet:TileSet) -> void:
 	var scene = PackedScene.new()
 	scene.pack(tileMap)
 	var result = ResourceSaver.save(tileMapPath,scene)
-	Logger.logMS(["Updated TileMap: ", TMName, " ", result])
+	Logger.logMS(["Saved TileMap: ", TMName, " ", result,"\n"])
 
 
 # Creates new TileMap with given TileSet and name
@@ -101,7 +99,7 @@ func _create_new_TileMap(tmPath:String, tmName:String, tileSet:TileSet) -> void:
 	
 	# Save
 	var result:int = ResourceSaver.save(tmPath,scene)
-	Logger.logMS(["TileMap created: " + tmName, " ", result])
+	Logger.logMS(["Created new TileMap: " + tmName, " ", result])
 
 
 # For tiles bigger than one cell offset texture accordingly

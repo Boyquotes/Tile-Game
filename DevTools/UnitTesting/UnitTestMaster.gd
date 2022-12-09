@@ -23,7 +23,7 @@ const UNIT_TESTS = {
 ### INIT ###
 func _ready():
 	# Starts unit test for a given scene
-	start_unit_test("SimulationManager")
+	start_unit_test("MapManager")
 
 
 ### UTILITY ###

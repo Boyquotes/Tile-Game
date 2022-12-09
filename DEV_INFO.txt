@@ -40,6 +40,5 @@ SAVE SYSTEM:
 
 -----------------------------NEXT GOALS-----------------------------------------------
 
-1) Finish TSUpdate script to properly generate tiles from materials
-2) Finishing MapEditor
-3) Write documentation for the project
+1) Finishing MapEditor
+2) Write documentation for the project

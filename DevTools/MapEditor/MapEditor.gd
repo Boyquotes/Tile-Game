@@ -23,10 +23,11 @@ func _ready() -> void:
 	$MapManager.set_blank_save()
 
 
-# DRAWING #
+### ----------------------------------------------------
+# Drawing
+### ----------------------------------------------------
 func _draw():
 	var mousePos:Vector2 = get_global_mouse_position()
-	
 	_draw_selection_square(mousePos)
 	_draw_selection_chunk(mousePos)
 
@@ -54,4 +55,5 @@ func _draw_selection_chunk(mousePos:Vector2):
 	var rect = Rect2(pos,size)
 	ChunkLabel.text = "Chunk: " + str(chunkPos)
 	
-	draw_rect(rect,Color.black,false,1)
+	draw_rect(rect, Color.black, false, 1)
+### ----------------------------------------------------
