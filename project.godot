@@ -19,6 +19,21 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Resources/SaveData/EntityDataRes/EntityDataRes.gd"
 }, {
+"base": "Reference",
+"class": "GutHookScript",
+"language": "GDScript",
+"path": "res://addons/gut/hook_script.gd"
+}, {
+"base": "Node",
+"class": "GutTest",
+"language": "GDScript",
+"path": "res://addons/gut/test.gd"
+}, {
+"base": "GutTest",
+"class": "GutTestLOG",
+"language": "GDScript",
+"path": "res://DevTools/UnitTesting/GutTestLOG.gd"
+}, {
 "base": "Node",
 "class": "LibK",
 "language": "GDScript",
@@ -43,21 +58,18 @@ _global_script_classes=[ {
 "class": "SaveManager",
 "language": "GDScript",
 "path": "res://Scenes/SimulationManager/MapManager/SaveManager.gd"
-}, {
-"base": "Node2D",
-"class": "UnitTestBase",
-"language": "GDScript",
-"path": "res://DevTools/UnitTesting/Scripts/UnitTestBase.gd"
 } ]
 _global_script_class_icons={
 "EntityBase": "",
 "EntityDataRes": "",
+"GutHookScript": "",
+"GutTest": "",
+"GutTestLOG": "",
 "LibK": "",
 "Logger": "",
 "MapDataRes": "",
 "SaveDataRes": "",
-"SaveManager": "",
-"UnitTestBase": ""
+"SaveManager": ""
 }
 
 [application]
@@ -72,7 +84,7 @@ INPUT="*res://Global/Singletons/INPUT.gd"
 
 [editor_plugins]
 
-enabled=PoolStringArray(  )
+enabled=PoolStringArray( "res://addons/gut/plugin.cfg" )
 
 [gui]
 
