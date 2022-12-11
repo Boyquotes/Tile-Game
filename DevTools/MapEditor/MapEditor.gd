@@ -19,7 +19,6 @@ func _ready() -> void:
 	switch_TM_selection(0)
 	switch_TL_selection(0)
 	
-	$ProceduralGen.initialize($MapManager.get_children())
 	$MapManager.set_blank_save()
 
 

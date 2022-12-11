@@ -22,18 +22,18 @@ static func add_tile_types(tileSet:TileSet, data:Dictionary, bitmask_flags:Array
 static func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array,
  tileType:String) -> TileSet:
 	if not data.has(tileType):
-		Logger.logMS(["TileType ",tileType,", doesnt exist in data"])
+		Logger.logMS(["[TAB]TileType ",tileType,", doesnt exist in data"])
 		return tileSet
 	
 	for setName in data[tileType]:
 		var textureBGPath:String = data[tileType][setName]+"/BG.png"
 		if not LibK.Files.file_exist(textureBGPath):
-			Logger.logMS(["File doesnt exist (textureBGPath): ",textureBGPath],true)
+			Logger.logMS(["[TAB]File doesnt exist (textureBGPath): ",textureBGPath],true)
 			continue
 		
 		var textureOutlinePath:String = data[tileType][setName]+"/Outline.png"
 		if not LibK.Files.file_exist(textureOutlinePath):
-			Logger.logMS(["File doesnt exist (textureOutlinePath): ",textureOutlinePath],true)
+			Logger.logMS(["[TAB]File doesnt exist (textureOutlinePath): ",textureOutlinePath],true)
 			continue
 		
 		var textureBG:Texture = load(textureBGPath)
@@ -47,7 +47,7 @@ static func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array
 			if tileType == "Autotile": tileMode = TileSet.AUTO_TILE
 			
 			tileSet = LibK.TS._add_tile(tileSet, tileName, texture, tileMode, bitmask_flags)
-			Logger.logMS(["Added tile: ",tileName,", to ",setName])
+			Logger.logMS(["[TAB]Added tile: ",tileName,", to ",setName])
 	
 	return tileSet
 
@@ -57,7 +57,7 @@ static func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array
 static func _blend_textures(textureBG:Texture,textureOutline:Texture,addColor:Color) -> Texture:
 	var texture:ImageTexture = ImageTexture.new()
 	if not textureBG.get_size() == textureOutline.get_size():
-		Logger.logMS(["Texture outline and bg must be same size: ",textureBG.get_size()," ",textureOutline.get_size()],true)
+		Logger.logMS(["[TAB]Texture outline and bg must be same size: ",textureBG.get_size()," ",textureOutline.get_size()],true)
 		return texture
 	
 	var BGImage:Image = textureBG.get_data()
@@ -114,6 +114,6 @@ static func _remove_old_tiles(tileSet:TileSet) -> TileSet:
 	for tileID in tilesToDelete:
 		var rmTN:String = tileSet.tile_get_name(tileID)
 		tileSet.remove_tile(tileID)
-		Logger.logMS(["Removed outdated tile: ", rmTN])
+		Logger.logMS(["[TAB]Removed outdated tile: ", rmTN])
 	
 	return tileSet

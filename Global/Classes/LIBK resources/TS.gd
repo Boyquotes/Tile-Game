@@ -50,7 +50,6 @@ bitmask_flags:Array) -> TileSet:
 	if tileID == -1:
 		tileID = _get_next_id(tileSet.get_tiles_ids())
 		tileSet.create_tile(tileID)
-		Logger.logMS(["Created new tile: ",tName])
 	
 	# Update tile
 	tileSet.tile_set_name(tileID,tName)

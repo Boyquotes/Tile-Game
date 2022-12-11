@@ -29,10 +29,10 @@ static func generate_merge_script(wallTiles:Array,scriptPath:String,tsPath:Strin
 	scriptStr += "func _is_tile_bound(drawn_id, neighbor_id):\n\tif drawn_id in BINDS:\n\t\treturn neighbor_id in BINDS[drawn_id]\n\treturn false"
 	
 	# Save script
-	LibK.Files.save_res_str(scriptStr,scriptPath)
-	Logger.logMS(["Binding.gd generated, path: ", scriptPath])
+	LibK.Files.save_res_str(scriptStr, scriptPath)
+	Logger.logMS(["[TAB]Binding.gd generated, path: ", scriptPath])
 	
 	# Add script to TileSet
-	var tileSet:TileSet = ResourceLoader.load(tsPath)
+	var tileSet:TileSet = load(tsPath)
 	tileSet.set_script(load(scriptPath))
-	var _result = ResourceSaver.save(tsPath,tileSet)
+	Logger.logMS(["[TAB]", LibK.Saving.saveResource(tsPath,tileSet)])

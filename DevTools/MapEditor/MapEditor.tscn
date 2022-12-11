@@ -1,9 +1,8 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://DevTools/MapEditor/MapEditor.gd" type="Script" id=1]
 [ext_resource path="res://DevTools/MapEditor/Cam/Cam.gd" type="Script" id=2]
 [ext_resource path="res://Scenes/SimulationManager/MapManager/MapManager.tscn" type="PackedScene" id=3]
-[ext_resource path="res://DevTools/MapEditor/ProceduralGen/ProceduralGen.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Resources/Themes/MapEditor.tres" type="Theme" id=5]
 
 [sub_resource type="StyleBoxEmpty" id=1]
@@ -149,8 +148,6 @@ text = "Load Map"
 fit_content_height = true
 
 [node name="MapManager" parent="." instance=ExtResource( 3 )]
-
-[node name="ProceduralGen" parent="." instance=ExtResource( 4 )]
 
 [connection signal="text_entered" from="UICanvas/Control/SaveEdit" to="." method="_on_SaveEdit_text_entered"]
 [connection signal="text_entered" from="UICanvas/Control/LoadEdit" to="." method="_on_LoadEdit_text_entered"]

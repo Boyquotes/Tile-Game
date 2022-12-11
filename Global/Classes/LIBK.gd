@@ -16,3 +16,4 @@ const Optimization:Script = preload("res://Global/Classes/LIBK resources/Optimiz
 const Files:Script = preload("res://Global/Classes/LIBK resources/Files.gd")
 const TS:Script = preload("res://Global/Classes/LIBK resources/TS.gd")
 const Misc:Script = preload("res://Global/Classes/LIBK resources/Misc.gd")
+const Saving:Script = preload("res://Global/Classes/LIBK resources/Saving.gd")

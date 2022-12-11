@@ -26,7 +26,9 @@ func _enter_tree() -> void:
 		add_child(TMInstance)
 
 
-### SAVE MANAGEMENT ###
+### ----------------------------------------------------
+# Save management
+### ----------------------------------------------------
 func set_blank_save():
 	SaveData = SaveDataRes.new()
 	var _result = SaveData.initialize(get_tilemaps())
@@ -72,9 +74,13 @@ func delete_save(SaveName:String) -> bool:
 	
 	Logger.logMS(["Deleted file: ", SaveName])
 	return true
+### ----------------------------------------------------
 
 
-# UTILITY #
+### ----------------------------------------------------
+# Utility
+### ----------------------------------------------------
+
 # Returns all tilemap children of the node
 func get_tilemaps() -> Array:
 	var TileMaps:Array = []
@@ -84,3 +90,4 @@ func get_tilemaps() -> Array:
 			TileMaps.append(node)
 	
 	return TileMaps
+### ----------------------------------------------------
