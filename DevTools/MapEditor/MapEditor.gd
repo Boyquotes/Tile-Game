@@ -14,7 +14,7 @@ extends "res://DevTools/MapEditor/MapEditorInput.gd"
 # INIT #
 func _ready() -> void:
 	VisualServer.set_default_clear_color(Color.darkslateblue)
-	AllTileMaps = $MapManager.get_tilemaps()
+	TileSelect.AllTileMaps = $MapManager.get_tilemaps()
 	
 	switch_TM_selection(0)
 	switch_TL_selection(0)
@@ -38,7 +38,7 @@ func _draw_selection_square(mousePos:Vector2):
 	var pos:Vector2 = cellPos * DATA.Map.BASE_SCALE
 	
 	var rect = Rect2(pos,size)
-	CellLabel.text = "Cell: " + str(cellPos)
+	PosInfo.CellLabel.text = "Cell: " + str(cellPos)
 	
 	draw_rect(rect,Color.crimson,false,1)
 
@@ -52,7 +52,7 @@ func _draw_selection_chunk(mousePos:Vector2):
 	var pos:Vector2 = chunkPos * chunkScale
 	
 	var rect = Rect2(pos,size)
-	ChunkLabel.text = "Chunk: " + str(chunkPos)
+	PosInfo.ChunkLabel.text = "Chunk: " + str(chunkPos)
 	
 	draw_rect(rect, Color.black, false, 1)
 ### ----------------------------------------------------

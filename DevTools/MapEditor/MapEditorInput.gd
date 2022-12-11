@@ -7,25 +7,26 @@ extends Node2D
 # VARIABLES
 ### ----------------------------------------------------
 
-# PosInfo
-onready var ChunkLabel = $UICanvas/Control/GridContainer/PosInfo/Chunk
-onready var ElevationLabel = $UICanvas/Control/GridContainer/PosInfo/Elevation
-onready var CellLabel = $UICanvas/Control/GridContainer/PosInfo/Cell
+onready var PosInfo = {
+	ChunkLabel = $UICanvas/Control/GridContainer/PosInfo/Chunk,
+	ElevationLabel = $UICanvas/Control/GridContainer/PosInfo/Elevation,
+	CellLabel = $UICanvas/Control/GridContainer/PosInfo/Cell,
+}
 
-# TileScroll
-onready var TMNameLabel = $UICanvas/Control/GridContainer/TileScroll/TMName
-onready var TileList = $UICanvas/Control/GridContainer/TileScroll/ItemList
+onready var TileSelect = {
+	AllTileMaps = [],
+	TMIndex = 0,
+	TLIndex = 0,
+	TMNameLabel = $UICanvas/Control/GridContainer/TileScroll/TMName,
+	TileList = $UICanvas/Control/GridContainer/TileScroll/ItemList,
+}
+
+onready var SaveLoad = {
+	isSaving = false,
+	isLoading = false,
+}
 
 var inputActive:bool = true
-
-var AllTileMaps:Array = []
-var TMIndex:int = 0
-
-var TLIndex:int = 0
-
-# Save/Load
-var isSaving:bool = false
-var isLoading:bool = false
 
 ### ----------------------------------------------------
 # FUNCTIONS
@@ -40,7 +41,7 @@ func _input(event: InputEvent) -> void:
 	saveInput(event)
 	loadInput(event)
 	
-	if isSaving or isLoading: return
+	if SaveLoad.isSaving or SaveLoad.isLoading: return
 	
 	TM_selection_input(event)
 	TL_selection_input(event)
@@ -56,27 +57,27 @@ func TM_selection_input(event: InputEvent):
 
 
 func switch_TM_selection(value:int):
-	TMIndex += value
+	TileSelect.TMIndex += value
 	
-	if TMIndex > (AllTileMaps.size() - 1): TMIndex = 0
-	if TMIndex < 0: TMIndex = (AllTileMaps.size() - 1)
+	if TileSelect.TMIndex > (TileSelect.AllTileMaps.size() - 1): TileSelect.TMIndex = 0
+	if TileSelect.TMIndex < 0: TileSelect.TMIndex = (TileSelect.AllTileMaps.size() - 1)
 	
-	TMNameLabel.text = AllTileMaps[TMIndex].get_name()
+	TileSelect.TMNameLabel.text = TileSelect.AllTileMaps[TileSelect.TMIndex].get_name()
 	
 	fill_item_list()
-	TLIndex = 0
+	TileSelect.TLIndex = 0
 	switch_TL_selection(0)
 
 
 # Fills item list with TileMap tiles
 func fill_item_list():
-	TileList.clear()
+	TileSelect.TileList.clear()
 	
-	var tileSet:TileSet = AllTileMaps[TMIndex].tile_set
+	var tileSet:TileSet = TileSelect.AllTileMaps[TileSelect.TMIndex].tile_set
 	for tileID in tileSet.get_tiles_ids():
 		var tileName:String = tileSet.tile_get_name(tileID)
 		var tileTexture:Texture = _get_tile_texture(tileID,tileSet)
-		TileList.add_item(tileName,tileTexture,true)
+		TileSelect.TileList.add_item(tileName,tileTexture,true)
 
 
 # Gets tile texture from TileSet
@@ -111,16 +112,16 @@ func TL_selection_input(event: InputEvent):
 
 
 func switch_TL_selection(value:int):
-	TLIndex += value
+	TileSelect.TLIndex += value
 	
-	if TLIndex > (TileList.get_item_count() - 1): TLIndex = 0
-	if TLIndex < 0: TLIndex = (TileList.get_item_count() - 1)
+	if TileSelect.TLIndex > (TileSelect.TileList.get_item_count() - 1): TileSelect.TLIndex = 0
+	if TileSelect.TLIndex < 0: TileSelect.TLIndex = (TileSelect.TileList.get_item_count() - 1)
 	
-	for ID in range(TileList.get_item_count()):
-		TileList.set_item_disabled(ID,true)
+	for ID in range(TileSelect.TileList.get_item_count()):
+		TileSelect.TileList.set_item_disabled(ID,true)
 	
-	TileList.set_item_disabled(TLIndex,false)
-	TileList.select(TLIndex)
+	TileSelect.TileList.set_item_disabled(TileSelect.TLIndex,false)
+	TileSelect.TileList.select(TileSelect.TLIndex)
 ### ----------------------------------------------------
 
 
@@ -129,12 +130,12 @@ func switch_TL_selection(value:int):
 ### ----------------------------------------------------
 func set_tile_input(event:InputEvent):
 	if event is InputEventMouseButton or event is InputEventMouseMotion:
-		if event.button_mask == BUTTON_MASK_LEFT:  set_selected_tile(TLIndex)
+		if event.button_mask == BUTTON_MASK_LEFT:  set_selected_tile(TileSelect.TLIndex)
 		if event.button_mask == BUTTON_MASK_RIGHT: set_selected_tile(-1)
 
 
 func set_selected_tile(tileID:int):
-	var tileMap:TileMap = AllTileMaps[TMIndex]
+	var tileMap:TileMap = TileSelect.AllTileMaps[TileSelect.TMIndex]
 	var packedPos:Array = [tileMap.world_to_map(get_global_mouse_position()), $Cam.currentElevation]
 	var TMName = tileMap.get_name()
 	
@@ -146,6 +147,13 @@ func set_selected_tile(tileID:int):
 	var tileName = tileMap.tile_set.tile_get_name(tileID)
 	$MapManager.SaveData.MapData.set_TData_on(TMName,packedPos,tileName)
 	$MapManager.refresh_tile(packedPos)
+### ----------------------------------------------------
+
+
+### ----------------------------------------------------
+# Filter Items
+### ----------------------------------------------------
+
 ### ----------------------------------------------------
 
 
@@ -170,32 +178,32 @@ func update_MapManager_chunks():
 # Save / Load
 ### ----------------------------------------------------
 func saveInput(event:InputEvent) -> void:
-	if isLoading: return
+	if SaveLoad.isLoading: return
 	
-	if event.is_action_pressed(INPUT.TR["LCtrl"]) and not isSaving:
+	if event.is_action_pressed(INPUT.TR["LCtrl"]) and not SaveLoad.isSaving:
 		$Cam.inputActive = false
-		isSaving = true
+		SaveLoad.isSaving = true
 		$UICanvas/Control/SaveEdit.show()
 		$UICanvas/Control/SaveEdit.grab_focus()
 	
-	if event.is_action_pressed(INPUT.TR["ESC"]) and isSaving:
+	if event.is_action_pressed(INPUT.TR["ESC"]) and SaveLoad.isSaving:
 		$Cam.inputActive = true
-		isSaving = false
+		SaveLoad.isSaving = false
 		$UICanvas/Control/SaveEdit.hide()
 
 
 func loadInput(event:InputEvent) -> void:
-	if isSaving: return
+	if SaveLoad.isSaving: return
 	
-	if event.is_action_pressed(INPUT.TR["LAlt"]) and not isLoading:
+	if event.is_action_pressed(INPUT.TR["LAlt"]) and not SaveLoad.isLoading:
 		$Cam.inputActive = false
-		isLoading = true
+		SaveLoad.isLoading = true
 		$UICanvas/Control/LoadEdit.show()
 		$UICanvas/Control/LoadEdit.grab_focus()
 	
-	if event.is_action_pressed(INPUT.TR["ESC"]) and isLoading:
+	if event.is_action_pressed(INPUT.TR["ESC"]) and SaveLoad.isLoading:
 		$Cam.inputActive = true
-		isLoading = false
+		SaveLoad.isLoading = false
 		$UICanvas/Control/LoadEdit.hide()
 
 
