@@ -27,6 +27,7 @@ onready var SaveLoad = {
 }
 
 var inputActive:bool = true
+var UIZone: bool = false
 
 ### ----------------------------------------------------
 # FUNCTIONS
@@ -35,16 +36,16 @@ var inputActive:bool = true
 func _input(event: InputEvent) -> void:
 	if not inputActive: return
 	
-	update()
-	update_MapManager_chunks()
-	
 	saveInput(event)
 	loadInput(event)
-	
 	if SaveLoad.isSaving or SaveLoad.isLoading: return
 	
 	TM_selection_input(event)
 	TL_selection_input(event)
+	if UIZone: return
+	
+	update()
+	update_MapManager_chunks()
 	
 	set_tile_input(event)
 
@@ -117,10 +118,6 @@ func switch_TL_selection(value:int):
 	if TileSelect.TLIndex > (TileSelect.TileList.get_item_count() - 1): TileSelect.TLIndex = 0
 	if TileSelect.TLIndex < 0: TileSelect.TLIndex = (TileSelect.TileList.get_item_count() - 1)
 	
-	for ID in range(TileSelect.TileList.get_item_count()):
-		TileSelect.TileList.set_item_disabled(ID,true)
-	
-	TileSelect.TileList.set_item_disabled(TileSelect.TLIndex,false)
 	TileSelect.TileList.select(TileSelect.TLIndex)
 ### ----------------------------------------------------
 
@@ -136,7 +133,12 @@ func set_tile_input(event:InputEvent):
 
 func set_selected_tile(tileID:int):
 	var tileMap:TileMap = TileSelect.AllTileMaps[TileSelect.TMIndex]
-	var packedPos:Array = [tileMap.world_to_map(get_global_mouse_position()), $Cam.currentElevation]
+	var mousePos:Vector2 = tileMap.world_to_map(get_global_mouse_position())
+	var packedPos:Array = [mousePos, $Cam.currentElevation]
+	var chunkPos:Array = [DATA.Map.GET_CHUNK_ON_POSITION(mousePos), $Cam.currentElevation]
+	
+	if not chunkPos in $MapManager.LoadedChunks: return
+	
 	var TMName = tileMap.get_name()
 	
 	if tileID == -1:
@@ -220,4 +222,18 @@ func _on_LoadEdit_text_entered(SaveName: String) -> void:
 	$MapManager.load_SaveData(SaveName)
 	update_MapManager_chunks()
 	$MapManager.refresh_all_chunks()
+### ----------------------------------------------------
+
+
+### ----------------------------------------------------
+# UI Control
+### ----------------------------------------------------
+func _on_TileScroll_mouse_entered() -> void:
+	UIZone = true
+	$Cam.inputActive = false
+
+
+func _on_TileScroll_mouse_exited() -> void:
+	UIZone = false
+	$Cam.inputActive = true
 ### ----------------------------------------------------

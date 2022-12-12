@@ -1,11 +1,9 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://DevTools/MapEditor/MapEditor.gd" type="Script" id=1]
 [ext_resource path="res://DevTools/MapEditor/Cam/Cam.gd" type="Script" id=2]
 [ext_resource path="res://Scenes/SimulationManager/MapManager/MapManager.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Resources/Themes/MapEditor.tres" type="Theme" id=5]
-
-[sub_resource type="StyleBoxEmpty" id=1]
 
 [node name="MapEditor" type="Node2D"]
 z_index = 10
@@ -22,6 +20,8 @@ script = ExtResource( 2 )
 [node name="Control" type="Control" parent="UICanvas"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_right = 1.0
+mouse_filter = 1
 
 [node name="GridContainer" type="GridContainer" parent="UICanvas/Control"]
 anchor_right = 1.0
@@ -29,13 +29,13 @@ anchor_bottom = 1.0
 columns = 4
 
 [node name="PosInfo" type="VBoxContainer" parent="UICanvas/Control/GridContainer"]
-margin_right = 253.0
+margin_right = 254.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Chunk" type="RichTextLabel" parent="UICanvas/Control/GridContainer/PosInfo"]
-margin_right = 253.0
+margin_right = 254.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 theme = ExtResource( 5 )
@@ -46,7 +46,7 @@ deselect_on_focus_loss_enabled = false
 
 [node name="Cell" type="RichTextLabel" parent="UICanvas/Control/GridContainer/PosInfo"]
 margin_top = 29.0
-margin_right = 253.0
+margin_right = 254.0
 margin_bottom = 54.0
 size_flags_horizontal = 3
 theme = ExtResource( 5 )
@@ -57,7 +57,7 @@ deselect_on_focus_loss_enabled = false
 
 [node name="Elevation" type="RichTextLabel" parent="UICanvas/Control/GridContainer/PosInfo"]
 margin_top = 58.0
-margin_right = 253.0
+margin_right = 254.0
 margin_bottom = 83.0
 size_flags_horizontal = 3
 theme = ExtResource( 5 )
@@ -67,22 +67,22 @@ scroll_active = false
 deselect_on_focus_loss_enabled = false
 
 [node name="null" type="VBoxContainer" parent="UICanvas/Control/GridContainer"]
-margin_left = 257.0
-margin_right = 510.0
+margin_left = 258.0
+margin_right = 511.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="null2" type="VBoxContainer" parent="UICanvas/Control/GridContainer"]
-margin_left = 514.0
-margin_right = 767.0
+margin_left = 515.0
+margin_right = 768.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="TileScroll" type="VBoxContainer" parent="UICanvas/Control/GridContainer"]
-margin_left = 771.0
-margin_right = 1024.0
+margin_left = 772.0
+margin_right = 1025.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -90,17 +90,27 @@ size_flags_vertical = 3
 [node name="TMName" type="RichTextLabel" parent="UICanvas/Control/GridContainer/TileScroll"]
 margin_right = 253.0
 margin_bottom = 25.0
+mouse_filter = 1
 theme = ExtResource( 5 )
 text = "Enviroment"
 fit_content_height = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="UICanvas/Control/GridContainer/TileScroll/TMName"]
+layer = 0
+
+[node name="ColorRect" type="ColorRect" parent="UICanvas/Control/GridContainer/TileScroll/TMName/CanvasLayer"]
+margin_left = 771.0
+margin_right = 1024.0
+margin_bottom = 38.0
+color = Color( 0.2, 0.2, 0.2, 1 )
 
 [node name="ItemList" type="ItemList" parent="UICanvas/Control/GridContainer/TileScroll"]
 margin_top = 29.0
 margin_right = 253.0
 margin_bottom = 600.0
+mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_styles/bg = SubResource( 1 )
 icon_scale = 2.0
 
 [node name="SaveEdit" type="LineEdit" parent="UICanvas/Control"]
@@ -149,6 +159,8 @@ fit_content_height = true
 
 [node name="MapManager" parent="." instance=ExtResource( 3 )]
 
+[connection signal="mouse_entered" from="UICanvas/Control/GridContainer/TileScroll" to="." method="_on_TileScroll_mouse_entered"]
+[connection signal="mouse_exited" from="UICanvas/Control/GridContainer/TileScroll" to="." method="_on_TileScroll_mouse_exited"]
 [connection signal="text_entered" from="UICanvas/Control/SaveEdit" to="." method="_on_SaveEdit_text_entered"]
 [connection signal="text_entered" from="UICanvas/Control/LoadEdit" to="." method="_on_LoadEdit_text_entered"]
 
