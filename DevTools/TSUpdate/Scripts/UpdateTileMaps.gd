@@ -49,9 +49,8 @@ func _update_TileSet(TMName:String,TMData:Dictionary) -> void:
 	Logger.logMS(["[B]Updating TileSet: ", TMName])
 	
 	# Update tiles of material types (autotile and single tile excluding universal)
-	Logger.logMS(["[TAB][B]< Adding tile types"])
 	tileSet = TSCreator.add_tile_types(tileSet,TMData[TMName],BITMASK_FLAGS)
-	Logger.logMS(["[TAB][B]> Adding tile types"])
+	
 	
 	# Add autotile bounding script
 	TSMerge.generate_merge_script(LibK.TS.get_autotile_ids(tileSet),

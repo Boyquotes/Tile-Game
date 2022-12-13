@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/BG.png-e9da19fc7bbd7bc390195541f4e99337.stex"
+path="res://.import/BG.png-aefe6cf80fe072efaacd442a00ba0fe7.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/TileMaps/WallFloor/Single/Floor/BG.png"
-dest_files=[ "res://.import/BG.png-e9da19fc7bbd7bc390195541f4e99337.stex" ]
+source_file="res://Resources/TileMaps/Enviroment/Autotile/Walls/BG.png"
+dest_files=[ "res://.import/BG.png-aefe6cf80fe072efaacd442a00ba0fe7.stex" ]
 
 [params]
 

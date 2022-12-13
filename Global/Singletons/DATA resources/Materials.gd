@@ -8,7 +8,7 @@ extends Script
 ### ----------------------------------------------------
 
 # https://www.rapidtables.com/web/color/RGB_Color.html
-enum TYPES {WoodenPlank,Stone,Steel,Dirt,Grass,DarkGrass,test1,test2,test3}
+enum TYPES {WoodenPlank,Stone,Steel,Dirt,Grass,DarkGrass}
 const DB:Dictionary = {
 	TYPES.WoodenPlank:{"Color":Color('#816109')},
 	TYPES.Stone: 	  {"Color":Color('#444444')},
@@ -16,11 +16,12 @@ const DB:Dictionary = {
 	TYPES.Dirt:  	  {"Color":Color('#483D8B')},
 	TYPES.Grass: 	  {"Color":Color('#228B22')},
 	TYPES.DarkGrass:  {"Color":Color('#006400')},
-	TYPES.test1:  {"Color":Color('#006400')},
-	TYPES.test2:  {"Color":Color('#006400')},
-	TYPES.test3:  {"Color":Color('#006400')},
 }
 
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
+static func CHECK_TYPES():
+	for keyVal in TYPES.values():
+		if not keyVal in DB:
+			Logger.logMS(["DATA.Materials - ", TYPES.keys()[keyVal], " missing in DB"],true)

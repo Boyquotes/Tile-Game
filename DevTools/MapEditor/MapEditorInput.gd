@@ -8,20 +8,22 @@ extends Node2D
 ### ----------------------------------------------------
 
 onready var PosInfo = {
-	ChunkLabel = $UICanvas/Control/GridContainer/PosInfo/Chunk,
-	ElevationLabel = $UICanvas/Control/GridContainer/PosInfo/Elevation,
-	CellLabel = $UICanvas/Control/GridContainer/PosInfo/Cell,
+	ChunkLabel = $UIElements/MC/GC/PosInfo/Chunk,
+	ElevationLabel = $UIElements/MC/GC/PosInfo/Elevation,
+	CellLabel = $UIElements/MC/GC/PosInfo/Cell,
 }
 
 onready var TileSelect = {
 	AllTileMaps = [],
 	TMIndex = 0,
 	TLIndex = 0,
-	TMNameLabel = $UICanvas/Control/GridContainer/TileScroll/TMName,
-	TileList = $UICanvas/Control/GridContainer/TileScroll/ItemList,
+	TMNameLabel = $UIElements/MC/GC/TileScroll/TMName,
+	TileList = $UIElements/MC/GC/TileScroll/ItemList,
 }
 
 onready var SaveLoad = {
+	SaveEdit = $UIElements/MC/GC/PosInfo/SaveEdit,
+	LoadEdit = $UIElements/MC/GC/PosInfo/LoadEdit,
 	isSaving = false,
 	isLoading = false,
 }
@@ -185,13 +187,13 @@ func saveInput(event:InputEvent) -> void:
 	if event.is_action_pressed(INPUT.TR["LCtrl"]) and not SaveLoad.isSaving:
 		$Cam.inputActive = false
 		SaveLoad.isSaving = true
-		$UICanvas/Control/SaveEdit.show()
-		$UICanvas/Control/SaveEdit.grab_focus()
+		SaveLoad.SaveEdit.show()
+		SaveLoad.SaveEdit.grab_focus()
 	
 	if event.is_action_pressed(INPUT.TR["ESC"]) and SaveLoad.isSaving:
 		$Cam.inputActive = true
 		SaveLoad.isSaving = false
-		$UICanvas/Control/SaveEdit.hide()
+		SaveLoad.SaveEdit.hide()
 
 
 func loadInput(event:InputEvent) -> void:
@@ -200,13 +202,13 @@ func loadInput(event:InputEvent) -> void:
 	if event.is_action_pressed(INPUT.TR["LAlt"]) and not SaveLoad.isLoading:
 		$Cam.inputActive = false
 		SaveLoad.isLoading = true
-		$UICanvas/Control/LoadEdit.show()
-		$UICanvas/Control/LoadEdit.grab_focus()
+		SaveLoad.LoadEdit.show()
+		SaveLoad.LoadEdit.grab_focus()
 	
 	if event.is_action_pressed(INPUT.TR["ESC"]) and SaveLoad.isLoading:
 		$Cam.inputActive = true
 		SaveLoad.isLoading = false
-		$UICanvas/Control/LoadEdit.hide()
+		SaveLoad.LoadEdit.hide()
 
 
 func _on_SaveEdit_text_entered(SaveName: String) -> void:

@@ -46,13 +46,10 @@ func _draw_selection_square(mousePos:Vector2):
 # Draws a square to indicate current chunk pointed by mouse cursor
 func _draw_selection_chunk(mousePos:Vector2):
 	var chunkScale:int = DATA.Map.BASE_SCALE * DATA.Map.CHUNK_SIZE
-	var size:Vector2 = Vector2(chunkScale, chunkScale)
 	var chunkPos:Vector2 = DATA.Map.GET_CHUNK_ON_POSITION(mousePos, false)
-	
 	var pos:Vector2 = chunkPos * chunkScale
+	var rect = Rect2(pos, Vector2(chunkScale, chunkScale))
 	
-	var rect = Rect2(pos,size)
 	PosInfo.ChunkLabel.text = "Chunk: " + str(chunkPos)
-	
 	draw_rect(rect, Color.black, false, 1)
 ### ----------------------------------------------------

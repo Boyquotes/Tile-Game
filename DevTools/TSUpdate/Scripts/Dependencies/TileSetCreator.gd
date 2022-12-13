@@ -10,10 +10,14 @@ extends Script
 # Adds autotiles according to types declared in DATA
 # data = {Autotile:{setName:setDir}, Single:{setName:setDir}}
 static func add_tile_types(tileSet:TileSet, data:Dictionary, bitmask_flags:Array) -> TileSet:
+	Logger.logMS(["[TAB][B]< Adding tile types"])
 	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Autotile")
 	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Single")
+	Logger.logMS(["[TAB][B]> Adding tile types"])
 	
+	Logger.logMS(["[TAB][B]< Removing outdated tiles"])
 	tileSet = _remove_old_tiles(tileSet)
+	Logger.logMS(["[TAB][B]> Removing outdated tiles"])
 	
 	return tileSet
 
@@ -111,6 +115,7 @@ static func _remove_old_tiles(tileSet:TileSet) -> TileSet:
 		if not isIn:
 			tilesToDelete.append(tileID)
 	
+	#Logger.logMS(["[B]TILES TO DELETE: ",tilesToDelete])
 	for tileID in tilesToDelete:
 		var rmTN:String = tileSet.tile_get_name(tileID)
 		tileSet.remove_tile(tileID)
