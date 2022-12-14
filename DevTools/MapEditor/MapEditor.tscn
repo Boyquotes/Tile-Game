@@ -143,16 +143,13 @@ margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TMName" type="RichTextLabel" parent="UIElements/MC/GC/TileScroll"]
+[node name="TMSelect" type="OptionButton" parent="UIElements/MC/GC/TileScroll"]
 margin_right = 251.0
-margin_bottom = 25.0
-mouse_filter = 1
-theme = ExtResource( 5 )
-text = "TSName"
-fit_content_height = true
+margin_bottom = 20.0
+text = "TMSelect"
 
 [node name="ItemList" type="ItemList" parent="UIElements/MC/GC/TileScroll"]
-margin_top = 29.0
+margin_top = 24.0
 margin_right = 251.0
 margin_bottom = 600.0
 mouse_filter = 1
@@ -214,6 +211,7 @@ size_flags_vertical = 3
 [connection signal="text_entered" from="UIElements/MC/GC/PosInfo/LoadEdit" to="." method="_on_LoadEdit_text_entered"]
 [connection signal="mouse_entered" from="UIElements/MC/GC/TileScroll" to="." method="_on_TileScroll_mouse_entered"]
 [connection signal="mouse_exited" from="UIElements/MC/GC/TileScroll" to="." method="_on_TileScroll_mouse_exited"]
+[connection signal="item_selected" from="UIElements/MC/GC/TileScroll/TMSelect" to="." method="_on_TMSelect_item_selected"]
 [connection signal="item_selected" from="UIElements/MC/GC/TileScroll/ItemList" to="." method="_on_ItemList_item_selected"]
 
 [editable path="MapManager"]

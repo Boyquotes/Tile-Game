@@ -20,7 +20,7 @@ onready var TileSelect = {
 	ShownTiles = [],	# List of all show tiles (in TileList)
 	TMIndex = 0,		# TileMap index (AllTileMaps)
 	ListIndex = 0,		# Index of selected item
-	TMNameLabel = $UIElements/MC/GC/TileScroll/TMName,
+	TMSelect = $UIElements/MC/GC/TileScroll/TMSelect,
 	TileList = $UIElements/MC/GC/TileScroll/ItemList,
 }
 
@@ -46,7 +46,7 @@ func _input(event: InputEvent) -> void:
 	if SaveLoad.isSaving or SaveLoad.isLoading: return
 	
 	TM_selection_input(event)
-	TD_selection_input(event)
+	tile_selection_input(event)
 	if UIZone: return
 	
 	update()
@@ -58,21 +58,26 @@ func _input(event: InputEvent) -> void:
 # Selecting TileMap
 ### ----------------------------------------------------
 func TM_selection_input(event: InputEvent):
-	if   event.is_action_pressed(INPUT.TR["E"]): switch_TM_selection(1)
-	elif event.is_action_pressed(INPUT.TR["Q"]): switch_TM_selection(-1)
+	if   event.is_action_pressed(INPUT.TR["E"]): 
+		switch_TM_selection(TileSelect.TMIndex + 1)
+	elif event.is_action_pressed(INPUT.TR["Q"]): 
+		switch_TM_selection(TileSelect.TMIndex - 1)
 
 
 func switch_TM_selection(value:int):
-	TileSelect.TMIndex += value
-	
+	TileSelect.TMIndex = value
 	if TileSelect.TMIndex > (TileSelect.AllTileMaps.size() - 1): TileSelect.TMIndex = 0
 	if TileSelect.TMIndex < 0: TileSelect.TMIndex = (TileSelect.AllTileMaps.size() - 1)
 	
-	TileSelect.TMNameLabel.text = TileSelect.AllTileMaps[TileSelect.TMIndex].get_name()
-	
-	fill_item_list()
 	TileSelect.ListIndex = 0
-	switch_list_selection(TileSelect.ListIndex)
+	fill_item_list()
+	
+	TileSelect.TMSelect.select(TileSelect.TMIndex)
+	switch_tile_selection(TileSelect.ListIndex)
+
+
+func _on_TMSelect_item_selected(index:int) -> void:
+	switch_TM_selection(index)
 
 
 # Fills item list with TileMap tiles
@@ -93,19 +98,22 @@ func fill_item_list():
 ### ----------------------------------------------------
 # Selecting Tile
 ### ----------------------------------------------------
-func TD_selection_input(event: InputEvent):
-	if   event.is_action_pressed(INPUT.TR["X"]): switch_list_selection(1)
-	elif event.is_action_pressed(INPUT.TR["Z"]): switch_list_selection(-1)
+func tile_selection_input(event: InputEvent):
+	if   event.is_action_pressed(INPUT.TR["X"]): 
+		switch_tile_selection(TileSelect.ListIndex + 1)
+	elif event.is_action_pressed(INPUT.TR["Z"]): 
+		switch_tile_selection(TileSelect.ListIndex - 1)
 
 
-func switch_list_selection(value:int):
-	TileSelect.ListIndex += value
+func switch_tile_selection(value:int):
+	TileSelect.ListIndex = value
 	if TileSelect.ListIndex > (TileSelect.TileList.get_item_count() - 1): TileSelect.ListIndex = 0
 	if TileSelect.ListIndex < 0: TileSelect.ListIndex = (TileSelect.TileList.get_item_count() - 1)
 	TileSelect.TileList.select(TileSelect.ListIndex)
 
-func _on_ItemList_item_selected(index: int) -> void:
-	TileSelect.ListIndex = index
+
+func _on_ItemList_item_selected(index:int) -> void:
+	switch_tile_selection(index)
 ### ----------------------------------------------------
 
 
