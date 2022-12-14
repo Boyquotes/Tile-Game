@@ -21,7 +21,11 @@ const DB:Dictionary = {
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
-static func CHECK_TYPES():
+static func CHECK_TYPES() -> bool:
+	var isOK:bool = true
 	for keyVal in TYPES.values():
 		if not keyVal in DB:
+			isOK = false
 			Logger.logMS(["DATA.Materials - ", TYPES.keys()[keyVal], " missing in DB"],true)
+	
+	return isOK

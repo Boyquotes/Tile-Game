@@ -103,3 +103,33 @@ static func _set_autotile_bitmask(tileSet:TileSet,tileID:int,bitmask_flags:Array
 		tileSet.autotile_set_bitmask(tileID,bVectors[index],bNums[index])
 	
 	return tileSet
+
+
+# Gets tile texture from TileSet
+static func get_tile_texture(tileID:int, tileSet:TileSet) -> Texture:
+	var fullTexture:Texture = tileSet.tile_get_texture(tileID)
+	var textureRect:Rect2 = tileSet.tile_get_region(tileID)
+	
+	# Crop tileset texture
+	var atlas_texture:AtlasTexture = AtlasTexture.new()
+	atlas_texture.set_atlas(fullTexture)
+	atlas_texture.set_region(textureRect)
+	
+	# Cast texture
+	var tileTexture:Texture = atlas_texture
+	
+	# Crop tile texture
+	var tileMode = tileSet.tile_get_tile_mode(tileID)
+	if tileMode != TileSet.SINGLE_TILE:
+		atlas_texture = AtlasTexture.new()
+		atlas_texture.set_atlas(tileTexture)
+		atlas_texture.set_region( Rect2(Vector2(0,0),tileSet.autotile_get_size(tileID)) )
+	
+	return atlas_texture
+
+
+static func get_tile_names_and_IDs(tileSet:TileSet) -> Array:
+	var tileList:Array = []
+	for tileID in tileSet.get_tiles_ids():
+		tileList.append([tileSet.tile_get_name(tileID), tileID])
+	return tileList

@@ -10,6 +10,10 @@ extends Script
 # Adds autotiles according to types declared in DATA
 # data = {Autotile:{setName:setDir}, Single:{setName:setDir}}
 static func add_tile_types(tileSet:TileSet, data:Dictionary, bitmask_flags:Array) -> TileSet:
+	if not DATA.Materials.CHECK_TYPES():
+		Logger.logMS(["[B]update terminated"], true)
+		return tileSet
+	
 	Logger.logMS(["[TAB][B]< Adding tile types"])
 	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Autotile")
 	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Single")

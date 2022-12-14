@@ -14,9 +14,12 @@ onready var PosInfo = {
 }
 
 onready var TileSelect = {
+	filter = "",
 	AllTileMaps = [],
+	TileData = [],
+	ShownTiles = [],
 	TMIndex = 0,
-	TLIndex = 0,
+	ListIndex = 0,
 	TMNameLabel = $UIElements/MC/GC/TileScroll/TMName,
 	TileList = $UIElements/MC/GC/TileScroll/ItemList,
 }
@@ -43,7 +46,7 @@ func _input(event: InputEvent) -> void:
 	if SaveLoad.isSaving or SaveLoad.isLoading: return
 	
 	TM_selection_input(event)
-	TL_selection_input(event)
+	TD_selection_input(event)
 	if UIZone: return
 	
 	update()
@@ -68,59 +71,40 @@ func switch_TM_selection(value:int):
 	TileSelect.TMNameLabel.text = TileSelect.AllTileMaps[TileSelect.TMIndex].get_name()
 	
 	fill_item_list()
-	TileSelect.TLIndex = 0
-	switch_TL_selection(0)
+	TileSelect.ListIndex = 0
+	switch_list_selection(TileSelect.ListIndex)
 
 
 # Fills item list with TileMap tiles
 func fill_item_list():
 	TileSelect.TileList.clear()
+	TileSelect.ShownTiles.clear()
 	
-	var tileSet:TileSet = TileSelect.AllTileMaps[TileSelect.TMIndex].tile_set
-	for tileID in tileSet.get_tiles_ids():
-		var tileName:String = tileSet.tile_get_name(tileID)
-		var tileTexture:Texture = _get_tile_texture(tileID,tileSet)
+	var tileMap:TileMap = TileSelect.AllTileMaps[TileSelect.TMIndex]
+	for packed in TileSelect.TileData[TileSelect.TMIndex]:
+		var tileName:String = packed[0]
+		var tileID:int = packed[1]
+		var tileTexture:Texture = LibK.TS.get_tile_texture(tileID, tileMap.tile_set)
+		
 		TileSelect.TileList.add_item(tileName,tileTexture,true)
-
-
-# Gets tile texture from TileSet
-func _get_tile_texture(tileID:int,tileSet:TileSet) -> Texture:
-	var fullTexture:Texture = tileSet.tile_get_texture(tileID)
-	var textureRect:Rect2 = tileSet.tile_get_region(tileID)
-	
-	# Crop tileset texture
-	var atlas_texture:AtlasTexture = AtlasTexture.new()
-	atlas_texture.set_atlas(fullTexture)
-	atlas_texture.set_region(textureRect)
-	
-	# Cast texture
-	var tileTexture:Texture = atlas_texture
-	
-	# Crop tile texture
-	var tileMode = tileSet.tile_get_tile_mode(tileID)
-	if tileMode != TileSet.SINGLE_TILE:
-		atlas_texture = AtlasTexture.new()
-		atlas_texture.set_atlas(tileTexture)
-		atlas_texture.set_region( Rect2(Vector2(0,0),tileSet.autotile_get_size(tileID)) )
-	
-	return atlas_texture
+		TileSelect.ShownTiles.append([tileName,tileID])
 ### ----------------------------------------------------
 
 ### ----------------------------------------------------
 # Selecting Tile
 ### ----------------------------------------------------
-func TL_selection_input(event: InputEvent):
-	if   event.is_action_pressed(INPUT.TR["X"]): switch_TL_selection(1)
-	elif event.is_action_pressed(INPUT.TR["Z"]): switch_TL_selection(-1)
+func TD_selection_input(event: InputEvent):
+	if   event.is_action_pressed(INPUT.TR["X"]): switch_list_selection(1)
+	elif event.is_action_pressed(INPUT.TR["Z"]): switch_list_selection(-1)
 
 
-func switch_TL_selection(value:int):
-	TileSelect.TLIndex += value
+func switch_list_selection(value:int):
+	TileSelect.ListIndex += value
 	
-	if TileSelect.TLIndex > (TileSelect.TileList.get_item_count() - 1): TileSelect.TLIndex = 0
-	if TileSelect.TLIndex < 0: TileSelect.TLIndex = (TileSelect.TileList.get_item_count() - 1)
+	if TileSelect.ListIndex > (TileSelect.TileList.get_item_count() - 1): TileSelect.ListIndex = 0
+	if TileSelect.ListIndex < 0: TileSelect.ListIndex = (TileSelect.TileList.get_item_count() - 1)
 	
-	TileSelect.TileList.select(TileSelect.TLIndex)
+	TileSelect.TileList.select(TileSelect.ListIndex)
 ### ----------------------------------------------------
 
 
@@ -129,8 +113,11 @@ func switch_TL_selection(value:int):
 ### ----------------------------------------------------
 func set_tile_input(event:InputEvent):
 	if event is InputEventMouseButton or event is InputEventMouseMotion:
-		if event.button_mask == BUTTON_MASK_LEFT:  set_selected_tile(TileSelect.TLIndex)
-		if event.button_mask == BUTTON_MASK_RIGHT: set_selected_tile(-1)
+		if event.button_mask == BUTTON_MASK_LEFT:  
+			var tileID:int = TileSelect.ShownTiles[TileSelect.ListIndex][1]
+			set_selected_tile(tileID)
+		if event.button_mask == BUTTON_MASK_RIGHT: 
+			set_selected_tile(-1)
 
 
 func set_selected_tile(tileID:int):

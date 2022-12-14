@@ -23,4 +23,4 @@ const Materials:Script = preload("res://Global/Singletons/DATA resources/Materia
 # VARIABLES
 ### ----------------------------------------------------
 func _init() -> void:
-	Materials.CHECK_TYPES()
+	var _result:bool = Materials.CHECK_TYPES()

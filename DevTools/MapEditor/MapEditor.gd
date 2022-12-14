@@ -11,16 +11,21 @@ extends "res://DevTools/MapEditor/MapEditorInput.gd"
 # FUNCTIONS
 ### ----------------------------------------------------
 
-# INIT #
 func _ready() -> void:
 	VisualServer.set_default_clear_color(Color.darkslateblue)
-	TileSelect.AllTileMaps = $MapManager.get_tilemaps()
+	
+	_init_tile_select()
 	
 	switch_TM_selection(0)
-	switch_TL_selection(0)
+	switch_list_selection(0)
 	
 	$MapManager.set_blank_save()
 
+
+func _init_tile_select():
+	TileSelect.AllTileMaps = $MapManager.get_tilemaps()
+	for tileMap in TileSelect.AllTileMaps:
+		TileSelect.TileData.append(LibK.TS.get_tile_names_and_IDs(tileMap.tile_set))
 
 ### ----------------------------------------------------
 # Drawing
