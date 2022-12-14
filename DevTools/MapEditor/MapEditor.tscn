@@ -214,5 +214,6 @@ size_flags_vertical = 3
 [connection signal="text_entered" from="UIElements/MC/GC/PosInfo/LoadEdit" to="." method="_on_LoadEdit_text_entered"]
 [connection signal="mouse_entered" from="UIElements/MC/GC/TileScroll" to="." method="_on_TileScroll_mouse_entered"]
 [connection signal="mouse_exited" from="UIElements/MC/GC/TileScroll" to="." method="_on_TileScroll_mouse_exited"]
+[connection signal="item_selected" from="UIElements/MC/GC/TileScroll/ItemList" to="." method="_on_ItemList_item_selected"]
 
 [editable path="MapManager"]

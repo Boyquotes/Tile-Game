@@ -14,12 +14,12 @@ onready var PosInfo = {
 }
 
 onready var TileSelect = {
-	filter = "",
-	AllTileMaps = [],
-	TileData = [],
-	ShownTiles = [],
-	TMIndex = 0,
-	ListIndex = 0,
+	filter = "",		# Item filter keyword
+	AllTileMaps = [],	# List of all tilemaps
+	TileData = [],		# Data regarding tiles (same order as all tilemaps)
+	ShownTiles = [],	# List of all show tiles (in TileList)
+	TMIndex = 0,		# TileMap index (AllTileMaps)
+	ListIndex = 0,		# Index of selected item
 	TMNameLabel = $UIElements/MC/GC/TileScroll/TMName,
 	TileList = $UIElements/MC/GC/TileScroll/ItemList,
 }
@@ -100,11 +100,12 @@ func TD_selection_input(event: InputEvent):
 
 func switch_list_selection(value:int):
 	TileSelect.ListIndex += value
-	
 	if TileSelect.ListIndex > (TileSelect.TileList.get_item_count() - 1): TileSelect.ListIndex = 0
 	if TileSelect.ListIndex < 0: TileSelect.ListIndex = (TileSelect.TileList.get_item_count() - 1)
-	
 	TileSelect.TileList.select(TileSelect.ListIndex)
+
+func _on_ItemList_item_selected(index: int) -> void:
+	TileSelect.ListIndex = index
 ### ----------------------------------------------------
 
 
