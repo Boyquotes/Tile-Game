@@ -53,7 +53,7 @@ func _draw_selection_square(mousePos:Vector2):
 	var pos:Vector2 = cellPos * DATA.Map.BASE_SCALE
 	
 	var rect = Rect2(pos,size)
-	PosInfo.CellLabel.text = "Cell: " + str(cellPos)
+	Info.CellLabel.text = "Cell: " + str(cellPos)
 	
 	draw_rect(rect,Color.crimson,false,1)
 
@@ -65,6 +65,6 @@ func _draw_selection_chunk(mousePos:Vector2):
 	var pos:Vector2 = chunkPos * chunkScale
 	var rect = Rect2(pos, Vector2(chunkScale, chunkScale))
 	
-	PosInfo.ChunkLabel.text = "Chunk: " + str(chunkPos)
+	Info.ChunkLabel.text = "Chunk: " + str(chunkPos)
 	draw_rect(rect, Color.black, false, 1)
 ### ----------------------------------------------------

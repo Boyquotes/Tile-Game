@@ -7,19 +7,26 @@ extends Node2D
 # VARIABLES
 ### ----------------------------------------------------
 
-onready var PosInfo = {
-	ChunkLabel = $UIElements/MC/GC/PosInfo/Chunk,
-	ElevationLabel = $UIElements/MC/GC/PosInfo/Elevation,
-	CellLabel = $UIElements/MC/GC/PosInfo/Cell,
+onready var Info = {
+	ChunkLabel = $UIElements/MC/GC/Info/Chunk,
+	ElevationLabel = $UIElements/MC/GC/Info/Elevation,
+	CellLabel = $UIElements/MC/GC/Info/Cell,
+	Filter = $UIElements/MC/GC/Info/Filter,
 }
 
 onready var TileSelect = {
-	filter = "",		# Item filter keyword
-	allTileMaps = [],	# List of all tilemaps
-	tileData = [],		# Data regarding tiles (same order as all tilemaps)
-	shownTiles = [],	# List of all show tiles (in TileList)
-	TMIndex = 0,		# TileMap index (allTileMaps)
-	listIndex = 0,		# Index of selected item
+	filter = "",			# Item filter keyword
+	allTileMaps = [],		# List of all tilemaps
+	tileData = [],			# Data regarding tiles (same order as all tilemaps)
+	shownTiles = [],		# List of all show tiles (in TileList)
+	TMIndex = 0,			# TileMap index (allTileMaps)
+	listIndex = 0,			# Index of selected item
+}
+
+onready var States = {
+	addingFilter = false,
+	isSaving     = false,
+	isLoading    = false,
 }
 
 onready var UIElement = {
@@ -27,36 +34,36 @@ onready var UIElement = {
 	TileScroll = $UIElements/MC/GC/TileScroll,
 	TMSelect = $UIElements/MC/GC/TileScroll/TMSelect,
 	TileList = $UIElements/MC/GC/TileScroll/ItemList,
-	SaveEdit = $UIElements/MC/GC/PosInfo/SaveEdit,
-	LoadEdit = $UIElements/MC/GC/PosInfo/LoadEdit,
-}
-
-onready var SaveLoad = {
-	isSaving = false,
-	isLoading = false,
+	SaveEdit = $UIElements/MC/GC/Info/SaveEdit,
+	LoadEdit = $UIElements/MC/GC/Info/LoadEdit,
+	FilterEdit = $UIElements/MC/GC/Info/FilterEdit,
 }
 
 var inputActive:bool = true
-var UIZone: bool = false
+var UIZone:bool = false
 
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
-
+func _ready() -> void:
+	print(States)
 func _input(event: InputEvent) -> void:
 	if not inputActive: return
 	
-	saveInput(event)
-	loadInput(event)
-	if SaveLoad.isSaving or SaveLoad.isLoading: return
+	_save_input(event)
+	_load_input(event)
+	_filter_input(event)
+	
+	# Check if something is being input
+	for state in States: if States[state]: return
 	
 	TM_selection_input(event)
 	tile_selection_input(event)
+	
 	if UIZone: return
 	
 	update()
 	update_MapManager_chunks()
-	
 	set_tile_input(event)
 
 ### ----------------------------------------------------
@@ -96,6 +103,8 @@ func fill_item_list():
 		var tileID:int = packed[1]
 		var tileTexture:Texture = LibK.TS.get_tile_texture(tileID, tileMap.tile_set)
 		
+		if TileSelect.filter != "":
+			if not TileSelect.filter.to_lower() in tileName.to_lower(): continue
 		UIElement.TileList.add_item(tileName,tileTexture,true)
 		TileSelect.shownTiles.append([tileName,tileID])
 ### ----------------------------------------------------
@@ -104,7 +113,7 @@ func fill_item_list():
 # Selecting Tile
 ### ----------------------------------------------------
 func tile_selection_input(event: InputEvent):
-	if   event.is_action_pressed(INPUT.TR["X"]): 
+	if   event.is_action_pressed(INPUT.TR["X"]):
 		switch_tile_selection(TileSelect.listIndex + 1)
 	elif event.is_action_pressed(INPUT.TR["Z"]): 
 		switch_tile_selection(TileSelect.listIndex - 1)
@@ -130,6 +139,8 @@ func _on_ItemList_item_selected(index:int) -> void:
 ### ----------------------------------------------------
 func set_tile_input(event:InputEvent):
 	if event is InputEventMouseButton or event is InputEventMouseMotion:
+		if not TileSelect.shownTiles.size() > 0: return # If list empty dont pick
+		
 		if event.button_mask == BUTTON_MASK_LEFT:  
 			var tileID:int = TileSelect.shownTiles[TileSelect.listIndex][1]
 			set_selected_tile(tileID)
@@ -161,7 +172,23 @@ func set_selected_tile(tileID:int):
 ### ----------------------------------------------------
 # Filter Items
 ### ----------------------------------------------------
+func _filter_input(event:InputEvent):
+	for state in States: 
+		if state == "addingFilter": continue
+		if States[state]: return
+	
+	if event.is_action_pressed(INPUT.TR["F"]) and not States.addingFilter:
+		_show_lineEdit("addingFilter", UIElement.FilterEdit)
+	
+	if event.is_action_pressed(INPUT.TR["ESC"]) and States.addingFilter:
+		_hide_lineEdit("addingFilter", UIElement.FilterEdit)
 
+
+func _on_Filter_text_entered(new_text: String) -> void:
+	TileSelect.filter = new_text
+	_hide_lineEdit("addingFilter", UIElement.FilterEdit)
+	Info.Filter.text = "Filter: " + "\"" + TileSelect.filter + "\""
+	switch_TM_selection(0)
 ### ----------------------------------------------------
 
 
@@ -185,39 +212,34 @@ func update_MapManager_chunks():
 ### ----------------------------------------------------
 # Save / Load
 ### ----------------------------------------------------
-func saveInput(event:InputEvent) -> void:
-	if SaveLoad.isLoading: return
+func _save_input(event:InputEvent) -> void:
+	for state in States: 
+		if state == "isSaving": continue
+		if States[state]: return
 	
-	if event.is_action_pressed(INPUT.TR["LCtrl"]) and not SaveLoad.isSaving:
-		$Cam.inputActive = false
-		SaveLoad.isSaving = true
-		SaveLoad.SaveEdit.show()
-		SaveLoad.SaveEdit.grab_focus()
+	if event.is_action_pressed(INPUT.TR["LCtrl"]) and not States.isSaving:
+		_show_lineEdit("isSaving", UIElement.SaveEdit)
 	
-	if event.is_action_pressed(INPUT.TR["ESC"]) and SaveLoad.isSaving:
-		$Cam.inputActive = true
-		SaveLoad.isSaving = false
-		SaveLoad.SaveEdit.hide()
+	if event.is_action_pressed(INPUT.TR["ESC"]) and States.isSaving:
+		_hide_lineEdit("isSaving", UIElement.SaveEdit)
 
 
-func loadInput(event:InputEvent) -> void:
-	if SaveLoad.isSaving: return
+func _load_input(event:InputEvent) -> void:
+	for state in States: 
+		if state == "isLoading": continue
+		if States[state]: return
 	
-	if event.is_action_pressed(INPUT.TR["LAlt"]) and not SaveLoad.isLoading:
-		$Cam.inputActive = false
-		SaveLoad.isLoading = true
-		SaveLoad.LoadEdit.show()
-		SaveLoad.LoadEdit.grab_focus()
+	if event.is_action_pressed(INPUT.TR["LAlt"]) and not States.isLoading:
+		_show_lineEdit("isLoading", UIElement.LoadEdit)
 	
-	if event.is_action_pressed(INPUT.TR["ESC"]) and SaveLoad.isLoading:
-		$Cam.inputActive = true
-		SaveLoad.isLoading = false
-		SaveLoad.LoadEdit.hide()
+	if event.is_action_pressed(INPUT.TR["ESC"]) and States.isLoading:
+		_hide_lineEdit("isLoading", UIElement.LoadEdit)
 
 
 func _on_SaveEdit_text_entered(SaveName: String) -> void:
 	$MapManager.SaveData.SaveName = SaveName
 	$MapManager.save_current_SaveData()
+	_hide_lineEdit("isSaving", UIElement.SaveEdit)
 
 
 func _on_LoadEdit_text_entered(SaveName: String) -> void:
@@ -228,6 +250,7 @@ func _on_LoadEdit_text_entered(SaveName: String) -> void:
 	$MapManager.load_SaveData(SaveName)
 	update_MapManager_chunks()
 	$MapManager.refresh_all_chunks()
+	_hide_lineEdit("isLoading", UIElement.LoadEdit)
 ### ----------------------------------------------------
 
 
@@ -235,10 +258,18 @@ func _on_LoadEdit_text_entered(SaveName: String) -> void:
 # UI Control
 ### ----------------------------------------------------
 func _physics_process(_delta: float) -> void:
-	if LibK.UI.is_mouse_on_ui(UIElement.TileScroll, UIElement.Parent):
-		UIZone = true
-		$Cam.inputActive = false
-	else:	
-		UIZone = false
-		$Cam.inputActive = true
+	UIZone = LibK.UI.is_mouse_on_ui(UIElement.TileScroll, UIElement.Parent)
+
+
+func _show_lineEdit(stateName:String, LENode:Control):
+	$Cam.inputActive = false
+	States[stateName] = true
+	LENode.show()
+	LENode.grab_focus()
+
+
+func _hide_lineEdit(stateName:String, LENode:Control):
+	$Cam.inputActive = true
+	States[stateName] = false
+	LENode.hide()
 ### ----------------------------------------------------

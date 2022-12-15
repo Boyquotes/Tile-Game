@@ -32,13 +32,13 @@ margin_right = 1019.0
 margin_bottom = 600.0
 columns = 4
 
-[node name="PosInfo" type="VBoxContainer" parent="UIElements/MC/GC"]
+[node name="Info" type="VBoxContainer" parent="UIElements/MC/GC"]
 margin_right = 252.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Chunk" type="RichTextLabel" parent="UIElements/MC/GC/PosInfo"]
+[node name="Chunk" type="RichTextLabel" parent="UIElements/MC/GC/Info"]
 margin_right = 252.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
@@ -48,7 +48,7 @@ fit_content_height = true
 scroll_active = false
 deselect_on_focus_loss_enabled = false
 
-[node name="Cell" type="RichTextLabel" parent="UIElements/MC/GC/PosInfo"]
+[node name="Cell" type="RichTextLabel" parent="UIElements/MC/GC/Info"]
 margin_top = 29.0
 margin_right = 252.0
 margin_bottom = 54.0
@@ -59,7 +59,7 @@ fit_content_height = true
 scroll_active = false
 deselect_on_focus_loss_enabled = false
 
-[node name="Elevation" type="RichTextLabel" parent="UIElements/MC/GC/PosInfo"]
+[node name="Elevation" type="RichTextLabel" parent="UIElements/MC/GC/Info"]
 margin_top = 58.0
 margin_right = 252.0
 margin_bottom = 83.0
@@ -70,14 +70,25 @@ fit_content_height = true
 scroll_active = false
 deselect_on_focus_loss_enabled = false
 
-[node name="null" type="VBoxContainer" parent="UIElements/MC/GC/PosInfo"]
+[node name="Filter" type="RichTextLabel" parent="UIElements/MC/GC/Info"]
 margin_top = 87.0
+margin_right = 252.0
+margin_bottom = 112.0
+size_flags_horizontal = 3
+theme = ExtResource( 5 )
+text = "Filter: \"\""
+fit_content_height = true
+scroll_active = false
+deselect_on_focus_loss_enabled = false
+
+[node name="null" type="VBoxContainer" parent="UIElements/MC/GC/Info"]
+margin_top = 116.0
 margin_right = 252.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="SaveEdit" type="LineEdit" parent="UIElements/MC/GC/PosInfo"]
+[node name="SaveEdit" type="LineEdit" parent="UIElements/MC/GC/Info"]
 visible = false
 margin_top = 600.0
 margin_right = 142.0
@@ -92,7 +103,7 @@ middle_mouse_paste_enabled = false
 selecting_enabled = false
 deselect_on_focus_loss_enabled = false
 
-[node name="RichTextLabel" type="RichTextLabel" parent="UIElements/MC/GC/PosInfo/SaveEdit"]
+[node name="RichTextLabel" type="RichTextLabel" parent="UIElements/MC/GC/Info/SaveEdit"]
 margin_top = -26.0
 margin_right = 355.0
 margin_bottom = 2.0
@@ -100,7 +111,7 @@ theme = ExtResource( 5 )
 text = "Save Map"
 fit_content_height = true
 
-[node name="LoadEdit" type="LineEdit" parent="UIElements/MC/GC/PosInfo"]
+[node name="LoadEdit" type="LineEdit" parent="UIElements/MC/GC/Info"]
 visible = false
 margin_top = 600.0
 margin_right = 142.0
@@ -115,12 +126,35 @@ middle_mouse_paste_enabled = false
 selecting_enabled = false
 deselect_on_focus_loss_enabled = false
 
-[node name="RichTextLabel" type="RichTextLabel" parent="UIElements/MC/GC/PosInfo/LoadEdit"]
+[node name="RichTextLabel" type="RichTextLabel" parent="UIElements/MC/GC/Info/LoadEdit"]
 margin_top = -26.0
 margin_right = 355.0
 margin_bottom = 2.0
 theme = ExtResource( 5 )
 text = "Load Map"
+fit_content_height = true
+
+[node name="FilterEdit" type="LineEdit" parent="UIElements/MC/GC/Info"]
+visible = false
+margin_top = 566.0
+margin_right = 142.0
+margin_bottom = 600.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource( 5 )
+context_menu_enabled = false
+virtual_keyboard_enabled = false
+shortcut_keys_enabled = false
+middle_mouse_paste_enabled = false
+selecting_enabled = false
+deselect_on_focus_loss_enabled = false
+
+[node name="RichTextLabel" type="RichTextLabel" parent="UIElements/MC/GC/Info/FilterEdit"]
+margin_top = -26.0
+margin_right = 355.0
+margin_bottom = 2.0
+theme = ExtResource( 5 )
+text = "Filter"
 fit_content_height = true
 
 [node name="null" type="VBoxContainer" parent="UIElements/MC/GC"]
@@ -211,8 +245,9 @@ size_flags_vertical = 3
 
 [node name="MapManager" parent="." instance=ExtResource( 3 )]
 
-[connection signal="text_entered" from="UIElements/MC/GC/PosInfo/SaveEdit" to="." method="_on_SaveEdit_text_entered"]
-[connection signal="text_entered" from="UIElements/MC/GC/PosInfo/LoadEdit" to="." method="_on_LoadEdit_text_entered"]
+[connection signal="text_entered" from="UIElements/MC/GC/Info/SaveEdit" to="." method="_on_SaveEdit_text_entered"]
+[connection signal="text_entered" from="UIElements/MC/GC/Info/LoadEdit" to="." method="_on_LoadEdit_text_entered"]
+[connection signal="text_entered" from="UIElements/MC/GC/Info/FilterEdit" to="." method="_on_Filter_text_entered"]
 [connection signal="item_selected" from="UIElements/MC/GC/TileScroll/TMSelect" to="." method="_on_TMSelect_item_selected"]
 [connection signal="item_selected" from="UIElements/MC/GC/TileScroll/ItemList" to="." method="_on_ItemList_item_selected"]
 
