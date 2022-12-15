@@ -26,6 +26,6 @@ static func CHECK_TYPES() -> bool:
 	for keyVal in TYPES.values():
 		if not keyVal in DB:
 			isOK = false
-			Logger.logMS(["DATA.Materials - ", TYPES.keys()[keyVal], " missing in DB"],true)
+			Logger.logErr(["DATA.Materials - ", TYPES.keys()[keyVal], " missing in DB"], get_stack())
 	
 	return isOK

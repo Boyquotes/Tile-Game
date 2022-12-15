@@ -36,6 +36,6 @@ func get_simManager():
 			SimulationManager = rootNode.find_node("SimulationManager")
 	
 	if SimulationManager == null:
-		Logger.logMS(["Unable to find SimulationManager."],true)
+		Logger.logErr(["Unable to find SimulationManager."], get_stack())
 	
 	return SimulationManager

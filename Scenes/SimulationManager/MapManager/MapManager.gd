@@ -119,7 +119,7 @@ func _unload_chunk_from_tilemap(packedChunk:Array):
 func refresh_tile(packedPos:Array):
 	var tileChunk:Array = [DATA.Map.GET_CHUNK_ON_POSITION(packedPos[0]),packedPos[1]]
 	if not tileChunk in LoadedChunks:
-		Logger.logMS(["Tried to refresh unloaded chunk tile."], true)
+		Logger.logErr(["Tried to refresh unloaded chunk tile."], get_stack())
 		return
 	
 	_load_tiles_on_position(packedPos)

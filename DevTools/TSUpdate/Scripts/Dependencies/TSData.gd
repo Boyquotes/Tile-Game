@@ -29,7 +29,7 @@ static func get_TMdata() -> Dictionary:
 	var TMdata:Dictionary = {} 	
 	
 	if not LibK.Files.dir_exist(TILEMAPS_DIR):
-			Logger.logMS(["TILEMAPS_DIR folder: ", TILEMAPS_DIR, ", doesn't exist."], true)
+			Logger.logErr(["TILEMAPS_DIR folder: ", TILEMAPS_DIR, ", doesn't exist."], get_stack())
 			return {}
 	
 	var dirList:Array = LibK.Files.get_file_list(TILEMAPS_DIR,true)

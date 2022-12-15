@@ -54,7 +54,7 @@ func _update_TileSet(TMName:String,TMData:Dictionary) -> void:
 	
 	# Add autotile bounding script
 	TSMerge.generate_merge_script(LibK.TS.get_autotile_ids(tileSet),
-	TILEMAPS_DIR + TMName + "/Binding.gd", TILEMAPS_DIR+TMName+"/TileSet.tres")
+	TILEMAPS_DIR + TMName + "/Binding.gd", TILEMAPS_DIR + TMName + "/TileSet.tres")
 	
 	# Update offset based on tile size
 	tileSet = _update_tile_texture_offset(tileSet)

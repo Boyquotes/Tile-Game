@@ -23,6 +23,7 @@ script = ExtResource( 2 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 5.0
+mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
@@ -146,6 +147,7 @@ size_flags_vertical = 3
 [node name="TMSelect" type="OptionButton" parent="UIElements/MC/GC/TileScroll"]
 margin_right = 251.0
 margin_bottom = 20.0
+mouse_filter = 1
 text = "TMSelect"
 
 [node name="ItemList" type="ItemList" parent="UIElements/MC/GC/TileScroll"]
@@ -164,6 +166,7 @@ layer = 0
 [node name="MC" type="MarginContainer" parent="BGElements"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 1
 
 [node name="GC" type="GridContainer" parent="BGElements/MC"]
 margin_right = 1024.0
@@ -192,16 +195,17 @@ margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TLBG" type="VBoxContainer" parent="BGElements/MC/GC"]
+[node name="UIBG" type="VBoxContainer" parent="BGElements/MC/GC"]
 margin_left = 771.0
 margin_right = 1024.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="BGElements/MC/GC/TLBG"]
+[node name="Panel" type="Panel" parent="BGElements/MC/GC/UIBG"]
 margin_right = 253.0
 margin_bottom = 600.0
+mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
@@ -209,8 +213,6 @@ size_flags_vertical = 3
 
 [connection signal="text_entered" from="UIElements/MC/GC/PosInfo/SaveEdit" to="." method="_on_SaveEdit_text_entered"]
 [connection signal="text_entered" from="UIElements/MC/GC/PosInfo/LoadEdit" to="." method="_on_LoadEdit_text_entered"]
-[connection signal="mouse_entered" from="UIElements/MC/GC/TileScroll" to="." method="_on_TileScroll_mouse_entered"]
-[connection signal="mouse_exited" from="UIElements/MC/GC/TileScroll" to="." method="_on_TileScroll_mouse_exited"]
 [connection signal="item_selected" from="UIElements/MC/GC/TileScroll/TMSelect" to="." method="_on_TMSelect_item_selected"]
 [connection signal="item_selected" from="UIElements/MC/GC/TileScroll/ItemList" to="." method="_on_ItemList_item_selected"]
 

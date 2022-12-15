@@ -14,7 +14,7 @@ extends "res://DevTools/MapEditor/MapEditorInput.gd"
 func _ready() -> void:
 	VisualServer.set_default_clear_color(Color.darkslateblue)
 	
-	TileSelect.AllTileMaps = $MapManager.get_tilemaps()
+	TileSelect.allTileMaps = $MapManager.get_tilemaps()
 	_init_TM_selection()
 	_init_tile_select()
 	
@@ -22,16 +22,19 @@ func _ready() -> void:
 	
 	$MapManager.set_blank_save()
 
-
+### ----------------------------------------------------
+# Init
+### ----------------------------------------------------
 func _init_TM_selection():
-	for tileMap in TileSelect.AllTileMaps:
+	for tileMap in TileSelect.allTileMaps:
 		var TMName:String = tileMap.get_name()
-		TileSelect.TMSelect.add_item (TMName)
+		UIElement.TMSelect.add_item (TMName)
 
 
 func _init_tile_select():
-	for tileMap in TileSelect.AllTileMaps:
-		TileSelect.TileData.append(LibK.TS.get_tile_names_and_IDs(tileMap.tile_set))
+	for tileMap in TileSelect.allTileMaps:
+		TileSelect.tileData.append(LibK.TS.get_tile_names_and_IDs(tileMap.tile_set))
+### ----------------------------------------------------
 
 
 ### ----------------------------------------------------

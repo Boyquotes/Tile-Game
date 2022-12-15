@@ -46,7 +46,7 @@ func save_current_SaveData() -> bool:
 
 func load_SaveData(SaveName:String) -> bool:
 	if not LibK.Files.file_exist(DATA.SAVE_FLODER_PATH + SaveName + ".res"):
-		Logger.logMS(["Save called: ", SaveName, " doesn't exist!"], true)
+		Logger.logErr(["Save called: ", SaveName, " doesn't exist!"], get_stack())
 		return false
 	
 	set_blank_save()
@@ -59,7 +59,7 @@ func load_SaveData(SaveName:String) -> bool:
 		Logger.logMS(["Loaded: ", SaveData.SaveName])
 		return true
 	
-	Logger.logMS(["Loading failed! Resource is not SaveDataRes type."], true)
+	Logger.logErr(["Loading failed! Resource is not SaveDataRes type."], get_stack())
 	return false
 
 
@@ -69,7 +69,7 @@ func delete_save(SaveName:String) -> bool:
 	var dir = Directory.new()
 	var result = dir.remove(saveFilePath)
 	if not result == 0:
-		Logger.logMS(["Could not delete file: ", SaveName], true)
+		Logger.logErr(["Could not delete file: ", SaveName], get_stack())
 		return false
 	
 	Logger.logMS(["Deleted file: ", SaveName])

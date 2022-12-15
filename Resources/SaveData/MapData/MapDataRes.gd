@@ -8,11 +8,11 @@ class_name MapDataRes
 # VARIABLES
 ### ----------------------------------------------------
 
-export(Dictionary) var TData = {} # {TSName:{ [TilePos,elevation]:data }}
+export(Dictionary) var TData = {}    # {TSName:{ [TilePos,elevation]:data }}
 export(Dictionary) var TDataLog = {} # {[TileName,TSName]:TileID}
 
 export(Array) var XYBoundaries = [[0,0],[0,0]] # [[minx,maxx],[miny,maxy]]
-export(Array) var ElevationBoundaries = [0,0] # [minElevation,maxElevation]
+export(Array) var ElevationBoundaries = [0,0]  # [minElevation,maxElevation]
 
 var TileSetsData:Dictionary = {} # {TSName:{tileName:tileID}}
 
@@ -59,7 +59,7 @@ func _check_ID_compatibility() -> bool:
 	# First check if all TileMaps exist
 	for TSName in TData:
 		if not TileSetsData.has(TSName):
-			Logger.logMS(["TSName (existing in TData) doesnt exist in available TileSets: " + TSName], true)
+			Logger.logErr(["TSName (existing in TData) doesnt exist in available TileSets: " + TSName], get_stack())
 			return false
 	
 	# Check if saved tile IDs are the same as in TileMaps
@@ -68,7 +68,7 @@ func _check_ID_compatibility() -> bool:
 		var TSName:String = TDLog[1]
 		
 		if not TileSetsData[TSName].has(tileName):
-			Logger.logMS(["Tile called: " + tileName +", saved in TDataLog doesnt exist in TileSetsData: " + TSName], true)
+			Logger.logErr(["Tile called: " + tileName +", saved in TDataLog doesnt exist in TileSetsData: " + TSName], get_stack())
 			return false
 		
 		var tileIDLog = TDataLog[TDLog]
@@ -82,7 +82,7 @@ func _check_ID_compatibility() -> bool:
 # Update every single tile in the map
 # Inefficient if the error occurs but at least the map is updated
 func _update_all_tile_IDs(tileIDTS:int,tileName:String,TSName:String) -> void:
-	Logger.logMS(["Tile called: " + tileName + ", has outdated ID: " + str(TDataLog[[tileName,TSName]])])
+	Logger.logErr(["Tile called: " + tileName + ", has outdated ID: " + str(TDataLog[[tileName,TSName]])], get_stack())
 	Logger.logMS(["Updating tile: " + str([tileName,TSName]) + ", to current global ID: ", tileIDTS])
 	
 	# Update TData IDs
@@ -100,11 +100,11 @@ func set_TData_on(TSName:String,packedPos:Array,tileName:String) -> bool:
 	if not TData.has(TSName): TData[TSName] = {}
 	
 	if not TileSetsData.has(TSName):
-		Logger.logMS(["TSName doesnt exist in available TileSets: " + TSName], true)
+		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
 		return false
 	
 	if not TileSetsData[TSName].has(tileName):
-		Logger.logMS(["TileName doesnt exist in available TileSets: " + tileName], true)
+		Logger.logErr(["TileName doesnt exist in available TileSets: " + tileName], get_stack())
 		return false
 	
 	var data = _pack_data(TSName,tileName)
@@ -128,7 +128,7 @@ func remove_TData_on(TSName:String,packedPos:Array) -> bool:
 
 func get_TData_on(TSName:String,packedPos:Array) -> Dictionary:
 	if not TileSetsData.has(TSName):
-		Logger.logMS(["TSName doesnt exist in available TileSets: " + TSName], true)
+		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
 		return {}
 	
 	if not TData.has(TSName):

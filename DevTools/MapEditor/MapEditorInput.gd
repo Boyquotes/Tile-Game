@@ -15,18 +15,23 @@ onready var PosInfo = {
 
 onready var TileSelect = {
 	filter = "",		# Item filter keyword
-	AllTileMaps = [],	# List of all tilemaps
-	TileData = [],		# Data regarding tiles (same order as all tilemaps)
-	ShownTiles = [],	# List of all show tiles (in TileList)
-	TMIndex = 0,		# TileMap index (AllTileMaps)
-	ListIndex = 0,		# Index of selected item
+	allTileMaps = [],	# List of all tilemaps
+	tileData = [],		# Data regarding tiles (same order as all tilemaps)
+	shownTiles = [],	# List of all show tiles (in TileList)
+	TMIndex = 0,		# TileMap index (allTileMaps)
+	listIndex = 0,		# Index of selected item
+}
+
+onready var UIElement = {
+	Parent = $UIElements/MC,
+	TileScroll = $UIElements/MC/GC/TileScroll,
 	TMSelect = $UIElements/MC/GC/TileScroll/TMSelect,
 	TileList = $UIElements/MC/GC/TileScroll/ItemList,
+	SaveEdit = $UIElements/MC/GC/PosInfo/SaveEdit,
+	LoadEdit = $UIElements/MC/GC/PosInfo/LoadEdit,
 }
 
 onready var SaveLoad = {
-	SaveEdit = $UIElements/MC/GC/PosInfo/SaveEdit,
-	LoadEdit = $UIElements/MC/GC/PosInfo/LoadEdit,
 	isSaving = false,
 	isLoading = false,
 }
@@ -66,14 +71,14 @@ func TM_selection_input(event: InputEvent):
 
 func switch_TM_selection(value:int):
 	TileSelect.TMIndex = value
-	if TileSelect.TMIndex > (TileSelect.AllTileMaps.size() - 1): TileSelect.TMIndex = 0
-	if TileSelect.TMIndex < 0: TileSelect.TMIndex = (TileSelect.AllTileMaps.size() - 1)
+	if TileSelect.TMIndex > (TileSelect.allTileMaps.size() - 1): TileSelect.TMIndex = 0
+	if TileSelect.TMIndex < 0: TileSelect.TMIndex = (TileSelect.allTileMaps.size() - 1)
 	
-	TileSelect.ListIndex = 0
+	TileSelect.listIndex = 0
 	fill_item_list()
 	
-	TileSelect.TMSelect.select(TileSelect.TMIndex)
-	switch_tile_selection(TileSelect.ListIndex)
+	UIElement.TMSelect.select(TileSelect.TMIndex)
+	switch_tile_selection(TileSelect.listIndex)
 
 
 func _on_TMSelect_item_selected(index:int) -> void:
@@ -82,17 +87,17 @@ func _on_TMSelect_item_selected(index:int) -> void:
 
 # Fills item list with TileMap tiles
 func fill_item_list():
-	TileSelect.TileList.clear()
-	TileSelect.ShownTiles.clear()
+	UIElement.TileList.clear()
+	TileSelect.shownTiles.clear()
 	
-	var tileMap:TileMap = TileSelect.AllTileMaps[TileSelect.TMIndex]
-	for packed in TileSelect.TileData[TileSelect.TMIndex]:
+	var tileMap:TileMap = TileSelect.allTileMaps[TileSelect.TMIndex]
+	for packed in TileSelect.tileData[TileSelect.TMIndex]:
 		var tileName:String = packed[0]
 		var tileID:int = packed[1]
 		var tileTexture:Texture = LibK.TS.get_tile_texture(tileID, tileMap.tile_set)
 		
-		TileSelect.TileList.add_item(tileName,tileTexture,true)
-		TileSelect.ShownTiles.append([tileName,tileID])
+		UIElement.TileList.add_item(tileName,tileTexture,true)
+		TileSelect.shownTiles.append([tileName,tileID])
 ### ----------------------------------------------------
 
 ### ----------------------------------------------------
@@ -100,16 +105,19 @@ func fill_item_list():
 ### ----------------------------------------------------
 func tile_selection_input(event: InputEvent):
 	if   event.is_action_pressed(INPUT.TR["X"]): 
-		switch_tile_selection(TileSelect.ListIndex + 1)
+		switch_tile_selection(TileSelect.listIndex + 1)
 	elif event.is_action_pressed(INPUT.TR["Z"]): 
-		switch_tile_selection(TileSelect.ListIndex - 1)
+		switch_tile_selection(TileSelect.listIndex - 1)
 
 
 func switch_tile_selection(value:int):
-	TileSelect.ListIndex = value
-	if TileSelect.ListIndex > (TileSelect.TileList.get_item_count() - 1): TileSelect.ListIndex = 0
-	if TileSelect.ListIndex < 0: TileSelect.ListIndex = (TileSelect.TileList.get_item_count() - 1)
-	TileSelect.TileList.select(TileSelect.ListIndex)
+	TileSelect.listIndex = value
+	if TileSelect.listIndex > (UIElement.TileList.get_item_count() - 1): 
+		TileSelect.listIndex = 0
+	if TileSelect.listIndex < 0: 
+		TileSelect.listIndex = (UIElement.TileList.get_item_count() - 1)
+	
+	UIElement.TileList.select(TileSelect.listIndex)
 
 
 func _on_ItemList_item_selected(index:int) -> void:
@@ -123,14 +131,14 @@ func _on_ItemList_item_selected(index:int) -> void:
 func set_tile_input(event:InputEvent):
 	if event is InputEventMouseButton or event is InputEventMouseMotion:
 		if event.button_mask == BUTTON_MASK_LEFT:  
-			var tileID:int = TileSelect.ShownTiles[TileSelect.ListIndex][1]
+			var tileID:int = TileSelect.shownTiles[TileSelect.listIndex][1]
 			set_selected_tile(tileID)
 		if event.button_mask == BUTTON_MASK_RIGHT: 
 			set_selected_tile(-1)
 
 
 func set_selected_tile(tileID:int):
-	var tileMap:TileMap = TileSelect.AllTileMaps[TileSelect.TMIndex]
+	var tileMap:TileMap = TileSelect.allTileMaps[TileSelect.TMIndex]
 	var mousePos:Vector2 = tileMap.world_to_map(get_global_mouse_position())
 	var packedPos:Array = [mousePos, $Cam.currentElevation]
 	var chunkPos:Array = [DATA.Map.GET_CHUNK_ON_POSITION(mousePos), $Cam.currentElevation]
@@ -214,7 +222,7 @@ func _on_SaveEdit_text_entered(SaveName: String) -> void:
 
 func _on_LoadEdit_text_entered(SaveName: String) -> void:
 	if not LibK.Files.file_exist(DATA.SAVE_FLODER_PATH + SaveName + ".res"):
-		Logger.logMS(["Save called: ", SaveName, " doesn't exist!"], true)
+		Logger.logErr(["Save called: ", SaveName, " doesn't exist!"], get_stack())
 		return
 	
 	$MapManager.load_SaveData(SaveName)
@@ -226,12 +234,11 @@ func _on_LoadEdit_text_entered(SaveName: String) -> void:
 ### ----------------------------------------------------
 # UI Control
 ### ----------------------------------------------------
-func _on_TileScroll_mouse_entered() -> void:
-	UIZone = true
-	$Cam.inputActive = false
-
-
-func _on_TileScroll_mouse_exited() -> void:
-	UIZone = false
-	$Cam.inputActive = true
+func _physics_process(_delta: float) -> void:
+	if LibK.UI.is_mouse_on_ui(UIElement.TileScroll, UIElement.Parent):
+		UIZone = true
+		$Cam.inputActive = false
+	else:	
+		UIZone = false
+		$Cam.inputActive = true
 ### ----------------------------------------------------

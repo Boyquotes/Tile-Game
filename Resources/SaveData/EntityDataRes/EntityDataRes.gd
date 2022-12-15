@@ -109,7 +109,7 @@ func _check_pack_data(data:Dictionary):
 	var edvKeys = EDV.keys()
 	for key in data:
 		if not edvKeys.has(key):
-			Logger.logMS(["Packed data for EData missing key: ", key], true)
+			Logger.logErr(["Packed data for EData missing key: ", key], get_stack())
 			return false
 	
 	return true

@@ -18,7 +18,7 @@ static func range_to_array(sourceDict:Dictionary) -> Array:
 	for tile in sourceDict:
 		var percent:int = int(sourceDict[tile]*100)
 		if (currentIndex + percent) > 100:
-			Logger.logMS(["currentIndex + percent is larger than possible max index: ", currentIndex + percent], true)
+			Logger.logErr(["currentIndex + percent is larger than possible max index: ", currentIndex + percent], get_stack())
 			return []
 		
 		for index in range(currentIndex, currentIndex + percent):
