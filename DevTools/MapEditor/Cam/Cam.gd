@@ -32,7 +32,7 @@ func move_camera(direction:Vector2):
 	if Input.is_action_pressed("LShift"):
 		direction *= 2
 	
-	position += direction
+	global_position += direction
 	cooldown = COOLDOWN_TIME
 
 
@@ -44,13 +44,13 @@ func _process(delta:float) -> void:
 		return
 	
 	if Input.is_action_pressed("Up"):
-		move_camera(Vector2(0,-16))
+		move_camera(Vector2(0,-DATA.Map.BASE_SCALE))
 	if Input.is_action_pressed("Down"):
-		move_camera(Vector2(0,16))
+		move_camera(Vector2(0,DATA.Map.BASE_SCALE))
 	if Input.is_action_pressed("Left"):
-		move_camera(Vector2(-16,0))
+		move_camera(Vector2(-DATA.Map.BASE_SCALE,0))
 	if Input.is_action_pressed("Right"):
-		move_camera(Vector2(16,0))
+		move_camera(Vector2(DATA.Map.BASE_SCALE,0))
 
 
 func _input(event: InputEvent) -> void:

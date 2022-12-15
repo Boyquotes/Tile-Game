@@ -27,6 +27,7 @@ onready var States = {
 	addingFilter = false,
 	isSaving     = false,
 	isLoading    = false,
+	goto         = false,
 }
 
 onready var UIElement = {
@@ -37,6 +38,7 @@ onready var UIElement = {
 	SaveEdit = $UIElements/MC/GC/Info/SaveEdit,
 	LoadEdit = $UIElements/MC/GC/Info/LoadEdit,
 	FilterEdit = $UIElements/MC/GC/Info/FilterEdit,
+	GotoEdit = $UIElements/MC/GC/Info/Goto,
 }
 
 var inputActive:bool = true
@@ -52,6 +54,7 @@ func _input(event: InputEvent) -> void:
 	
 	_save_input(event)
 	_load_input(event)
+	_goto_input(event)
 	_filter_input(event)
 	
 	# Check if something is being input
@@ -253,6 +256,34 @@ func _on_LoadEdit_text_entered(SaveName: String) -> void:
 	_hide_lineEdit("isLoading", UIElement.LoadEdit)
 ### ----------------------------------------------------
 
+
+### ----------------------------------------------------
+# UI Control
+### ----------------------------------------------------
+func _goto_input(event:InputEvent) -> void:
+	for state in States: 
+		if state == "goto": continue
+		if States[state]: return
+	
+	if event.is_action_pressed(INPUT.TR["G"]) and not States.goto:
+		_show_lineEdit("goto", UIElement.GotoEdit)
+	
+	if event.is_action_pressed(INPUT.TR["ESC"]) and States.goto:
+		_hide_lineEdit("goto", UIElement.GotoEdit)
+
+
+func _on_GOTO_text_entered(new_text: String) -> void:
+	var coords:Array = new_text.split(" ")
+	if not coords.size() >= 2: return
+	if not coords[0].is_valid_integer() and coords[1].is_valid_integer():
+		return
+	
+	var x:int = int(coords[0]) * DATA.Map.BASE_SCALE
+	var y:int = int(coords[1]) * DATA.Map.BASE_SCALE
+	$Cam.global_position = Vector2(x,y)
+	
+	_hide_lineEdit("goto", UIElement.GotoEdit)
+### ----------------------------------------------------
 
 ### ----------------------------------------------------
 # UI Control

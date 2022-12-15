@@ -157,6 +157,29 @@ theme = ExtResource( 5 )
 text = "Filter"
 fit_content_height = true
 
+[node name="Goto" type="LineEdit" parent="UIElements/MC/GC/Info"]
+visible = false
+margin_top = 566.0
+margin_right = 142.0
+margin_bottom = 600.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource( 5 )
+context_menu_enabled = false
+virtual_keyboard_enabled = false
+shortcut_keys_enabled = false
+middle_mouse_paste_enabled = false
+selecting_enabled = false
+deselect_on_focus_loss_enabled = false
+
+[node name="RichTextLabel" type="RichTextLabel" parent="UIElements/MC/GC/Info/Goto"]
+margin_top = -26.0
+margin_right = 355.0
+margin_bottom = 2.0
+theme = ExtResource( 5 )
+text = "Go to:"
+fit_content_height = true
+
 [node name="null" type="VBoxContainer" parent="UIElements/MC/GC"]
 margin_left = 256.0
 margin_right = 508.0
@@ -248,6 +271,7 @@ size_flags_vertical = 3
 [connection signal="text_entered" from="UIElements/MC/GC/Info/SaveEdit" to="." method="_on_SaveEdit_text_entered"]
 [connection signal="text_entered" from="UIElements/MC/GC/Info/LoadEdit" to="." method="_on_LoadEdit_text_entered"]
 [connection signal="text_entered" from="UIElements/MC/GC/Info/FilterEdit" to="." method="_on_Filter_text_entered"]
+[connection signal="text_entered" from="UIElements/MC/GC/Info/Goto" to="." method="_on_GOTO_text_entered"]
 [connection signal="item_selected" from="UIElements/MC/GC/TileScroll/TMSelect" to="." method="_on_TMSelect_item_selected"]
 [connection signal="item_selected" from="UIElements/MC/GC/TileScroll/ItemList" to="." method="_on_ItemList_item_selected"]
 
