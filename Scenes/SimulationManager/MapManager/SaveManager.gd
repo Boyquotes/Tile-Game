@@ -17,11 +17,10 @@ var SaveData:SaveDataRes
 
 func _enter_tree() -> void:
 	# Load all TileMaps
-	var dirList:Array = LibK.Files.get_file_list(DATA.TILEMAPS_DIR,true)
-	var nameList:Array = LibK.Files.get_file_list(DATA.TILEMAPS_DIR)
-	
-	for index in range(dirList.size()):
-		var TMScene:PackedScene = load(dirList[index] + "/" + nameList[index] + ".tscn")
+	for packed in LibK.Files.get_file_list_at_dir(DATA.TILEMAPS_DIR):
+		var filePath:String = packed[0]
+		var fileName:String = packed[1]
+		var TMScene:PackedScene = load(filePath + "/" + fileName + ".tscn")
 		var TMInstance = TMScene.instance()
 		add_child(TMInstance)
 

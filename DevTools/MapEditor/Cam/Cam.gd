@@ -1,6 +1,12 @@
 ### ----------------------------------------------------
-### Desc
+### Controls camera movement in the editor
+### Key inputs:
+### 	WASD         - Move in a direction by 16 pixels
+### 	Shift + WASD - Move in a direction faster
+### 	Scroll Up    - Zoom camera out
+### 	Scroll Down  - Zoom camera in
 ### ----------------------------------------------------
+
 extends Camera2D
 
 ### ----------------------------------------------------

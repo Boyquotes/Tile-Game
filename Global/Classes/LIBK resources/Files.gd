@@ -33,9 +33,8 @@ static func load_res_str(path:String) -> String:
 	return content
 
 
-### MISC ###
-# Returns all file directories in a given directory
-static func get_file_list(path:String,getDirs:bool=false) -> Array:
+# Returns [ [filepath, filename], ... ]
+static func get_file_list_at_dir(path:String) -> Array:
 	var dir = Directory.new()
 	var fileList = []
 	
@@ -48,15 +47,12 @@ static func get_file_list(path:String,getDirs:bool=false) -> Array:
 		if not "import" in fileName:
 			if path[path.length()-1] != "/":
 				path += "/"
-			
-			if getDirs:
-				fileList.append(path + fileName)
-			else:
-				fileList.append(fileName)
+			fileList.append([path + fileName, fileName])
 		fileName = dir.get_next()
 	dir.list_dir_end()
 	
 	return fileList
+
 
 # Returns image size as array [width,height]
 static func get_png_size(path:String) -> Array:

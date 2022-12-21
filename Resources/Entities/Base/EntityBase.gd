@@ -28,7 +28,7 @@ var scenePath:String = "Not Set"
 ### SETGET ###
 func _set_map_position(pos):
 	if not isReady:
-		Logger.logMS(["Entity: ", get_name(), ", is not ready!"], true)
+		Logger.logErr(["Entity: ", get_name(), ", is not ready!"], get_stack())
 		return
 	
 	var minx = mapXYBoundaries[0][0]

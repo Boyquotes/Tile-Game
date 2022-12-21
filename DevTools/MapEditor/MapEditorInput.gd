@@ -1,5 +1,11 @@
 ### ----------------------------------------------------
 ### Input management for MapEditor
+### Key inputs:
+### 	Q and E - Switch TileMap
+### 	Z and X - Switch tile
+### 	Alt     - Load current map
+### 	Ctrl    - Save current map
+### 	F       - Add filter to listed tiles
 ### ----------------------------------------------------
 extends Node2D
 
@@ -47,8 +53,6 @@ var UIZone:bool = false
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
-func _ready() -> void:
-	print(States)
 func _input(event: InputEvent) -> void:
 	if not inputActive: return
 	
@@ -57,7 +61,6 @@ func _input(event: InputEvent) -> void:
 	_goto_input(event)
 	_filter_input(event)
 	
-	# Check if something is being input
 	for state in States: if States[state]: return
 	
 	TM_selection_input(event)

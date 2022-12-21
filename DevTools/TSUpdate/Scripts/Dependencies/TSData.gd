@@ -1,5 +1,5 @@
 ### ----------------------------------------------------
-### Setup script for TileMap Update
+### Setup script for TSUpdate
 ### ----------------------------------------------------
 extends EditorScript
 
@@ -16,49 +16,66 @@ const BITMASK_FLAGS:Array = [ Vector2( 0, 0 ), 432, Vector2( 0, 1 ), 438, Vector
 # FUNCTIONS
 ### ----------------------------------------------------
 
+### ----------------------------------------------------
+# Getting TileMap data
+### ----------------------------------------------------
+
 # Function outputs array of data regarding a TileMap
 # Directory structure:
-# > TILEMAPS_DIR
-# 	> TileMapName
-#		> TypeOfTile (Autotile or Single)
-#			> SetName
-#				> BG.png and Outline.png
+# TILEMAPS_DIR/TileMapName/TypeOfTile/SetName/[BG.png and Outline.png]
+# TMdata = { TMName:{Autotile:data, Single:data} }
+# data = {setName:setDir}
 static func get_TMdata() -> Dictionary:
-	# TMdata = { TMName:{Autotile:data, Single:data} }
-	# data = {setName:setDir}
 	var TMdata:Dictionary = {} 	
+	if not LibK.Files.dir_exist(TILEMAPS_DIR):
+			Logger.logErr(["TILEMAPS_DIR folder: ", TILEMAPS_DIR, ", doesn't exist."], get_stack())
+			return {}
+	
+	for packed in LibK.Files.get_file_list_at_dir(TILEMAPS_DIR):
+		var filePath:String = packed[0]
+		var fileName:String = packed[1]
+		TMdata[fileName] = {}
+		
+		# Check if any autotiles exist
+		var autotileDir = filePath + "/Autotile"
+		if LibK.Files.dir_exist(autotileDir):
+			TMdata[fileName]["Autotile"] = create_tile_data(autotileDir)
+		
+		# Check if any single tiles exist
+		var singleDir = filePath + "/Single"
+		if LibK.Files.dir_exist(singleDir):
+			TMdata[fileName]["Single"] = create_tile_data(singleDir)
+		
+	return TMdata
+
+
+# Creates dict of directories inside of a folder 
+# {dirName : directory}
+static func create_tile_data(dir:String) -> Dictionary:
+	var data:Dictionary = {}
+	for packed in LibK.Files.get_file_list_at_dir(dir):
+		data[packed[1]] = packed[0]
+	return data
+### ----------------------------------------------------
+
+
+### ----------------------------------------------------
+# Getting TileSet data
+### ----------------------------------------------------
+
+# Returns all TileSets in Resource directory
+# TileSets[fileName] = TileSet (loaded)
+static func get_TileSets() -> Dictionary:
+	var TileSets:Dictionary = {}
 	
 	if not LibK.Files.dir_exist(TILEMAPS_DIR):
 			Logger.logErr(["TILEMAPS_DIR folder: ", TILEMAPS_DIR, ", doesn't exist."], get_stack())
 			return {}
 	
-	var dirList:Array = LibK.Files.get_file_list(TILEMAPS_DIR,true)
-	var nameList:Array = LibK.Files.get_file_list(TILEMAPS_DIR)
+	for packed in LibK.Files.get_file_list_at_dir(TILEMAPS_DIR):
+		var filePath:String = packed[0]
+		var fileName:String = packed[1]
+		TileSets[fileName] = load(filePath + "/TileSet.tres")
 	
-	# Autotiles and single tiles get color shifted, universal dont
-	for index in range(dirList.size()):
-		TMdata[nameList[index]] = {}
-		
-		# Check if any autotiles exist
-		var autotileDir = dirList[index] + "/Autotile"
-		if LibK.Files.dir_exist(autotileDir):
-			TMdata[nameList[index]]["Autotile"] = create_tile_data(autotileDir)
-		
-		# Check if any single tiles exist
-		var singleDir = dirList[index] + "/Single"
-		if LibK.Files.dir_exist(singleDir):
-			TMdata[nameList[index]]["Single"] = create_tile_data(singleDir)
-		
-	return TMdata
-
-
-# Creates dict of directories inside of a folder {dirName : directory}
-static func create_tile_data(dir:String) -> Dictionary:
-	var data:Dictionary = {}
-	var dirList:Array = LibK.Files.get_file_list(dir,true)
-	var nameList:Array = LibK.Files.get_file_list(dir)
-	
-	for index in range(dirList.size()):
-		data[nameList[index]] = dirList[index]
-	
-	return data
+	return TileSets
+### ----------------------------------------------------

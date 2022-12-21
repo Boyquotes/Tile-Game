@@ -81,6 +81,7 @@ config/name="Remaster"
 DATA="*res://Global/Singletons/DATA.gd"
 GLOBALREF="*res://Global/Singletons/GLOBALREF.gd"
 INPUT="*res://Global/Singletons/INPUT.gd"
+TILES="*res://Global/Singletons/TILES.gd"
 
 [editor_plugins]
 

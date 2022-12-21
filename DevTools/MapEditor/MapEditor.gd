@@ -1,5 +1,6 @@
 ### ----------------------------------------------------
-### Map Editor
+### Map Editor main script
+### For input details check MapEditorInput.gd
 ### ----------------------------------------------------
 extends "res://DevTools/MapEditor/MapEditorInput.gd"
 
