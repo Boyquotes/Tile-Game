@@ -41,4 +41,3 @@ SAVE SYSTEM:
 -----------------------------NEXT GOALS-----------------------------------------------
 
 1) Finishing MapEditor
-2) Write documentation for the project
