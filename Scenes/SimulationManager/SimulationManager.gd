@@ -30,14 +30,14 @@ func start_simulation(mapName:String) -> bool:
 	# Load save file
 	isOk = $MapManager.load_SaveData(mapName)
 	if not isOk:
-		Logger.logMS(["Failed to start simulation (load_SaveData)."],true)
+		Logger.logErr(["Failed to start simulation (load_SaveData)."], get_stack())
 		return isOk
 	
 	# Load simulated entities to the map
 	var EDataSimCopy:Dictionary = $MapManager.SaveData.EntityData.get_all_EDataSim(true)
 	isOk = $EntityManager.load_simulated_entities(EDataSimCopy)
 	if not isOk:
-		Logger.logMS(["Failed to start simulation (load_simulated_entities)."],true)
+		Logger.logErr(["Failed to start simulation (load_simulated_entities)."], get_stack())
 		return isOk
 	
 	# For now its player by default on loading save

@@ -18,10 +18,10 @@ var Player:Node2D # Just to have direct access to player
 func load_simulated_entities(EDataSim:Dictionary) -> bool:
 	for packedPos in EDataSim:
 		if not _load_entity(EDataSim[packedPos], packedPos):
-			Logger.logMS(["Failed to load entity."], true)
+			Logger.logErr(["Failed to load entity."], get_stack())
 	
 	if Player == null:
-		Logger.logMS(["Player does not exist in this save file!"], true)
+		Logger.logErr(["Player does not exist in this save file!"], get_stack())
 		return false
 	
 	return true
@@ -32,12 +32,12 @@ func update_noSim_entities(renderedEntities:Dictionary, simulatedChunks:Array):
 	# Load all new ones
 	for packedPos in renderedEntities:
 		if not _load_entity(renderedEntities[packedPos], packedPos):
-			Logger.logMS(["Failed to load entity."], true)
+			Logger.logErr(["Failed to load entity."], get_stack())
 	
 	# Unload old ones
 	for Entity in get_children():
 		if Entity.get("isSimulated") == null:
-			Logger.logMS(["Entity: ", Entity.get_name(),", has no variable called 'isSimulated'."],true)
+			Logger.logErr(["Entity: ", Entity.get_name(),", has no variable called 'isSimulated'."], get_stack())
 			continue
 		
 		# Unload all not simulated entities that are beyond render distance
@@ -57,7 +57,7 @@ func _load_entity(EData:Dictionary, packedPos:Array) -> bool:
 	var scenePath = EData["ScenePath"]
 	var Entity = load(scenePath).instance()
 	if Entity == null:
-		Logger.logMS(["Entity scene: ",scenePath,", does not exist."],true)
+		Logger.logErr(["Entity scene: ",scenePath,", does not exist."], get_stack())
 		return false
 	
 	# Loading entity into the map
@@ -78,7 +78,7 @@ func get_simulated_entities() -> Array:
 	
 	for Entity in get_children():
 		if Entity.get("isSimulated") == null:
-			Logger.logMS(["Entity: ", Entity.get_name(),", has no variable called 'isSimulated'."],true)
+			Logger.logErr(["Entity: ", Entity.get_name(),", has no variable called 'isSimulated'."], get_stack())
 			continue
 		
 		if Entity.isSimulated:

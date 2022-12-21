@@ -12,5 +12,5 @@ func _ready() -> void:
 
 
 func initialize():
-	isSimulated = true
-	scenePath = "res://Resources/Entities/Player/Player.tscn"
+	Init.isSimulated = true
+	Init.scenePath = "res://Resources/Entities/Player/Player.tscn"

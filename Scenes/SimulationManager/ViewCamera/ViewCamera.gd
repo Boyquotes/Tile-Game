@@ -3,6 +3,9 @@
 ### ----------------------------------------------------
 extends Camera2D
 
+### ----------------------------------------------------
+### FUNCTIONS
+### ----------------------------------------------------
 
 func update_camera_pos(CameraFocusObject:Node2D):
 	var objPos = CameraFocusObject.global_position
