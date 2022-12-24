@@ -16,7 +16,8 @@ static func logMS(message:Array):
 # Format:
 # logErr(["This is an error message], get_stack())
 static func logErr(message:Array, frame:Array):
-	var errInfo:String = "[ERR] " + "Line:" + str(frame[0]["line"]) + ", Script:" + frame[0]["source"] + ", Function:" + frame[0]["function"]
+	var errInfo:String = "[ERR] "
+	if not frame.empty():	errInfo += "Line:" + str(frame[0]["line"]) + ", Script:" + frame[0]["source"] + ", Function:" + frame[0]["function"]
 	_format_LOG(errInfo)
 	
 	message.push_front("[ERR] ")

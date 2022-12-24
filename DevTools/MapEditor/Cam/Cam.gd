@@ -45,6 +45,7 @@ func move_camera(direction:Vector2):
 
 func _process(delta:float) -> void:
 	if not inputActive: return
+	if get_parent().UIZone: return
 	
 	if cooldown > 0:
 		cooldown -= delta
@@ -62,6 +63,7 @@ func _process(delta:float) -> void:
 
 func _input(event: InputEvent) -> void:
 	if not inputActive: return
+	if get_parent().UIZone: return
 	
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_WHEEL_UP:
