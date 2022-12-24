@@ -129,3 +129,7 @@ func refresh_tile(packedPos:Array):
 func refresh_all_chunks():
 	for packedChunk in LoadedChunks:
 		_load_chunk_to_tilemap(packedChunk)
+
+
+func unload_all_chunks():
+	LoadedChunks.clear()

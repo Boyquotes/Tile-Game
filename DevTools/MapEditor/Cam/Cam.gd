@@ -5,6 +5,8 @@
 ### 	Shift + WASD - Move in a direction faster
 ### 	Scroll Up    - Zoom camera out
 ### 	Scroll Down  - Zoom camera in
+### 	-            - Minus elevation
+### 	=            - Add elevation
 ### ----------------------------------------------------
 
 extends Camera2D
@@ -20,8 +22,7 @@ var cooldown:float = 0
 
 export (float) var ZOOM_VALUE = 0.05
 
-# For chunks (MapManager)
-var currentElevation:int = 0
+
 
 ### ----------------------------------------------------
 # FUNCTIONS
@@ -49,13 +50,13 @@ func _process(delta:float) -> void:
 		cooldown -= delta
 		return
 	
-	if Input.is_action_pressed("Up"):
+	if Input.is_action_pressed(INPUT.TR["W"]):
 		move_camera(Vector2(0,-DATA.Map.BASE_SCALE))
-	if Input.is_action_pressed("Down"):
+	if Input.is_action_pressed(INPUT.TR["S"]):
 		move_camera(Vector2(0,DATA.Map.BASE_SCALE))
-	if Input.is_action_pressed("Left"):
+	if Input.is_action_pressed(INPUT.TR["A"]):
 		move_camera(Vector2(-DATA.Map.BASE_SCALE,0))
-	if Input.is_action_pressed("Right"):
+	if Input.is_action_pressed(INPUT.TR["D"]):
 		move_camera(Vector2(DATA.Map.BASE_SCALE,0))
 
 

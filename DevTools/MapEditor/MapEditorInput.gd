@@ -47,6 +47,8 @@ onready var UIElement = {
 	GotoEdit = $UIElements/MC/GC/Info/Goto,
 }
 
+var currentElevation:int = 0
+
 var inputActive:bool = true
 var UIZone:bool = false
 
@@ -56,6 +58,7 @@ var UIZone:bool = false
 func _input(event: InputEvent) -> void:
 	if not inputActive: return
 	
+	_elevation_input(event)
 	_save_input(event)
 	_load_input(event)
 	_goto_input(event)
@@ -157,8 +160,8 @@ func set_tile_input(event:InputEvent):
 func set_selected_tile(tileID:int):
 	var tileMap:TileMap = TileSelect.allTileMaps[TileSelect.TMIndex]
 	var mousePos:Vector2 = tileMap.world_to_map(get_global_mouse_position())
-	var packedPos:Array = [mousePos, $Cam.currentElevation]
-	var chunkPos:Array = [DATA.Map.GET_CHUNK_ON_POSITION(mousePos), $Cam.currentElevation]
+	var packedPos:Array = [mousePos, currentElevation]
+	var chunkPos:Array = [DATA.Map.GET_CHUNK_ON_POSITION(mousePos), currentElevation]
 	
 	if not chunkPos in $MapManager.LoadedChunks: return
 	
@@ -209,9 +212,9 @@ func update_MapManager_chunks():
 	var posToRender:Array = LibK.Vectors.GET_POS_RANGE_V2(1,camChunk,false)
 	
 	for pos in posToRender:
-		chunksToRender.append([pos,$Cam.currentElevation])
+		chunksToRender.append([pos,currentElevation])
 	
-	$MapManager.update_visable_map(chunksToRender,$Cam.currentElevation)
+	$MapManager.update_visable_map(chunksToRender,currentElevation)
 ### ----------------------------------------------------
 
 
@@ -261,7 +264,7 @@ func _on_LoadEdit_text_entered(SaveName: String) -> void:
 
 
 ### ----------------------------------------------------
-# UI Control
+# GOTO
 ### ----------------------------------------------------
 func _goto_input(event:InputEvent) -> void:
 	for state in States: 
@@ -286,6 +289,22 @@ func _on_GOTO_text_entered(new_text: String) -> void:
 	$Cam.global_position = Vector2(x,y)
 	
 	_hide_lineEdit("goto", UIElement.GotoEdit)
+### ----------------------------------------------------
+
+### ----------------------------------------------------
+# Elevation
+### ----------------------------------------------------
+func _elevation_input(event:InputEvent):
+	if event.is_action_pressed(INPUT.TR["-"]):
+		change_elevation(-1)
+	if event.is_action_pressed(INPUT.TR["="]):
+		change_elevation(1)
+
+
+func change_elevation(direction:int):
+	currentElevation += direction
+	Info.ElevationLabel.text = "Elevation: " + str(currentElevation)
+	$MapManager.unload_all_chunks()
 ### ----------------------------------------------------
 
 ### ----------------------------------------------------
