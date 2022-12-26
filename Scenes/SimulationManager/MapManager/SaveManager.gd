@@ -11,6 +11,8 @@ class_name SaveManager
 
 var SaveData:SaveDataRes
 
+var TileMaps:Array = []  # Reference to all tilemaps
+
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
@@ -23,7 +25,7 @@ func _enter_tree() -> void:
 		var TMScene:PackedScene = load(filePath + "/" + fileName + ".tscn")
 		var TMInstance = TMScene.instance()
 		add_child(TMInstance)
-
+	TileMaps = get_tilemaps()
 
 ### ----------------------------------------------------
 # Save management
@@ -82,11 +84,7 @@ func delete_save(SaveName:String) -> bool:
 
 # Returns all tilemap children of the node
 func get_tilemaps() -> Array:
-	var TileMaps:Array = []
-	
-	for node in get_children():
-		if node is TileMap:
-			TileMaps.append(node)
-	
-	return TileMaps
+	var TM:Array = []
+	for node in get_children(): if node is TileMap: TM.append(node)
+	return TM
 ### ----------------------------------------------------

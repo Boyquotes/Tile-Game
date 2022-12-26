@@ -17,7 +17,7 @@ signal logMessage
 
 func generate_TILES_script(TileSets:Dictionary, scriptPath:String):
 	emit_signal("logMessage", ["Creating TILES.gd singleton at: ",scriptPath], false)
-	var scriptStr:String = ScriptGenerator.announce("TILESGenerator.gd (TSUpdate)", "Node")
+	var scriptStr:String = ScriptGenerator.announce("ScriptsGenerator.gd (UpdateTimeMaps)", "Node")
 	
 	scriptStr += ScriptGenerator.get_marker_str("TILESET TILE NAMES",false)
 	for TSName in TileSets:
@@ -32,7 +32,7 @@ func generate_TILES_script(TileSets:Dictionary, scriptPath:String):
 
 
 func generate_binding_script(wallTiles:Array, scriptPath:String, tsPath:String):
-	var scriptStr:String = ScriptGenerator.announce("BindingGenerator.gd (TSUpdate)", "TileSet", true)
+	var scriptStr:String = ScriptGenerator.announce("ScriptsGenerator.gd (UpdateTimeMaps)", "TileSet", true)
 	
 	# Create BINDS variable
 	var bindsDict := {}
