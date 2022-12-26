@@ -5,6 +5,6 @@
 extends Node
 
 ### TILESET TILE NAMES START ###
-enum ENVIROMENT {WoodenPlankWalls_GEN_ = 0, StoneWalls_GEN_ = 1, SteelWalls_GEN_ = 2, DirtWalls_GEN_ = 3, GrassWalls_GEN_ = 4, DarkGrassWalls_GEN_ = 5, PineTree = 6, LeafTree = 7, Bush = 8, Grass = 9, Pebble = 10, WoodenPlankStairsUp_GEN_ = 11, StoneStairsUp_GEN_ = 12, SteelStairsUp_GEN_ = 13, DirtStairsUp_GEN_ = 14, GrassStairsUp_GEN_ = 15, DarkGrassStairsUp_GEN_ = 16, WoodenPlankStairsDown_GEN_ = 17, StoneStairsDown_GEN_ = 18, SteelStairsDown_GEN_ = 19, DirtStairsDown_GEN_ = 20, GrassStairsDown_GEN_ = 21, DarkGrassStairsDown_GEN_ = 22, }
-enum FLOOR {WoodenPlankFloor_GEN_ = 0, StoneFloor_GEN_ = 1, SteelFloor_GEN_ = 2, DirtFloor_GEN_ = 3, GrassFloor_GEN_ = 4, DarkGrassFloor_GEN_ = 5, }
+enum ENVIROMENT {WoodenPlankWalls_GEN_ = 0, StoneWalls_GEN_ = 1, DirtWalls_GEN_ = 3, GrassWalls_GEN_ = 4, DarkGrassWalls_GEN_ = 5, PineTree = 6, LeafTree = 7, Bush = 8, Grass = 9, Pebble = 10, WoodenPlankStairsUp_GEN_ = 11, StoneStairsUp_GEN_ = 12, DirtStairsUp_GEN_ = 14, GrassStairsUp_GEN_ = 15, DarkGrassStairsUp_GEN_ = 16, WoodenPlankStairsDown_GEN_ = 17, StoneStairsDown_GEN_ = 18, DirtStairsDown_GEN_ = 20, GrassStairsDown_GEN_ = 21, DarkGrassStairsDown_GEN_ = 22, }
+enum FLOOR {WoodenPlankFloor_GEN_ = 0, StoneFloor_GEN_ = 1, DirtFloor_GEN_ = 3, GrassFloor_GEN_ = 4, DarkGrassFloor_GEN_ = 5, }
 ### TILESET TILE NAMES END ###

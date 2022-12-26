@@ -6,7 +6,15 @@
 ### 	BG is put at the back and Outline on top
 ### 	Resulting texture is added as a tile
 ### ----------------------------------------------------
-extends Script
+
+tool
+extends Node
+
+### ----------------------------------------------------
+# Variables
+### ----------------------------------------------------
+
+signal logMessage
 
 ### ----------------------------------------------------
 # FUNCTIONS
@@ -18,39 +26,39 @@ extends Script
 
 # Adds autotiles according to types declared in DATA
 # data = {Autotile:{setName:setDir}, Single:{setName:setDir}}
-static func add_tile_types(tileSet:TileSet, data:Dictionary, bitmask_flags:Array) -> TileSet:
+func add_tile_types(tileSet:TileSet, data:Dictionary, bitmask_flags:Array) -> TileSet:
 	if not DATA.Materials.CHECK_TYPES():
-		Logger.logErr(["[B]update terminated"], get_stack())
+		emit_signal("logMessage", ["[b]update terminated[/b]"], true)
 		return tileSet
 	
-	Logger.logMS(["[TAB][B]< Adding tile types"])
+	emit_signal("logMessage", ["\t[b]< Adding tile types[/b]"], false)
 	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Autotile")
 	tileSet = _add_tile_type(tileSet, data, bitmask_flags,"Single")
-	Logger.logMS(["[TAB][B]> Adding tile types"])
+	emit_signal("logMessage", ["\t[b]> Adding tile types[/b]"], false)
 	
-	Logger.logMS(["[TAB][B]< Removing outdated tiles"])
+	emit_signal("logMessage", ["\t[b]< Removing outdated tiles[/b]"], false)
 	tileSet = _remove_old_tiles(tileSet)
-	Logger.logMS(["[TAB][B]> Removing outdated tiles"])
+	emit_signal("logMessage", ["\t[b]> Removing outdated tiles[/b]"], false)
 	
 	return tileSet
 
 
 # Adds all materials to TileSet
-static func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array,
+func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array,
  tileType:String) -> TileSet:
 	if not data.has(tileType):
-		Logger.logMS(["[TAB]TileType ",tileType,", doesnt exist in data"])
+		emit_signal("logMessage", ["\tTileType ",tileType,", doesnt exist in data"], false)
 		return tileSet
 	
 	for setName in data[tileType]:
 		var textureBGPath:String = data[tileType][setName]+"/BG.png"
 		if not LibK.Files.file_exist(textureBGPath):
-			Logger.logErr(["[TAB]File doesnt exist (textureBGPath): ",textureBGPath], get_stack())
+			emit_signal("logMessage", ["\tFile doesnt exist (textureBGPath): ",textureBGPath], true)
 			continue
 		
 		var textureOutlinePath:String = data[tileType][setName]+"/Outline.png"
 		if not LibK.Files.file_exist(textureOutlinePath):
-			Logger.logErr(["[TAB]File doesnt exist (textureOutlinePath): ",textureOutlinePath], get_stack())
+			emit_signal("logMessage", ["\tFile doesnt exist (textureOutlinePath): ",textureOutlinePath], true)
 			continue
 		
 		var textureBG:Texture = load(textureBGPath)
@@ -64,7 +72,7 @@ static func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array
 			if tileType == "Autotile": tileMode = TileSet.AUTO_TILE
 			
 			tileSet = LibK.TS._add_tile(tileSet, tileName, texture, tileMode, bitmask_flags)
-			Logger.logMS(["[TAB]Added tile: ",tileName,", to ",setName])
+			emit_signal("logMessage", ["\tAdded tile: ",tileName,", to ",setName], false)
 	
 	return tileSet
 ### ----------------------------------------------------
@@ -75,10 +83,10 @@ static func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array
 
 # Interpolates BG texture with addColor 20/80
 # Puts Outline texture on top of interpolated BG texture
-static func _blend_textures(textureBG:Texture,textureOutline:Texture,addColor:Color) -> Texture:
+func _blend_textures(textureBG:Texture,textureOutline:Texture,addColor:Color) -> Texture:
 	var texture:ImageTexture = ImageTexture.new()
 	if not textureBG.get_size() == textureOutline.get_size():
-		Logger.logErr(["[TAB]Texture outline and bg must be same size: ",textureBG.get_size()," ",textureOutline.get_size()], get_stack())
+		emit_signal("logMessage", ["\tTexture outline and bg must be same size: ",textureBG.get_size()," ",textureOutline.get_size()], true)
 		return texture
 	
 	var BGImage:Image = textureBG.get_data()
@@ -114,7 +122,7 @@ static func _blend_textures(textureBG:Texture,textureOutline:Texture,addColor:Co
 ### ----------------------------------------------------
 
 # Removes all non existent material tiles that were previously generated
-static func _remove_old_tiles(tileSet:TileSet) -> TileSet:
+func _remove_old_tiles(tileSet:TileSet) -> TileSet:
 	var tileNames:Array = LibK.TS.get_tile_names(tileSet)
 	var tileIDs:Array = tileSet.get_tiles_ids()
 	var tilesToDelete:Array = []
@@ -139,7 +147,7 @@ static func _remove_old_tiles(tileSet:TileSet) -> TileSet:
 	for tileID in tilesToDelete:
 		var rmTN:String = tileSet.tile_get_name(tileID)
 		tileSet.remove_tile(tileID)
-		Logger.logMS(["[TAB]Removed outdated tile: ", rmTN])
+		emit_signal("logMessage", ["\tRemoved outdated tile: ", rmTN], false)
 	
 	return tileSet
 ### ----------------------------------------------------

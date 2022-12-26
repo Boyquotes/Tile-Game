@@ -1,8 +1,8 @@
-
 ### ----------------------------------------------------
 ### Class is used as a general use library
 ### Stores resource scripts for given sublib
 ### ----------------------------------------------------
+
 extends Node
 class_name LibK
 
