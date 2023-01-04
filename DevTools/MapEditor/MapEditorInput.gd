@@ -75,6 +75,14 @@ func _input(event: InputEvent) -> void:
 	update_MapManager_chunks()
 	set_tile_input(event)
 
+
+func _flag_control(stateName:String) -> bool:
+	for state in States: 
+		if state == stateName: continue
+		if States[state]: return false
+	return true
+
+
 ### ----------------------------------------------------
 # Selecting TileMap
 ### ----------------------------------------------------
@@ -117,6 +125,7 @@ func fill_item_list():
 		UIElement.TileList.add_item(tileName,tileTexture,true)
 		TileSelect.shownTiles.append([tileName,tileID])
 ### ----------------------------------------------------
+
 
 ### ----------------------------------------------------
 # Selecting Tile
@@ -182,9 +191,7 @@ func set_selected_tile(tileID:int):
 # Filter Items
 ### ----------------------------------------------------
 func _filter_input(event:InputEvent):
-	for state in States: 
-		if state == "addingFilter": continue
-		if States[state]: return
+	if not _flag_control("addingFilter"): return
 	
 	if event.is_action_pressed(INPUT.TR["F"]) and not States.addingFilter:
 		_show_lineEdit("addingFilter", UIElement.FilterEdit)
@@ -222,9 +229,7 @@ func update_MapManager_chunks():
 # Save / Load
 ### ----------------------------------------------------
 func _save_input(event:InputEvent) -> void:
-	for state in States: 
-		if state == "isSaving": continue
-		if States[state]: return
+	if not _flag_control("isSaving"): return
 	
 	if event.is_action_pressed(INPUT.TR["LCtrl"]) and not States.isSaving:
 		_show_lineEdit("isSaving", UIElement.SaveEdit)
@@ -234,9 +239,7 @@ func _save_input(event:InputEvent) -> void:
 
 
 func _load_input(event:InputEvent) -> void:
-	for state in States: 
-		if state == "isLoading": continue
-		if States[state]: return
+	if not _flag_control("isLoading"): return
 	
 	if event.is_action_pressed(INPUT.TR["LAlt"]) and not States.isLoading:
 		_show_lineEdit("isLoading", UIElement.LoadEdit)
@@ -267,9 +270,7 @@ func _on_LoadEdit_text_entered(SaveName: String) -> void:
 # GOTO
 ### ----------------------------------------------------
 func _goto_input(event:InputEvent) -> void:
-	for state in States: 
-		if state == "goto": continue
-		if States[state]: return
+	if not _flag_control("goto"): return
 	
 	if event.is_action_pressed(INPUT.TR["G"]) and not States.goto:
 		_show_lineEdit("goto", UIElement.GotoEdit)

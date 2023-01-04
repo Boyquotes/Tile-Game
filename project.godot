@@ -49,6 +49,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Resources/SaveData/MapData/MapDataRes.gd"
 }, {
+"base": "Script",
+"class": "MapSave",
+"language": "GDScript",
+"path": "res://Resources/SaveData/MapSave.gd"
+}, {
+"base": "Reference",
+"class": "SQLiteWrapper",
+"language": "GDScript",
+"path": "res://addons/godot-sqlite/godot-sqlite-wrapper.gd"
+}, {
 "base": "Resource",
 "class": "SaveDataRes",
 "language": "GDScript",
@@ -73,6 +83,8 @@ _global_script_class_icons={
 "LibK": "",
 "Logger": "",
 "MapDataRes": "",
+"MapSave": "",
+"SQLiteWrapper": "",
 "SaveDataRes": "",
 "SaveManager": "",
 "ScriptGenerator": ""
@@ -91,7 +103,7 @@ TILES="*res://Global/Singletons/TILES.gd"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/UpdateTileMaps/plugin.cfg", "res://addons/gut/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/UpdateTileMaps/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/gut/plugin.cfg" )
 
 [gui]
 

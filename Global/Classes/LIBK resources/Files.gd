@@ -15,7 +15,10 @@ const FILE_TAB = "\t"
 # FUNCTIONS
 ### ----------------------------------------------------
 
-### RESOURCES ###
+### ----------------------------------------------------
+# Resources
+### ----------------------------------------------------
+
 # Saving resource from string
 static func save_res_str(content:String,path:String):
 	var file = File.new()
@@ -31,6 +34,22 @@ static func load_res_str(path:String) -> String:
 	var content = file.get_as_text()
 	file.close()
 	return content
+### ----------------------------------------------------
+
+
+### ----------------------------------------------------
+# Directory / Files
+### ----------------------------------------------------
+static func create_empty_file(path:String) -> int:
+	var file := File.new()
+	var result := file.open(path, File.WRITE)
+	file.close()
+	return result
+
+
+static func delete_file(path:String) -> int:
+	var dir = Directory.new()
+	return dir.remove(path)
 
 
 # Returns [ [filepath, filename], ... ]
@@ -54,6 +73,21 @@ static func get_file_list_at_dir(path:String) -> Array:
 	return fileList
 
 
+static func file_exist(filePath:String) -> bool:
+	var directory = Directory.new();
+	return directory.file_exists(filePath)
+
+
+static func dir_exist(dirPath:String) -> bool:
+	var directory = Directory.new();
+	return directory.dir_exists(dirPath)
+### ----------------------------------------------------
+
+
+### ----------------------------------------------------
+# MISC
+### ----------------------------------------------------
+
 # Returns image size as array [width,height]
 static func get_png_size(path:String) -> Array:
 	var image = Image.new()
@@ -74,13 +108,6 @@ static func get_string_fromEnd_toStart(source:String,startStr:String,endStr:Stri
 	var result = source.substr(startIndex,span)
 	
 	return result
+### ----------------------------------------------------
 
 
-static func file_exist(filePath:String) -> bool:
-	var directory = Directory.new();
-	return directory.file_exists(filePath)
-
-
-static func dir_exist(dirPath:String) -> bool:
-	var directory = Directory.new();
-	return directory.dir_exists(dirPath)
