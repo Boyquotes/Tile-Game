@@ -2,47 +2,60 @@
 ### Is a container for all TileMaps
 ### Takes care of showing the map to the player
 ### ----------------------------------------------------
-extends SaveManager
+extends Node2D
 
 ### ----------------------------------------------------
 # VARIABLES
 ### ----------------------------------------------------
 
-var LoadedChunks:Array = [] # List of chunk loaded to tilemap
-# LoadedChunks = [[chunkPos,elevationLevel],...]
+var CurrentSave:SaveData
+var TileMaps:Array = [] # Reference to all tilemaps
+
+# List of chunks loaded to tilemap (format array for comparing)
+var LoadedChunks:Array = [] # [ Vector3, ... ]
 
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
 
+func _enter_tree() -> void:
+	for packed in LibK.Files.get_file_list_at_dir(DATA.TILEMAPS_DIR):
+		var filePath:String = packed[0]
+		var fileName:String = packed[1]
+		var TMScene:PackedScene = load(filePath + "/" + fileName + ".tscn")
+		var TMInstance = TMScene.instance()
+		add_child(TMInstance)
+	TileMaps = get_tilemaps()
+	set_blank_save()
+
 ### ----------------------------------------------------
 # Getting chunks to load / unload
 ### ----------------------------------------------------
-func update_visable_map(ChunksToLoad:Array,GFObjectElevation:int):
-	ChunksToLoad = _get_chunks_on_elevation(ChunksToLoad,GFObjectElevation)
+func update_visable_map(ChunksToLoad:Array, GFObjectElevation:int) -> void:
+	ChunksToLoad = _get_chunks_on_elevation(ChunksToLoad, GFObjectElevation)
 	
 	# Loading chunks that are not yet rendered
-	for packedChunk in ChunksToLoad:
-		if LoadedChunks.has(packedChunk): continue
-		_load_chunk_to_tilemap(packedChunk)
+	for chunkV3 in ChunksToLoad:
+		if LoadedChunks.has(chunkV3): continue
+		_load_chunk_to_tilemap(chunkV3)
 	
 	# Unload old chunks that are not in range (iterate backwards)
 	for i in range(LoadedChunks.size() - 1, -1, -1):
-		var packedChunk = LoadedChunks[i]
-		if ChunksToLoad.has(packedChunk): continue
+		var chunkV3:Vector3 = LoadedChunks[i]
+		if ChunksToLoad.has(chunkV3): continue
 		LoadedChunks.remove(i)
-		_unload_chunk_from_tilemap(packedChunk)
+		_unload_chunk_from_tilemap(chunkV3)
 	
 	for tileMap in TileMaps: tileMap.update_bitmask_region()
 
 
 # Used to get chunks only on a given elevation
 # Render only current elevation chunks
-func _get_chunks_on_elevation(PackedArray:Array,elevation:int) -> Array:
+func _get_chunks_on_elevation(PackedArray:Array, GFObjectElevation:int) -> Array:
 	var result = []
-	for packedChunk in PackedArray:
-		if packedChunk[1] != elevation: continue
-		result.append(packedChunk)
+	for chunkV3 in PackedArray:
+		if chunkV3[2] != GFObjectElevation: continue
+		result.append(chunkV3)
 	
 	return result
 ### ----------------------------------------------------
@@ -50,62 +63,112 @@ func _get_chunks_on_elevation(PackedArray:Array,elevation:int) -> Array:
 ### ----------------------------------------------------
 # Loading chunks
 ### ----------------------------------------------------
-func _load_chunk_to_tilemap(packedChunk:Array):
-	var chunkPos = packedChunk[0]
-	var elevationLevel = packedChunk[1]
-	
-	# For every tile in chunk
-	for tilePos in DATA.Map.GET_CHUNK_TILE_POSITIONS(chunkPos):
-		_load_tiles_on_position([tilePos,elevationLevel])
-	LoadedChunks.append(packedChunk)
+func _load_chunk_to_tilemap(chunkV3:Vector3):
+	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.CHUNK_SIZE):
+		_load_tiles_on_position(posV3)
+	LoadedChunks.append(chunkV3)
 
 
 # Loads tiles from every TileMap on position
-func _load_tiles_on_position(packedPos:Array):
-	# Loop to check for every TileMap position
+func _load_tiles_on_position(posV3:Vector3):
 	for tileMap in TileMaps:
 		var TMName = tileMap.get_name()
-		var data:Dictionary = SaveData.MapData.get_TData_on(TMName,packedPos)
-		
-		# If no data on this position put blank
-		if data.size() == 0:
-			tileMap.set_cellv(packedPos[0],-1)
-			continue
-		
-		# Set tile on tilemap
-		var tileID = data[ SaveData.MapData.TDV.keys()[SaveData.MapData.TDV.tileID] ]
-		tileMap.set_cellv(packedPos[0],tileID)
+		var tileData:TileData = CurrentSave.get_tile_on(TMName, posV3)
+		tileMap.set_cellv(LibK.Vectors.vec3_vec2(posV3), tileData.tileID)
 ### ----------------------------------------------------
 
 
 ### ----------------------------------------------------
 # Unloading chunks
 ### ----------------------------------------------------
-func _unload_chunk_from_tilemap(packedChunk:Array):
-	var chunkPos = packedChunk[0]
-	
-	# For every tile in chunk
-	for tilePos in DATA.Map.GET_CHUNK_TILE_POSITIONS(chunkPos):
-		for tileMap in TileMaps: tileMap.set_cellv(tilePos,-1)
+func _unload_chunk_from_tilemap(chunkV3:Vector3):
+	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.CHUNK_SIZE):
+		for tileMap in TileMaps:
+			tileMap.set_cellv(LibK.Vectors.vec3_vec2(posV3), -1)
 ### ----------------------------------------------------
 
 
 ### ----------------------------------------------------
 # Update map
 ### ----------------------------------------------------
-func refresh_tile(packedPos:Array):
-	var tileChunk:Array = [DATA.Map.GET_CHUNK_ON_POSITION(packedPos[0]),packedPos[1]]
-	if not tileChunk in LoadedChunks:
-		Logger.logErr(["Tried to refresh unloaded chunk tile."], get_stack())
+func refresh_tile(posV3:Vector3):
+	var chunkV3:Vector3 = LibK.Vectors.scale_down_vec3(posV3, DATA.CHUNK_SIZE)
+	if not chunkV3 in LoadedChunks:
+		Logger.logErr(["Tried to refresh unloaded tile: ", posV3],get_stack())
 		return
-	_load_tiles_on_position(packedPos)
+	_load_tiles_on_position(posV3)
+
+
+func refresh_chunk(chunkV3:Vector3):
+	if not chunkV3 in LoadedChunks:
+		Logger.logErr(["Tried to refresh unloaded chunk: ", chunkV3],get_stack())
+		return
+	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.CHUNK_SIZE):
+		_load_tiles_on_position(posV3)
 
 
 func refresh_all_chunks():
-	for packedChunk in LoadedChunks:
-		_load_chunk_to_tilemap(packedChunk)
+	for chunkV3 in LoadedChunks: refresh_chunk(chunkV3)
 
 
 func unload_all_chunks():
 	LoadedChunks.clear()
+### ----------------------------------------------------
+
+
+### ----------------------------------------------------
+# Save management
+### ----------------------------------------------------
+
+func set_blank_save() -> void:
+	CurrentSave = SaveData.new()
+	CurrentSave.create_new(TileMaps)
+	Logger.logMS(["Set blank save in MapManager."])
+
+
+func save_CurrentSave(saveName:String = "") -> bool:
+	if saveName != "": CurrentSave.SaveName = saveName
+	
+	var path:String = DATA.SAVE_FOLDER_PATH + CurrentSave.SaveName + ".res"
+	var result := ResourceSaver.save(path, CurrentSave, ResourceSaver.FLAG_COMPRESS)
+	Logger.logMS(["Saved: ", CurrentSave.SaveName, " ",result])
+	return (result == OK)
+
+
+func load_CurrentSave(SaveName:String) -> bool:
+	var saveFilePath:String = DATA.SAVE_FOLDER_PATH + SaveName + ".res"
+	if not LibK.Files.file_exist(saveFilePath):
+		Logger.logErr(["Save called: ", SaveName, " doesn't exist!"], get_stack())
+		return false
+	
+	set_blank_save() # Clear previos save (otherwise game wont load the same save)
+	var SD = ResourceLoader.load(saveFilePath)
+	if SD is SaveData:
+		CurrentSave = SD
+		Logger.logMS(["Loaded: ", CurrentSave.SaveName])
+		return true
+	
+	Logger.logErr(["Loading failed! Resource is not SaveDataRes type."], get_stack())
+	return false
+
+
+func delete_save(SaveName:String) -> bool:
+	var saveFilePath:String = DATA.SAVE_FOLDER_PATH + SaveName + ".res"
+	var result = LibK.Files.delete_file(saveFilePath)
+	if result != OK:
+		Logger.logErr(["Could not delete file: ", saveFilePath], get_stack())
+		return false
+	
+	Logger.logMS(["Deleted file: ", saveFilePath])
+	return true
+### ----------------------------------------------------
+
+
+### ----------------------------------------------------
+# Utility
+### ----------------------------------------------------
+func get_tilemaps() -> Array:
+	var TM:Array = []
+	for node in get_children(): if node is TileMap: TM.append(node)
+	return TM
 ### ----------------------------------------------------

@@ -7,55 +7,60 @@ extends GutTestLOG
 # VARIABLES
 ### ----------------------------------------------------
 
-const MapManagerScene = preload("res://Scenes/SimulationManager/MapManager/MapManager.tscn")
+const _MMS = preload("res://Scenes/SimulationManager/MapManager/MapManager.tscn")
+const SAVE_NAME := "Test"
+onready var RNG = RandomNumberGenerator.new()
+
+
 var MapManager:Node = null
 
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
 
-func before_all():
-	MapManager = autoqfree(MapManagerScene.instance())
+func before_each():
+	MapManager = autoqfree(_MMS.instance())
 	add_child(MapManager)
+	RNG.randomize()
 
+### ----------------------------------------------------
+# UnitTests
+### ----------------------------------------------------
 
-func test_save_and_load() -> void:
-	MapManager.set_blank_save()
-	var MapDataShort = MapManager.SaveData.MapData
-	
+func test_save_and_load():
 	LOG_GUT("Iterate through every possible tile")
 	var yCord:int = 0
-	for tileMap in MapManager.get_tilemaps():
+	for tileMap in MapManager.TileMaps:
 		var TMName:String = tileMap.get_name()
-		
-		for tileName in LibK.TS.get_tile_names(tileMap.tile_set):
-			var packedPos:Array = [Vector2(0,yCord),0]
-			
-			# Set Data on cord
-			MapDataShort.set_TData_on(TMName,packedPos,tileName)
-			
-			# Load Data on cord anc check
-			assert_eq(tileName, MapDataShort.get_TData_on(TMName,packedPos)["tileName"], "Tiles should match")
+		for tileID in tileMap.tile_set.get_tiles_ids():
+			var posV3 := Vector3(0, yCord, 0)
+			var tileData := TileData.new(tileID)
+			assert_true(MapManager.CurrentSave.set_tile_on(TMName, posV3, tileData),
+				"Unable to set tile on: " + TMName + " " + str(posV3))
+			assert_eq(str(tileData), str(MapManager.CurrentSave.get_tile_on(TMName, posV3)),
+				"tileData should match")
 			yCord += 1
 	
-	LOG_GUT("save and load test", true)
-	
-	var TDataLogbck = MapDataShort.TDataLog
-	var TDatabck = MapDataShort.TData
-	
-	MapManager.SaveData.SaveName = "Test"
-	MapManager.save_current_SaveData()
-	MapManager.SaveData = null
-	MapManager.load_SaveData("Test")
-	
-	#Test loaded save
-	var MDShort = MapManager.SaveData.MapData
-	for tsName in MDShort.TData:
-		assert_eq_deep(MDShort.TData[tsName],TDatabck[tsName])
-	assert_eq_deep(MDShort.TDataLog,TDataLogbck)
-	
-	Logger.logMS(["Logback: ", TDataLogbck])
-	
-	# Cleanup
-	MapManager.delete_save("Test")
+	LOG_GUT("save and load test")
+	assert_true(MapManager.save_CurrentSave(SAVE_NAME),
+		"Saving failed.")
+	var TSDataHash:int = MapManager.CurrentSave.TSData.hash()
+	MapManager.CurrentSave = null
+	assert_true(MapManager.load_CurrentSave(SAVE_NAME), 
+		"Loading failed.")
+	assert_true(TSDataHash == MapManager.CurrentSave.TSData.hash(),
+		"Content of saved data doesnt match.")
+	assert_true(MapManager.delete_save(SAVE_NAME),
+		"Deleting failed.")
+	gut.p("Finished.")
 
+
+func test_MapManager_functions():
+	LOG_GUT("update_visable_map test")
+	var PositionsV3 = LibK.Vectors.vec3_get_square(Vector3(0,0,0), 1, true)
+	MapManager.update_visable_map(PositionsV3, 0)
+	
+	assert_true(MapManager.LoadedChunks==PositionsV3, "Chunks should be loaded")
+	gut.p(MapManager.LoadedChunks)
+	
+### ----------------------------------------------------

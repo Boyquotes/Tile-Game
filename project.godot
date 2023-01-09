@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Resource",
+"class": "DataType",
+"language": "GDScript",
+"path": "res://Global/Classes/DataTypes/DataType.gd"
+}, {
 "base": "Node2D",
 "class": "EntityBase",
 "language": "GDScript",
@@ -45,36 +50,32 @@ _global_script_classes=[ {
 "path": "res://Global/Classes/Logger.gd"
 }, {
 "base": "Resource",
-"class": "MapDataRes",
-"language": "GDScript",
-"path": "res://Resources/SaveData/MapData/MapDataRes.gd"
-}, {
-"base": "Script",
-"class": "MapSave",
-"language": "GDScript",
-"path": "res://Resources/SaveData/MapSave.gd"
-}, {
-"base": "Reference",
-"class": "SQLiteWrapper",
-"language": "GDScript",
-"path": "res://addons/godot-sqlite/godot-sqlite-wrapper.gd"
-}, {
-"base": "Resource",
-"class": "SaveDataRes",
+"class": "SaveData",
 "language": "GDScript",
 "path": "res://Resources/SaveData/SaveData.gd"
-}, {
-"base": "Node2D",
-"class": "SaveManager",
-"language": "GDScript",
-"path": "res://Scenes/SimulationManager/MapManager/SaveManager.gd"
 }, {
 "base": "Script",
 "class": "ScriptGenerator",
 "language": "GDScript",
 "path": "res://Global/Classes/ScriptGenerator.gd"
+}, {
+"base": "Node",
+"class": "State",
+"language": "GDScript",
+"path": "res://Global/Classes/StateMachine/State.gd"
+}, {
+"base": "Node",
+"class": "StateMachine",
+"language": "GDScript",
+"path": "res://Global/Classes/StateMachine/StateMachine.gd"
+}, {
+"base": "DataType",
+"class": "TileData",
+"language": "GDScript",
+"path": "res://Global/Classes/DataTypes/TileData.gd"
 } ]
 _global_script_class_icons={
+"DataType": "",
 "EntityBase": "",
 "EntityDataRes": "",
 "GutHookScript": "",
@@ -82,12 +83,11 @@ _global_script_class_icons={
 "GutTestLOG": "",
 "LibK": "",
 "Logger": "",
-"MapDataRes": "",
-"MapSave": "",
-"SQLiteWrapper": "",
-"SaveDataRes": "",
-"SaveManager": "",
-"ScriptGenerator": ""
+"SaveData": "",
+"ScriptGenerator": "",
+"State": "",
+"StateMachine": "",
+"TileData": ""
 }
 
 [application]
@@ -103,7 +103,7 @@ TILES="*res://Global/Singletons/TILES.gd"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/UpdateTileMaps/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/gut/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/UpdateTileMaps/plugin.cfg", "res://addons/gut/plugin.cfg" )
 
 [gui]
 

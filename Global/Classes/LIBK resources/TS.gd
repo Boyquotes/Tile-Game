@@ -133,3 +133,10 @@ static func get_tile_names_and_IDs(tileSet:TileSet) -> Array:
 	for tileID in tileSet.get_tiles_ids():
 		tileList.append([tileSet.tile_get_name(tileID), tileID])
 	return tileList
+
+
+static func get_tile_on_pos(pos:Vector2) -> Vector2:
+	var x = floor( pos[0]/(DATA.Map.BASE_SCALE) )
+	var y = floor( pos[1]/(DATA.Map.BASE_SCALE) )
+	
+	return Vector2(x,y)

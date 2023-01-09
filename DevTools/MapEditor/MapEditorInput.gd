@@ -47,8 +47,6 @@ onready var UIElement = {
 	GotoEdit = $UIElements/MC/GC/Info/Goto,
 }
 
-var currentElevation:int = 0
-
 var inputActive:bool = true
 var UIZone:bool = false
 
@@ -169,21 +167,20 @@ func set_tile_input(event:InputEvent):
 func set_selected_tile(tileID:int):
 	var tileMap:TileMap = TileSelect.allTileMaps[TileSelect.TMIndex]
 	var mousePos:Vector2 = tileMap.world_to_map(get_global_mouse_position())
-	var packedPos:Array = [mousePos, currentElevation]
-	var chunkPos:Array = [DATA.Map.GET_CHUNK_ON_POSITION(mousePos), currentElevation]
+	var posV3:Vector3 = LibK.Vectors.vec2_vec3(mousePos, $Cam.currentElevation)
+	var chunkV3:Vector3 = LibK.Vectors.vec2_vec3(LibK.Vectors.scale_down_vec2(mousePos, DATA.CHUNK_SIZE), $Cam.currentElevation)
 	
-	if not chunkPos in $MapManager.LoadedChunks: return
-	
+	if not chunkV3 in $MapManager.LoadedChunks: return
 	var TMName = tileMap.get_name()
 	
 	if tileID == -1:
-		$MapManager.SaveData.MapData.remove_TData_on(TMName,packedPos)
-		$MapManager.refresh_tile(packedPos)
+		$MapManager.CurrentSave.remove_tile_on(TMName,posV3)
+		$MapManager.refresh_tile(posV3)
 		return
 	
-	var tileName = tileMap.tile_set.tile_get_name(tileID)
-	$MapManager.SaveData.MapData.set_TData_on(TMName,packedPos,tileName)
-	$MapManager.refresh_tile(packedPos)
+	var tileData = TileData.new(tileID)
+	$MapManager.CurrentSave.set_tile_on(TMName,posV3,tileData)
+	$MapManager.refresh_tile(posV3)
 ### ----------------------------------------------------
 
 
@@ -214,14 +211,14 @@ func _on_Filter_text_entered(new_text: String) -> void:
 
 # Renders chunks as in normal game based on camera position (as simulated entity)
 func update_MapManager_chunks():
-	var camChunk:Vector2 = DATA.Map.GET_CHUNK_ON_POSITION($Cam.global_position, false)
+	var camChunk:Vector2 = LibK.Vectors.scale_down_vec2($Cam.global_position, DATA.CHUNK_SIZE*DATA.BASE_SCALE)
 	var chunksToRender:Array = []
-	var posToRender:Array = LibK.Vectors.GET_POS_RANGE_V2(1,camChunk,false)
+	var posToRender:Array = LibK.Vectors.vec2_get_square(camChunk, 1)
 	
 	for pos in posToRender:
-		chunksToRender.append([pos,currentElevation])
+		chunksToRender.append(LibK.Vectors.vec2_vec3(pos,$Cam.currentElevation))
 	
-	$MapManager.update_visable_map(chunksToRender,currentElevation)
+	$MapManager.update_visable_map(chunksToRender, $Cam.currentElevation)
 ### ----------------------------------------------------
 
 
@@ -249,17 +246,16 @@ func _load_input(event:InputEvent) -> void:
 
 
 func _on_SaveEdit_text_entered(SaveName: String) -> void:
-	$MapManager.SaveData.SaveName = SaveName
-	$MapManager.save_current_SaveData()
+	$MapManager.save_CurrentSave(SaveName)
 	_hide_lineEdit("isSaving", UIElement.SaveEdit)
 
 
 func _on_LoadEdit_text_entered(SaveName: String) -> void:
-	if not LibK.Files.file_exist(DATA.SAVE_FLODER_PATH + SaveName + ".res"):
+	if not LibK.Files.file_exist(DATA.SAVE_FOLDER_PATH + SaveName + ".res"):
 		Logger.logErr(["Save called: ", SaveName, " doesn't exist!"], get_stack())
 		return
 	
-	$MapManager.load_SaveData(SaveName)
+	$MapManager.load_CurrentSave(SaveName)
 	update_MapManager_chunks()
 	$MapManager.refresh_all_chunks()
 	_hide_lineEdit("isLoading", UIElement.LoadEdit)
@@ -303,8 +299,8 @@ func _elevation_input(event:InputEvent):
 
 
 func change_elevation(direction:int):
-	currentElevation += direction
-	Info.ElevationLabel.text = "Elevation: " + str(currentElevation)
+	$Cam.currentElevation += direction
+	Info.ElevationLabel.text = "Elevation: " + str($Cam.currentElevation)
 	$MapManager.unload_all_chunks()
 ### ----------------------------------------------------
 
