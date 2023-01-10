@@ -27,7 +27,7 @@ signal logMessage
 # Adds autotiles according to types declared in DATA
 # data = {Autotile:{setName:setDir}, Single:{setName:setDir}}
 func add_tile_types(tileSet:TileSet, data:Dictionary, bitmask_flags:Array) -> TileSet:
-	if not DATA.Materials.CHECK_TYPES():
+	if not DATA.MATERIALS.CHECK_TYPES():
 		emit_signal("logMessage", ["[b]update terminated[/b]"], true)
 		return tileSet
 	
@@ -64,10 +64,10 @@ func _add_tile_type(tileSet:TileSet, data:Dictionary, bitmask_flags:Array,
 		var textureBG:Texture = load(textureBGPath)
 		var textureOutline:Texture = load(textureOutlinePath)
 		
-		for M_TYPE in DATA.Materials.TYPES.values():
-			var M_COLOR:Color = DATA.Materials.DB[M_TYPE]["Color"]
+		for M_TYPE in DATA.MATERIALS.TYPES.values():
+			var M_COLOR:Color = DATA.MATERIALS.DB[M_TYPE]["Color"]
 			var texture:Texture = _blend_textures(textureBG,textureOutline,M_COLOR)
-			var tileName:String = DATA.Materials.TYPES.keys()[M_TYPE] + setName + DATA.GENERATED_TAG
+			var tileName:String = DATA.MATERIALS.TYPES.keys()[M_TYPE] + setName + DATA.DATA.MATERIALS.GENERATED_TAG
 			var tileMode:int = TileSet.SINGLE_TILE
 			if tileType == "Autotile": tileMode = TileSet.AUTO_TILE
 			
@@ -132,12 +132,12 @@ func _remove_old_tiles(tileSet:TileSet) -> TileSet:
 		var tileID:int = tileIDs[index]
 		
 		# Only check for generated tiles
-		if not DATA.GENERATED_TAG in tileName:
+		if not DATA.DATA.MATERIALS.GENERATED_TAG in tileName:
 			continue
 		
 		# Delete outdated tiles
 		var isIn:bool = false
-		for materialName in DATA.Materials.TYPES.keys():
+		for materialName in DATA.MATERIALS.TYPES.keys():
 			if materialName in tileName:
 				isIn = true
 		

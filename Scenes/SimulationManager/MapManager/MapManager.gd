@@ -8,7 +8,6 @@ extends Node2D
 # VARIABLES
 ### ----------------------------------------------------
 
-var CurrentSave:SaveData
 var TileMaps:Array = [] # Reference to all tilemaps
 
 # List of chunks loaded to tilemap (format array for comparing)
@@ -19,14 +18,14 @@ var LoadedChunks:Array = [] # [ Vector3, ... ]
 ### ----------------------------------------------------
 
 func _enter_tree() -> void:
-	for packed in LibK.Files.get_file_list_at_dir(DATA.TILEMAPS_DIR):
+	for packed in LibK.Files.get_file_list_at_dir(DATA.MAP.TILEMAPS_DIR):
 		var filePath:String = packed[0]
 		var fileName:String = packed[1]
 		var TMScene:PackedScene = load(filePath + "/" + fileName + ".tscn")
 		var TMInstance = TMScene.instance()
 		add_child(TMInstance)
 	TileMaps = get_tilemaps()
-	set_blank_save()
+	SAVE.set_blank_save(TileMaps)
 
 ### ----------------------------------------------------
 # Getting chunks to load / unload
@@ -60,11 +59,12 @@ func _get_chunks_on_elevation(PackedArray:Array, GFObjectElevation:int) -> Array
 	return result
 ### ----------------------------------------------------
 
+
 ### ----------------------------------------------------
 # Loading chunks
 ### ----------------------------------------------------
 func _load_chunk_to_tilemap(chunkV3:Vector3):
-	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.CHUNK_SIZE):
+	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.MAP.CHUNK_SIZE):
 		_load_tiles_on_position(posV3)
 	LoadedChunks.append(chunkV3)
 
@@ -73,7 +73,7 @@ func _load_chunk_to_tilemap(chunkV3:Vector3):
 func _load_tiles_on_position(posV3:Vector3):
 	for tileMap in TileMaps:
 		var TMName = tileMap.get_name()
-		var tileData:TileData = CurrentSave.get_tile_on(TMName, posV3)
+		var tileData:TileData = SAVE.CurrentSave.get_tile_on(TMName, posV3)
 		tileMap.set_cellv(LibK.Vectors.vec3_vec2(posV3), tileData.tileID)
 ### ----------------------------------------------------
 
@@ -82,7 +82,7 @@ func _load_tiles_on_position(posV3:Vector3):
 # Unloading chunks
 ### ----------------------------------------------------
 func _unload_chunk_from_tilemap(chunkV3:Vector3):
-	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.CHUNK_SIZE):
+	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.MAP.CHUNK_SIZE):
 		for tileMap in TileMaps:
 			tileMap.set_cellv(LibK.Vectors.vec3_vec2(posV3), -1)
 ### ----------------------------------------------------
@@ -92,7 +92,7 @@ func _unload_chunk_from_tilemap(chunkV3:Vector3):
 # Update map
 ### ----------------------------------------------------
 func refresh_tile(posV3:Vector3):
-	var chunkV3:Vector3 = LibK.Vectors.scale_down_vec3(posV3, DATA.CHUNK_SIZE)
+	var chunkV3:Vector3 = LibK.Vectors.scale_down_vec3(posV3, DATA.MAP.CHUNK_SIZE)
 	if not chunkV3 in LoadedChunks:
 		Logger.logErr(["Tried to refresh unloaded tile: ", posV3],get_stack())
 		return
@@ -103,7 +103,7 @@ func refresh_chunk(chunkV3:Vector3):
 	if not chunkV3 in LoadedChunks:
 		Logger.logErr(["Tried to refresh unloaded chunk: ", chunkV3],get_stack())
 		return
-	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.CHUNK_SIZE):
+	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.MAP.CHUNK_SIZE):
 		_load_tiles_on_position(posV3)
 
 
@@ -113,54 +113,6 @@ func refresh_all_chunks():
 
 func unload_all_chunks():
 	LoadedChunks.clear()
-### ----------------------------------------------------
-
-
-### ----------------------------------------------------
-# Save management
-### ----------------------------------------------------
-
-func set_blank_save() -> void:
-	CurrentSave = SaveData.new()
-	CurrentSave.create_new(TileMaps)
-	Logger.logMS(["Set blank save in MapManager."])
-
-
-func save_CurrentSave(saveName:String = "") -> bool:
-	if saveName != "": CurrentSave.SaveName = saveName
-	
-	var path:String = DATA.SAVE_FOLDER_PATH + CurrentSave.SaveName + ".res"
-	var result := ResourceSaver.save(path, CurrentSave, ResourceSaver.FLAG_COMPRESS)
-	Logger.logMS(["Saved: ", CurrentSave.SaveName, " ",result])
-	return (result == OK)
-
-
-func load_CurrentSave(SaveName:String) -> bool:
-	var saveFilePath:String = DATA.SAVE_FOLDER_PATH + SaveName + ".res"
-	if not LibK.Files.file_exist(saveFilePath):
-		Logger.logErr(["Save called: ", SaveName, " doesn't exist!"], get_stack())
-		return false
-	
-	set_blank_save() # Clear previos save (otherwise game wont load the same save)
-	var SD = ResourceLoader.load(saveFilePath)
-	if SD is SaveData:
-		CurrentSave = SD
-		Logger.logMS(["Loaded: ", CurrentSave.SaveName])
-		return true
-	
-	Logger.logErr(["Loading failed! Resource is not SaveDataRes type."], get_stack())
-	return false
-
-
-func delete_save(SaveName:String) -> bool:
-	var saveFilePath:String = DATA.SAVE_FOLDER_PATH + SaveName + ".res"
-	var result = LibK.Files.delete_file(saveFilePath)
-	if result != OK:
-		Logger.logErr(["Could not delete file: ", saveFilePath], get_stack())
-		return false
-	
-	Logger.logMS(["Deleted file: ", saveFilePath])
-	return true
 ### ----------------------------------------------------
 
 

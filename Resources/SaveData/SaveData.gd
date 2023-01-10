@@ -106,7 +106,7 @@ func remove_tile_on(TSName:String, posV3:Vector3) -> bool:
 		Logger.logErr(["TSName doesnt exist in TSData: " + TSName], get_stack())
 		return false
 	
-	if not TSData[TSName].has(str(posV3)): return false
+	# if not TSData[TSName].has(str(posV3)): return false
 	TSData[TSName].erase(str(posV3))
 	return true
 ### ----------------------------------------------------

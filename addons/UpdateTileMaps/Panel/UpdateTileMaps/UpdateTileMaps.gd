@@ -62,9 +62,9 @@ func _update_tile_texture_offset(tileSet:TileSet) -> TileSet:
 		if tileMode == TileSet.SINGLE_TILE:
 			continue
 		
-		if tileSize[0] > DATA.BASE_SCALE or tileSize[1] > DATA.BASE_SCALE:
-			var offsetSizeX:int = DATA.BASE_SCALE - int(tileSize[0])
-			var offsetSizeY:int = DATA.BASE_SCALE - int(tileSize[1])
+		if tileSize[0] > DATA.MAP.BASE_SCALE or tileSize[1] > DATA.MAP.BASE_SCALE:
+			var offsetSizeX:int = DATA.MAP.BASE_SCALE - int(tileSize[0])
+			var offsetSizeY:int = DATA.MAP.BASE_SCALE - int(tileSize[1])
 			tileSet.tile_set_texture_offset(tileID,Vector2(offsetSizeX, offsetSizeY))
 			emit_signal("logMessage", ["\tUpdated tile offset: ", tileSet.tile_get_name(tileID)], false)
 	emit_signal("logMessage", ["\t[b]> updating tile offset[/b]"], false)

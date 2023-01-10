@@ -42,7 +42,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "LibK",
 "language": "GDScript",
-"path": "res://Global/Classes/LIBK.gd"
+"path": "res://Global/Classes/LibK.gd"
 }, {
 "base": "Resource",
 "class": "SaveData",
@@ -91,10 +91,9 @@ config/name="Remaster"
 [autoload]
 
 DATA="*res://Global/Singletons/DATA.gd"
-GLOBALREF="*res://Global/Singletons/GLOBALREF.gd"
-INPUT="*res://Global/Singletons/INPUT.gd"
 TILES="*res://Global/Singletons/TILES.gd"
 Logger="*res://Global/Singletons/Logger.gd"
+SAVE="*res://Global/Singletons/SAVE.gd"
 
 [editor_plugins]
 

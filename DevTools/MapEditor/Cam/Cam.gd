@@ -52,14 +52,14 @@ func _process(delta:float) -> void:
 		cooldown -= delta
 		return
 	
-	if Input.is_action_pressed(INPUT.TR["W"]):
-		move_camera(Vector2(0,-DATA.BASE_SCALE))
-	if Input.is_action_pressed(INPUT.TR["S"]):
-		move_camera(Vector2(0,DATA.BASE_SCALE))
-	if Input.is_action_pressed(INPUT.TR["A"]):
-		move_camera(Vector2(-DATA.BASE_SCALE,0))
-	if Input.is_action_pressed(INPUT.TR["D"]):
-		move_camera(Vector2(DATA.BASE_SCALE,0))
+	if Input.is_action_pressed(DATA.INPUT.MAP["W"]):
+		move_camera(Vector2(0,-DATA.MAP.BASE_SCALE))
+	if Input.is_action_pressed(DATA.INPUT.MAP["S"]):
+		move_camera(Vector2(0,DATA.MAP.BASE_SCALE))
+	if Input.is_action_pressed(DATA.INPUT.MAP["A"]):
+		move_camera(Vector2(-DATA.MAP.BASE_SCALE,0))
+	if Input.is_action_pressed(DATA.INPUT.MAP["D"]):
+		move_camera(Vector2(DATA.MAP.BASE_SCALE,0))
 
 
 func _input(event: InputEvent) -> void:

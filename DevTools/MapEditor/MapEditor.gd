@@ -49,9 +49,9 @@ func _draw():
 
 # Draws a square to indicate current cell pointed by mouse cursor
 func _draw_selection_square(mousePos:Vector2):
-	var size = Vector2(DATA.BASE_SCALE,DATA.BASE_SCALE)
-	var cellPosV2:Vector2 = LibK.Vectors.scale_down_vec2(mousePos, DATA.BASE_SCALE)
-	var posV2:Vector2 = cellPosV2 * DATA.BASE_SCALE
+	var size = Vector2(DATA.MAP.BASE_SCALE,DATA.MAP.BASE_SCALE)
+	var cellPosV2:Vector2 = LibK.Vectors.scale_down_vec2(mousePos, DATA.MAP.BASE_SCALE)
+	var posV2:Vector2 = cellPosV2 * DATA.MAP.BASE_SCALE
 	
 	var rect = Rect2(posV2,size)
 	Info.CellLabel.text = "Cell: " + str(cellPosV2)
@@ -61,8 +61,8 @@ func _draw_selection_square(mousePos:Vector2):
 
 # Draws a square to indicate current chunk pointed by mouse cursor
 func _draw_selection_chunk(mousePos:Vector2):
-	var chunkScale:int = DATA.BASE_SCALE * DATA.CHUNK_SIZE
-	var chunkV2:Vector2 = LibK.Vectors.scale_down_vec2(mousePos, DATA.CHUNK_SIZE*DATA.BASE_SCALE)
+	var chunkScale:int = DATA.MAP.BASE_SCALE * DATA.MAP.CHUNK_SIZE
+	var chunkV2:Vector2 = LibK.Vectors.scale_down_vec2(mousePos, DATA.MAP.CHUNK_SIZE*DATA.MAP.BASE_SCALE)
 	var posV2:Vector2 = chunkV2 * chunkScale
 	var rect = Rect2(posV2, Vector2(chunkScale, chunkScale))
 	
@@ -72,7 +72,7 @@ func _draw_selection_chunk(mousePos:Vector2):
 
 func _draw_loaded_chunks():
 	for posV3 in $MapManager.LoadedChunks:
-		var chunkScale:int = DATA.BASE_SCALE * DATA.CHUNK_SIZE
+		var chunkScale:int = DATA.MAP.BASE_SCALE * DATA.MAP.CHUNK_SIZE
 		var posV2:Vector2 = LibK.Vectors.vec3_vec2(posV3) * chunkScale
 		var rect = Rect2(posV2, Vector2(chunkScale, chunkScale))
 		draw_rect(rect, Color.red, false, 1)
