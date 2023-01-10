@@ -44,11 +44,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Global/Classes/LIBK.gd"
 }, {
-"base": "Node",
-"class": "Logger",
-"language": "GDScript",
-"path": "res://Global/Classes/Logger.gd"
-}, {
 "base": "Resource",
 "class": "SaveData",
 "language": "GDScript",
@@ -82,7 +77,6 @@ _global_script_class_icons={
 "GutTest": "",
 "GutTestLOG": "",
 "LibK": "",
-"Logger": "",
 "SaveData": "",
 "ScriptGenerator": "",
 "State": "",
@@ -100,6 +94,7 @@ DATA="*res://Global/Singletons/DATA.gd"
 GLOBALREF="*res://Global/Singletons/GLOBALREF.gd"
 INPUT="*res://Global/Singletons/INPUT.gd"
 TILES="*res://Global/Singletons/TILES.gd"
+Logger="*res://Global/Singletons/Logger.gd"
 
 [editor_plugins]
 
