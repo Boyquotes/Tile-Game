@@ -61,6 +61,7 @@ class INPUT:
 # Stores data regardning map, TileMaps ect
 class MAP:
 	const TILEMAPS_DIR:String = "res://Resources/TileMaps/"
+	const SIM_RANGE = 1   # How far (chunks) world will generate 
 	const CHUNK_SIZE = 8  # Keep it 2^x (min 8,max 32 - for both performance and drawing reasons)
 	const BASE_SCALE = 16 # Pixel size of tiles
 
@@ -69,4 +70,5 @@ class MAP:
 ### ----------------------------------------------------
 
 func _ready() -> void:
-	Logger.logMS(["Materials correction check: ", MATERIALS.CHECK_TYPES()])
+	if get_tree().get_root().has_node("Logger"):
+		Logger.logMS(["Materials correction check: ", MATERIALS.CHECK_TYPES()])

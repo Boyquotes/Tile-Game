@@ -1,8 +1,9 @@
 ### ----------------------------------------------------
 ### Base for custom data types
+### Allows for easy data saving
 ### ----------------------------------------------------
 
-extends Resource
+extends Node2D
 class_name DataType
 
 ### ----------------------------------------------------

@@ -35,10 +35,11 @@ func load_CurrentSave(SaveName:String) -> bool:
 	if not LibK.Files.file_exist(saveFilePath):
 		Logger.logErr(["Save called: ", SaveName, " doesn't exist!"], get_stack())
 		return false
-	
+		
+	CurrentSave = null
 	var SD = ResourceLoader.load(saveFilePath)
+	
 	if SD is SaveData:
-		CurrentSave = null
 		CurrentSave = SD
 		Logger.logMS(["Loaded: ", CurrentSave.SaveName])
 		return true

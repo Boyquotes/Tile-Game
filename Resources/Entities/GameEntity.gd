@@ -1,27 +1,20 @@
 ### ----------------------------------------------------
-### Decides what chunks of the map are meant to be simulated in the game
+### Desc
 ### ----------------------------------------------------
 
 extends Node2D
+class_name GameEntity
 
 ### ----------------------------------------------------
 # VARIABLES
 ### ----------------------------------------------------
 
-var SimulatedChunks:Array  # SimulatedChunks = [ Vector3,... ]
-var GameFocusObject:Node2D # Focus of both camera and rendering tilemap
+var MapPosition:Vector3 setget _set_MapPosition
 
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
 
-func start_simulation(mapName:String) -> bool:
-	return true
-
-
-func update_simulation() -> bool:
-	return true
-
-
-func _update_simulated_chunks() -> bool :
-	return true
+func _set_MapPosition(posV3:Vector3):
+	global_position = LibK.Vectors.vec3_vec2(posV3)
+	MapPosition = posV3
