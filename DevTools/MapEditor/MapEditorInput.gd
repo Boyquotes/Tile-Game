@@ -174,13 +174,13 @@ func set_selected_tile(tileID:int):
 	var TMName = tileMap.get_name()
 	
 	if tileID == -1:
-		if not SAVE.CurrentSave.remove_tile_on(TMName,posV3):
+		if not SAVE.CurrentMap.remove_tile_on(TMName,posV3):
 			Logger.logErr(["Failed to remove tile."],get_stack())
 		$MapManager.refresh_tile(posV3)
 		return
 	
 	var tileData = TileData.new(tileID)
-	if not SAVE.CurrentSave.set_tile_on(TMName,posV3,tileData):
+	if not SAVE.CurrentMap.set_tile_on(TMName,posV3,tileData):
 		Logger.logErr(["Failed to set tile: ",TMName, posV3, tileData], get_stack())
 	$MapManager.refresh_tile(posV3)
 ### ----------------------------------------------------
@@ -248,18 +248,14 @@ func _load_input(event:InputEvent) -> void:
 
 
 func _on_SaveEdit_text_entered(SaveName: String) -> void:
-	if not SAVE.save_CurrentSave(SaveName):
+	if not SAVE.CM_save_current(SaveName):
 		Logger.logErr(["Failed to save: ", SaveName], get_stack())
 	
 	_hide_lineEdit("isSaving", UIElement.SaveEdit)
 
 
 func _on_LoadEdit_text_entered(SaveName: String) -> void:
-	if not LibK.Files.file_exist(SAVE.saveFolderDir + SaveName + ".res"):
-		Logger.logErr(["Save called: ", SaveName, " doesn't exist!"], get_stack())
-		return
-	
-	if not SAVE.load_CurrentSave(SaveName):
+	if not SAVE.CM_load_current(SaveName):
 		Logger.logErr(["Failed to load save: ", SaveName], get_stack())
 	
 	update_MapManager_chunks()

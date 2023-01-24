@@ -25,7 +25,7 @@ func _enter_tree() -> void:
 		var TMInstance = TMScene.instance()
 		add_child(TMInstance)
 	TileMaps = get_tilemaps()
-	SAVE.set_blank_save(TileMaps)
+	SAVE.CM_set_blank(TileMaps)
 
 ### ----------------------------------------------------
 # Getting chunks to load / unload
@@ -73,7 +73,7 @@ func _load_chunk_to_tilemap(chunkV3:Vector3):
 func _load_tiles_on_position(posV3:Vector3):
 	for tileMap in TileMaps:
 		var TMName = tileMap.get_name()
-		var tileData:TileData = SAVE.CurrentSave.get_tile_on(TMName, posV3)
+		var tileData:TileData = SAVE.CurrentMap.get_tile_on(TMName, posV3)
 		tileMap.set_cellv(LibK.Vectors.vec3_vec2(posV3), tileData.tileID)
 ### ----------------------------------------------------
 
