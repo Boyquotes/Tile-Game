@@ -32,21 +32,21 @@ func test_save_and_load():
 		for tileID in tileMap.tile_set.get_tiles_ids():
 			var posV3 := Vector3(0, yCord, 0)
 			var tileData := TileData.new(tileID)
-			assert_true(SAVE.CurrentSave.set_tile_on(TMName, posV3, tileData),
+			assert_true(SAVE.CurrentMap.set_tile_on(TMName, posV3, tileData),
 				"Unable to set tile on: " + TMName + " " + str(posV3))
-			assert_eq(str(tileData), str(SAVE.CurrentSave.get_tile_on(TMName, posV3)),
+			assert_eq(str(tileData), str(SAVE.CurrentMap.get_tile_on(TMName, posV3)),
 				"tileData should match")
 			yCord += 1
 	
 	LOG_GUT("save and load test")
-	assert_true(SAVE.save_CurrentSave(SAVE_NAME),
+	assert_true(SAVE.CM_save_current(SAVE_NAME),
 		"Saving failed.")
-	var TSDataHash:int = SAVE.CurrentSave.TSData.hash()
-	SAVE.CurrentSave = null
-	assert_true(SAVE.load_CurrentSave(SAVE_NAME), 
+	var TSDataHash:int = SAVE.CurrentMap.TSData.hash()
+	SAVE.CurrentMap = null
+	assert_true(SAVE.CM_load_current(SAVE_NAME), 
 		"Loading failed.")
-	assert_true(TSDataHash == SAVE.CurrentSave.TSData.hash(),
+	assert_true(TSDataHash == SAVE.CurrentMap.TSData.hash(),
 		"Content of saved data doesnt match.")
-	assert_true(SAVE.delete_save(SAVE_NAME),
+	assert_true(SAVE.CM_delete(SAVE_NAME),
 		"Deleting failed.")
 	gut.p("Finished.")

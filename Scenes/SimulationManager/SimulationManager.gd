@@ -8,20 +8,43 @@ extends Node2D
 # VARIABLES
 ### ----------------------------------------------------
 
-var SimulatedChunks:Array  # SimulatedChunks = [ Vector3,... ]
-var GameFocusObject:Node2D # Focus of both camera and rendering tilemap
+const SIM_RANGE = 1
+
+# [ Vector3,... ]
+var SimulatedChunks:Array
+
+# [ GameEntity,... ]
+var SimulatedEntities:Array
+
+# Focus of both camera and rendering tilemap 
+var GameFocusEntity:GameEntity
 
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
 
-func start_simulation(mapName:String) -> bool:
-	return true
+func _ready() -> void:
+	start_simulation("test")
 
 
-func update_simulation() -> bool:
-	return true
+func start_simulation(mapName:String) -> void:
+	var dummyEnttity = GameEntity.new()
+	SimulatedEntities.append(dummyEnttity)
+	
+	SAVE.CM_load_current(mapName)
+	
+	update_simulation()
 
 
-func _update_simulated_chunks() -> bool :
-	return true
+func update_simulation() -> void:
+	_update_simulated_chunks()
+	$MapManager.update_visable_map(SimulatedChunks)
+
+
+func _update_simulated_chunks() -> void:
+	for entity in SimulatedEntities:
+		var sqrRange := LibK.Vectors.vec3_get_square(
+			entity.MapPosition, SIM_RANGE, true)
+		for posV3 in sqrRange:
+			if SimulatedChunks.has(posV3): continue
+			SimulatedChunks.append(posV3)

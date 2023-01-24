@@ -43,7 +43,7 @@ func CS_save_current(saveName:String = "") -> bool:
 
 
 func CS_load_current(SaveName:String) -> bool:
-	var path:String = CS_FOLDER_DIR + CurrentSave.SaveName + ".res"
+	var path:String = CS_FOLDER_DIR + SaveName + ".res"
 	if not LibK.Files.file_exist(path):
 		Logger.logErr(["CS Save called: ", SaveName, " doesn't exist!"], get_stack())
 		return false
@@ -89,7 +89,7 @@ func CM_save_current(saveName:String = "") -> bool:
 
 
 func CM_load_current(SaveName:String) -> bool:
-	var path:String = CM_FOLDER_DIR + CurrentMap.SaveName + ".res"
+	var path:String = CM_FOLDER_DIR + SaveName + ".res"
 	if not LibK.Files.file_exist(path):
 		Logger.logErr(["CM Save called: ", SaveName, " doesn't exist!"], get_stack())
 		return false

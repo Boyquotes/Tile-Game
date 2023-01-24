@@ -30,9 +30,7 @@ func _enter_tree() -> void:
 ### ----------------------------------------------------
 # Getting chunks to load / unload
 ### ----------------------------------------------------
-func update_visable_map(ChunksToLoad:Array, GFObjectElevation:int) -> void:
-	ChunksToLoad = _get_chunks_on_elevation(ChunksToLoad, GFObjectElevation)
-	
+func update_visable_map(ChunksToLoad:Array) -> void:
 	# Loading chunks that are not yet rendered
 	for chunkV3 in ChunksToLoad:
 		if LoadedChunks.has(chunkV3): continue
@@ -46,17 +44,6 @@ func update_visable_map(ChunksToLoad:Array, GFObjectElevation:int) -> void:
 		_unload_chunk_from_tilemap(chunkV3)
 	
 	for tileMap in TileMaps: tileMap.update_bitmask_region()
-
-
-# Used to get chunks only on a given elevation
-# Render only current elevation chunks
-func _get_chunks_on_elevation(PackedArray:Array, GFObjectElevation:int) -> Array:
-	var result = []
-	for chunkV3 in PackedArray:
-		if chunkV3[2] != GFObjectElevation: continue
-		result.append(chunkV3)
-	
-	return result
 ### ----------------------------------------------------
 
 

@@ -14,7 +14,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Resources/DataTypes/DataType.gd"
 }, {
-"base": "Node2D",
+"base": "DataType",
 "class": "GameEntity",
 "language": "GDScript",
 "path": "res://Resources/Entities/GameEntity.gd"

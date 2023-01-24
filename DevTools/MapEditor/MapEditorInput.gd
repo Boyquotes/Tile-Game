@@ -220,7 +220,7 @@ func update_MapManager_chunks():
 	for pos in posToRender:
 		chunksToRender.append(LibK.Vectors.vec2_vec3(pos,$Cam.currentElevation))
 	
-	$MapManager.update_visable_map(chunksToRender, $Cam.currentElevation)
+	$MapManager.update_visable_map(chunksToRender)
 ### ----------------------------------------------------
 
 
