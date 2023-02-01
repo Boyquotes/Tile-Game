@@ -27,13 +27,19 @@ func _ready() -> void:
 	start_simulation("test")
 
 
-func start_simulation(mapName:String) -> void:
-	var dummyEnttity = GameEntity.new()
-	SimulatedEntities.append(dummyEnttity)
+func start_simulation(mapName:String) -> bool:
+	var isOK:bool = true
 	
-	SAVE.CM_load_current(mapName)
+	# Add dummy entity
+	var DummyEntity := GameEntity.new()
+	SimulatedEntities.append(DummyEntity) 
+	GameFocusEntity = DummyEntity
+	
+	isOK = isOK and SAVE.CM_load_current(mapName)
 	
 	update_simulation()
+	
+	return isOK
 
 
 func update_simulation() -> void:

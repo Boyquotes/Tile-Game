@@ -9,10 +9,12 @@ class_name SaveData
 # VARIABLES
 ### ----------------------------------------------------
 
-export(String) var SaveName = "Unnamed"
+export(String) var MapName = "Unnamed"
+export(String) var GameVersion = "1.0"
 
 # Holds map data
 export var TSData := Dictionary() # { TSName:{PackedPos:TileData} }
+export var TEData := Dictionary() # { PackedPos:EntityData }
 
 # Holds TileSet data (setup when creating a new save) 
 export var TS_CONTROL := Dictionary() # { TSName:{tileID:tileName} }

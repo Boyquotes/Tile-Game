@@ -33,7 +33,6 @@ func CS_set_blank(TileMaps:Array) -> void:
 	Logger.logMS(["CS set to blank."])
 
 
-
 func CS_save_current(saveName:String = "") -> bool:
 	if saveName != "": CurrentSave.SaveName = saveName
 	var path:String = CS_FOLDER_DIR + CurrentSave.SaveName + ".res"

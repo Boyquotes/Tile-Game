@@ -1,14 +1,16 @@
 ### ----------------------------------------------------
-### Is a container for all TileMaps
+### Container for all TileMaps
 ### Takes care of showing the map to the player
 ### ----------------------------------------------------
+
 extends Node2D
 
 ### ----------------------------------------------------
 # VARIABLES
 ### ----------------------------------------------------
 
-var TileMaps:Array = [] # Reference to all tilemaps
+# Reference to all tilemaps
+var TileMaps:Array = [] 
 
 # List of chunks loaded to tilemap (format array for comparing)
 var LoadedChunks:Array = [] # [ Vector3, ... ]
