@@ -13,6 +13,8 @@ extends Node2D
 # VARIABLES
 ### ----------------------------------------------------
 
+onready var EditedMapSave:MapSave
+
 onready var Info = {
 	ChunkLabel = $UIElements/MC/GC/Info/Chunk,
 	ElevationLabel = $UIElements/MC/GC/Info/Elevation,
@@ -53,6 +55,7 @@ var UIZone:bool = false
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
+
 func _input(event: InputEvent) -> void:
 	if not inputActive: return
 	
@@ -79,7 +82,6 @@ func _flag_control(stateName:String) -> bool:
 		if state == stateName: continue
 		if States[state]: return false
 	return true
-
 
 ### ----------------------------------------------------
 # Selecting TileMap
@@ -174,13 +176,13 @@ func set_selected_tile(tileID:int):
 	var TMName = tileMap.get_name()
 	
 	if tileID == -1:
-		if not SAVE.CurrentMap.remove_tile_on(TMName,posV3):
+		if not EditedMapSave.remove_tile_on(TMName,posV3):
 			Logger.logErr(["Failed to remove tile."],get_stack())
 		$MapManager.refresh_tile(posV3)
 		return
 	
 	var tileData = TileData.new(tileID)
-	if not SAVE.CurrentMap.set_tile_on(TMName,posV3,tileData):
+	if not EditedMapSave.set_tile_on(TMName,posV3,tileData):
 		Logger.logErr(["Failed to set tile: ",TMName, posV3, tileData], get_stack())
 	$MapManager.refresh_tile(posV3)
 ### ----------------------------------------------------
@@ -247,20 +249,21 @@ func _load_input(event:InputEvent) -> void:
 		_hide_lineEdit("isLoading", UIElement.LoadEdit)
 
 
-func _on_SaveEdit_text_entered(SaveName: String) -> void:
-	if not SAVE.CM_save_current(SaveName):
-		Logger.logErr(["Failed to save: ", SaveName], get_stack())
+func _on_SaveEdit_text_entered(mapName: String) -> void:
+	if not save_map(mapName):
+		Logger.logErr(["Failed to save: ", mapName], get_stack())
 	
 	_hide_lineEdit("isSaving", UIElement.SaveEdit)
 
 
-func _on_LoadEdit_text_entered(SaveName: String) -> void:
-	if not SAVE.CM_load_current(SaveName):
-		Logger.logErr(["Failed to load save: ", SaveName], get_stack())
+func _on_LoadEdit_text_entered(mapName: String) -> void:
+	if not load_map(mapName):
+		Logger.logErr(["Failed to load save: ", mapName], get_stack())
 	
 	update_MapManager_chunks()
 	$MapManager.refresh_all_chunks()
 	_hide_lineEdit("isLoading", UIElement.LoadEdit)
+
 ### ----------------------------------------------------
 
 

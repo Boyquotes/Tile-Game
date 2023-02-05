@@ -34,9 +34,7 @@ func start_simulation(mapName:String) -> bool:
 	var DummyEntity := GameEntity.new()
 	SimulatedEntities.append(DummyEntity) 
 	GameFocusEntity = DummyEntity
-	
-	isOK = isOK and SAVE.CM_load_current(mapName)
-	
+
 	update_simulation()
 	
 	return isOK

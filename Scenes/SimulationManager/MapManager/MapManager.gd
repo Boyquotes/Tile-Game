@@ -27,7 +27,6 @@ func _enter_tree() -> void:
 		var TMInstance = TMScene.instance()
 		add_child(TMInstance)
 	TileMaps = get_tilemaps()
-	SAVE.CM_set_blank(TileMaps)
 
 ### ----------------------------------------------------
 # Getting chunks to load / unload

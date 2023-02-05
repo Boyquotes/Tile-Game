@@ -19,11 +19,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Resources/Entities/GameEntity.gd"
 }, {
-"base": "SaveData",
-"class": "GameSave",
-"language": "GDScript",
-"path": "res://Resources/SaveData/GameSave.gd"
-}, {
 "base": "Reference",
 "class": "GutHookScript",
 "language": "GDScript",
@@ -44,15 +39,15 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Global/Classes/LibK.gd"
 }, {
-"base": "SaveData",
-"class": "MapSave",
+"base": "Resource",
+"class": "MapSaveData",
 "language": "GDScript",
-"path": "res://Resources/SaveData/MapSave.gd"
+"path": "res://Resources/Save/MapSaveData.gd"
 }, {
 "base": "Resource",
-"class": "SaveData",
+"class": "Save",
 "language": "GDScript",
-"path": "res://Resources/SaveData/SaveData.gd"
+"path": "res://Resources/Save/Save.gd"
 }, {
 "base": "Script",
 "class": "ScriptGenerator",
@@ -77,13 +72,12 @@ _global_script_classes=[ {
 _global_script_class_icons={
 "DataType": "",
 "GameEntity": "",
-"GameSave": "",
 "GutHookScript": "",
 "GutTest": "",
 "GutTestLOG": "",
 "LibK": "",
-"MapSave": "",
-"SaveData": "",
+"MapSaveData": "",
+"Save": "",
 "ScriptGenerator": "",
 "State": "",
 "StateMachine": "",
@@ -99,7 +93,6 @@ config/name="Remaster"
 DATA="*res://Global/Singletons/DATA.gd"
 TILES="*res://Global/Singletons/TILES.gd"
 Logger="*res://Global/Singletons/Logger.gd"
-SAVE="*res://Global/Singletons/SAVE.gd"
 
 [editor_plugins]
 

@@ -51,7 +51,6 @@ func logMS(message:Array, logIndicator = true):
 	_format_LOG(message)
 
 
-# Format:
 # logErr(["This is an error message], get_stack())
 func logErr(message:Array, frame:Array):
 	if not frame.empty():

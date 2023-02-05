@@ -3,17 +3,18 @@
 ### ----------------------------------------------------
 
 extends Resource
-class_name SaveData
+class_name MapSaveData
 
 ### ----------------------------------------------------
 # VARIABLES
 ### ----------------------------------------------------
 
-export(String) var MapName = "Unnamed"
-export(String) var GameVersion = "1.0"
+export var MapName := "Unnamed"
+export var GameVersion := "1.0"
 
-# Holds map data
+# Holds TileSet data (not meant to be editet directly!)
 export var TSData := Dictionary() # { TSName:{PackedPos:TileData} }
+# Holds Entity data  (not meant to be editet directly!)
 export var TEData := Dictionary() # { PackedPos:EntityData }
 
 # Holds TileSet data (setup when creating a new save) 
@@ -53,7 +54,7 @@ func check_compatible(TileMaps:Array) -> bool:
 	return isOK
 
 
-func create_new(TileMaps:Array):
+func create_new(TileMaps:Array) -> void:
 	for tileMap in TileMaps:
 		var TSName:String = tileMap.get_name()
 		var tileSet:TileSet = tileMap.tile_set

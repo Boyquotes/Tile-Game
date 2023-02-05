@@ -19,12 +19,19 @@ func _ready() -> void:
 	TileSelect.allTileMaps = $MapManager.get_tilemaps()
 	_init_TM_selection()
 	_init_tile_select()
+	_init_EditedMapSave()
 	
 	switch_TM_selection(0)
 
 ### ----------------------------------------------------
 # Init
 ### ----------------------------------------------------
+
+func _init_EditedMapSave():
+	EditedMapSave = MapSave.new()
+	EditedMapSave.create_new(TileSelect.allTileMaps)
+
+
 func _init_TM_selection():
 	for tileMap in TileSelect.allTileMaps:
 		var TMName:String = tileMap.get_name()
