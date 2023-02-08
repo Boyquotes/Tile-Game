@@ -14,6 +14,7 @@ export var GameVersion := "1.0"
 
 # Holds TileSet data (not meant to be editet directly!)
 export var TSData := Dictionary() # { TSName:{PackedPos:TileData} }
+
 # Holds Entity data  (not meant to be editet directly!)
 export var TEData := Dictionary() # { PackedPos:EntityData }
 
@@ -53,7 +54,7 @@ func check_compatible(TileMaps:Array) -> bool:
 	
 	return isOK
 
-
+# Creates a new map based on passed Tilemaps
 func create_new(TileMaps:Array) -> void:
 	for tileMap in TileMaps:
 		var TSName:String = tileMap.get_name()
@@ -69,6 +70,9 @@ func create_new(TileMaps:Array) -> void:
 ### ----------------------------------------------------
 # Map - Set / Get / Remove
 ### ----------------------------------------------------
+
+
+# Sets TileData on a given position
 func set_tile_on(TSName:String, posV3:Vector3, tileData:TileData) -> bool:
 	if not TS_CONTROL.has(TSName):
 		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
@@ -83,7 +87,7 @@ func set_tile_on(TSName:String, posV3:Vector3, tileData:TileData) -> bool:
 	
 	return true
 
-
+# Returns tile on a given position, returns a new empty tiledata on fail
 func get_tile_on(TSName:String, posV3:Vector3) -> TileData:
 	if not TS_CONTROL.has(TSName):
 		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
@@ -99,7 +103,7 @@ func get_tile_on(TSName:String, posV3:Vector3) -> TileData:
 	var tileData := TileData.new()
 	return tileData.from_str(TSData[TSName][str(posV3)])
 
-
+# Removes TileData on a given position
 func remove_tile_on(TSName:String, posV3:Vector3) -> bool:
 	if not TS_CONTROL.has(TSName):
 		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())

@@ -13,8 +13,6 @@ extends Node2D
 # VARIABLES
 ### ----------------------------------------------------
 
-onready var EditedMapSave:MapSave
-
 onready var Info = {
 	ChunkLabel = $UIElements/MC/GC/Info/Chunk,
 	ElevationLabel = $UIElements/MC/GC/Info/Elevation,
@@ -76,7 +74,6 @@ func _input(event: InputEvent) -> void:
 	update_MapManager_chunks()
 	set_tile_input(event)
 
-
 func _flag_control(stateName:String) -> bool:
 	for state in States: 
 		if state == stateName: continue
@@ -86,12 +83,13 @@ func _flag_control(stateName:String) -> bool:
 ### ----------------------------------------------------
 # Selecting TileMap
 ### ----------------------------------------------------
+
+
 func TM_selection_input(event: InputEvent):
 	if   event.is_action_pressed(DATA.INPUT.MAP["E"]): 
 		switch_TM_selection(TileSelect.TMIndex + 1)
 	elif event.is_action_pressed(DATA.INPUT.MAP["Q"]): 
 		switch_TM_selection(TileSelect.TMIndex - 1)
-
 
 func switch_TM_selection(value:int):
 	TileSelect.TMIndex = value
@@ -104,10 +102,8 @@ func switch_TM_selection(value:int):
 	UIElement.TMSelect.select(TileSelect.TMIndex)
 	switch_tile_selection(TileSelect.listIndex)
 
-
 func _on_TMSelect_item_selected(index:int) -> void:
 	switch_TM_selection(index)
-
 
 # Fills item list with TileMap tiles
 func fill_item_list():
@@ -124,18 +120,17 @@ func fill_item_list():
 			if not TileSelect.filter.to_lower() in tileName.to_lower(): continue
 		UIElement.TileList.add_item(tileName,tileTexture,true)
 		TileSelect.shownTiles.append([tileName,tileID])
-### ----------------------------------------------------
-
 
 ### ----------------------------------------------------
 # Selecting Tile
 ### ----------------------------------------------------
+
+
 func tile_selection_input(event: InputEvent):
-	if   event.is_action_pressed(DATA.INPUT.MAP["X"]):
+	if event.is_action_pressed(DATA.INPUT.MAP["X"]):
 		switch_tile_selection(TileSelect.listIndex + 1)
 	elif event.is_action_pressed(DATA.INPUT.MAP["Z"]): 
 		switch_tile_selection(TileSelect.listIndex - 1)
-
 
 func switch_tile_selection(value:int):
 	TileSelect.listIndex = value
@@ -146,15 +141,14 @@ func switch_tile_selection(value:int):
 	
 	UIElement.TileList.select(TileSelect.listIndex)
 
-
 func _on_ItemList_item_selected(index:int) -> void:
 	switch_tile_selection(index)
-### ----------------------------------------------------
-
 
 ### ----------------------------------------------------
 # Placing Tile
 ### ----------------------------------------------------
+
+
 func set_tile_input(event:InputEvent):
 	if event is InputEventMouseButton or event is InputEventMouseMotion:
 		if not TileSelect.shownTiles.size() > 0: return # If list empty dont pick
@@ -165,32 +159,31 @@ func set_tile_input(event:InputEvent):
 		if event.button_mask == BUTTON_MASK_RIGHT: 
 			set_selected_tile(-1)
 
-
 func set_selected_tile(tileID:int):
 	var tileMap:TileMap = TileSelect.allTileMaps[TileSelect.TMIndex]
 	var mousePos:Vector2 = tileMap.world_to_map(get_global_mouse_position())
 	var posV3:Vector3 = LibK.Vectors.vec2_vec3(mousePos, $Cam.currentElevation)
-	var chunkV3:Vector3 = LibK.Vectors.vec2_vec3(LibK.Vectors.scale_down_vec2(mousePos, DATA.MAP.CHUNK_SIZE), $Cam.currentElevation)
+	var chunkV3:Vector3 = LibK.Vectors.vec2_vec3(LibK.Vectors.scale_down_vec2(mousePos, DATA.TILEMAPS.CHUNK_SIZE), $Cam.currentElevation)
 	
 	if not chunkV3 in $MapManager.LoadedChunks: return
 	var TMName = tileMap.get_name()
 	
 	if tileID == -1:
-		if not EditedMapSave.remove_tile_on(TMName,posV3):
+		if not SaveManager.remove_TileData_on(TMName,posV3):
 			Logger.logErr(["Failed to remove tile."],get_stack())
 		$MapManager.refresh_tile(posV3)
 		return
 	
 	var tileData = TileData.new(tileID)
-	if not EditedMapSave.set_tile_on(TMName,posV3,tileData):
+	if not SaveManager.set_TileData_on(TMName,posV3,tileData):
 		Logger.logErr(["Failed to set tile: ",TMName, posV3, tileData], get_stack())
 	$MapManager.refresh_tile(posV3)
-### ----------------------------------------------------
-
 
 ### ----------------------------------------------------
 # Filter Items
 ### ----------------------------------------------------
+
+
 func _filter_input(event:InputEvent):
 	if not _flag_control("addingFilter"): return
 	
@@ -200,22 +193,20 @@ func _filter_input(event:InputEvent):
 	if event.is_action_pressed(DATA.INPUT.MAP["ESC"]) and States.addingFilter:
 		_hide_lineEdit("addingFilter", UIElement.FilterEdit)
 
-
 func _on_Filter_text_entered(new_text: String) -> void:
 	TileSelect.filter = new_text
 	_hide_lineEdit("addingFilter", UIElement.FilterEdit)
 	Info.Filter.text = "Filter: " + "\"" + TileSelect.filter + "\""
 	switch_TM_selection(0)
-### ----------------------------------------------------
-
 
 ### ----------------------------------------------------
 # Update chunks
 ### ----------------------------------------------------
 
+
 # Renders chunks as in normal game based on camera position (as simulated entity)
 func update_MapManager_chunks():
-	var camChunk:Vector2 = LibK.Vectors.scale_down_vec2($Cam.global_position, DATA.MAP.CHUNK_SIZE*DATA.MAP.BASE_SCALE)
+	var camChunk:Vector2 = LibK.Vectors.scale_down_vec2($Cam.global_position, DATA.TILEMAPS.CHUNK_SIZE*DATA.TILEMAPS.BASE_SCALE)
 	var chunksToRender:Array = []
 	var posToRender:Array = LibK.Vectors.vec2_get_square(camChunk, 1)
 	
@@ -223,12 +214,12 @@ func update_MapManager_chunks():
 		chunksToRender.append(LibK.Vectors.vec2_vec3(pos,$Cam.currentElevation))
 	
 	$MapManager.update_visable_map(chunksToRender)
-### ----------------------------------------------------
-
 
 ### ----------------------------------------------------
 # Save / Load
 ### ----------------------------------------------------
+
+
 func _save_input(event:InputEvent) -> void:
 	if not _flag_control("isSaving"): return
 	
@@ -237,7 +228,6 @@ func _save_input(event:InputEvent) -> void:
 	
 	if event.is_action_pressed(DATA.INPUT.MAP["ESC"]) and States.isSaving:
 		_hide_lineEdit("isSaving", UIElement.SaveEdit)
-
 
 func _load_input(event:InputEvent) -> void:
 	if not _flag_control("isLoading"): return
@@ -248,28 +238,33 @@ func _load_input(event:InputEvent) -> void:
 	if event.is_action_pressed(DATA.INPUT.MAP["ESC"]) and States.isLoading:
 		_hide_lineEdit("isLoading", UIElement.LoadEdit)
 
-
-func _on_SaveEdit_text_entered(mapName: String) -> void:
-	if not save_map(mapName):
+func _on_SaveEdit_text_entered(mapName:String) -> void:
+	var savePath = SaveManager.MAP_FOLDER_DIR + mapName + ".res"
+	if (not LibCustom.save_custom_resource(SaveManager._CurrentSave, savePath, "MapDataRes")):
 		Logger.logErr(["Failed to save: ", mapName], get_stack())
-	
 	_hide_lineEdit("isSaving", UIElement.SaveEdit)
 
-
 func _on_LoadEdit_text_entered(mapName: String) -> void:
-	if not load_map(mapName):
+	var loadPath = SaveManager.MAP_FOLDER_DIR + mapName + ".res"
+	var TempRef = LibCustom.load_MapSaveData_resource(loadPath, TileSelect.allTileMaps)
+	printt("ya", TempRef, SaveManager._CurrentSave)
+	if (TempRef == null):
 		Logger.logErr(["Failed to load save: ", mapName], get_stack())
+		return
+	
+	SaveManager._CurrentSave = null
+	SaveManager._CurrentSave = TempRef
+	printt("ya", TempRef, SaveManager._CurrentSave)
 	
 	update_MapManager_chunks()
 	$MapManager.refresh_all_chunks()
 	_hide_lineEdit("isLoading", UIElement.LoadEdit)
 
 ### ----------------------------------------------------
-
-
-### ----------------------------------------------------
 # GOTO
 ### ----------------------------------------------------
+
+
 func _goto_input(event:InputEvent) -> void:
 	if not _flag_control("goto"): return
 	
@@ -279,42 +274,41 @@ func _goto_input(event:InputEvent) -> void:
 	if event.is_action_pressed(DATA.INPUT.MAP["ESC"]) and States.goto:
 		_hide_lineEdit("goto", UIElement.GotoEdit)
 
-
 func _on_GOTO_text_entered(new_text: String) -> void:
 	var coords:Array = new_text.split(" ")
 	if not coords.size() >= 2: return
 	if not coords[0].is_valid_integer() and coords[1].is_valid_integer():
 		return
 	
-	var x:int = int(coords[0]) * DATA.Map.BASE_SCALE
-	var y:int = int(coords[1]) * DATA.Map.BASE_SCALE
+	var x:int = int(coords[0]) * DATA.TILEMAPS.BASE_SCALE
+	var y:int = int(coords[1]) * DATA.TILEMAPS.BASE_SCALE
 	$Cam.global_position = Vector2(x,y)
 	
 	_hide_lineEdit("goto", UIElement.GotoEdit)
-### ----------------------------------------------------
 
 ### ----------------------------------------------------
 # Elevation
 ### ----------------------------------------------------
+
+
 func _elevation_input(event:InputEvent):
 	if event.is_action_pressed(DATA.INPUT.MAP["-"]):
 		change_elevation(-1)
 	if event.is_action_pressed(DATA.INPUT.MAP["="]):
 		change_elevation(1)
 
-
 func change_elevation(direction:int):
 	$Cam.currentElevation += direction
 	Info.ElevationLabel.text = "Elevation: " + str($Cam.currentElevation)
 	$MapManager.unload_all_chunks()
-### ----------------------------------------------------
 
 ### ----------------------------------------------------
 # UI Control
 ### ----------------------------------------------------
+
+
 func _physics_process(_delta: float) -> void:
 	UIZone = LibK.UI.is_mouse_on_ui(UIElement.TileScroll, UIElement.Parent)
-
 
 func _show_lineEdit(stateName:String, LENode:Control):
 	$Cam.inputActive = false
@@ -322,9 +316,7 @@ func _show_lineEdit(stateName:String, LENode:Control):
 	LENode.show()
 	LENode.grab_focus()
 
-
 func _hide_lineEdit(stateName:String, LENode:Control):
 	$Cam.inputActive = true
 	States[stateName] = false
 	LENode.hide()
-### ----------------------------------------------------

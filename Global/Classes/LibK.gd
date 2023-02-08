@@ -3,18 +3,18 @@
 ### Stores resource scripts for given sublib
 ### ----------------------------------------------------
 
-extends Node
+extends Script
 class_name LibK
 
 ### ----------------------------------------------------
 # SCRIPTS
 ### ----------------------------------------------------
 
-const Vectors:Script = preload("res://Global/Classes/LIBK resources/Vectors.gd")
-const Noise:Script = preload("res://Global/Classes/LIBK resources/Noise.gd")
-const Optimization:Script = preload("res://Global/Classes/LIBK resources/Optimization.gd")
-const Files:Script = preload("res://Global/Classes/LIBK resources/Files.gd")
-const TS:Script = preload("res://Global/Classes/LIBK resources/TS.gd")
-const Misc:Script = preload("res://Global/Classes/LIBK resources/Misc.gd")
-const Saving:Script = preload("res://Global/Classes/LIBK resources/Saving.gd")
-const UI:Script = preload("res://Global/Classes/LIBK resources/UI.gd")
+const Vectors:Script =      preload("res://Global/Classes/LIBKDependencies/Vectors.gd")
+const Noise:Script =        preload("res://Global/Classes/LIBKDependencies/Noise.gd")
+const Optimization:Script = preload("res://Global/Classes/LIBKDependencies/Optimization.gd")
+const Files:Script =        preload("res://Global/Classes/LIBKDependencies/Files.gd")
+const TS:Script =           preload("res://Global/Classes/LIBKDependencies/TS.gd")
+const Saving:Script =       preload("res://Global/Classes/LIBKDependencies/Saving.gd")
+const UI:Script =           preload("res://Global/Classes/LIBKDependencies/UI.gd")
+const ScriptGen:Script =    preload("res://Global/Classes/LIBKDependencies/ScriptGen.gd")

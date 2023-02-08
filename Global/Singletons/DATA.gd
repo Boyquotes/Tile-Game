@@ -16,8 +16,13 @@ extends Node
 # Material types define color and properties of objects and tiles in the game
 # Colors: https://www.rapidtables.com/web/color/RGB_Color.html
 class MATERIALS: 
-	const GENERATED_TAG:String = "_GEN_"
+
+	# Tag for generated tiles
+	const GENERATED_TAG:String = "_GEN_" 
+
+	# Enum of all material types
 	enum TYPES {WoodenPlank,Stone,Dirt,Grass,DarkGrass}
+
 	const DB:Dictionary = {
 		TYPES.WoodenPlank:{"Color":Color('#816109')},
 		TYPES.Stone: 	  {"Color":Color('#708090')},
@@ -39,6 +44,8 @@ class MATERIALS:
 # Stores data about what key translates to what action in input map
 # Hardcode a key input when needed
 class INPUT:
+
+	# Input map for physical keys
 	const MAP = {
 		"W" : "Up",
 		"A" : "Left",
@@ -58,8 +65,7 @@ class INPUT:
 	}
 
 
-# Stores data regardning map, TileMaps ect
-class MAP:
+class TILEMAPS: # Stores data regardning map, TileMaps ect
 	const TILEMAPS_DIR:String = "res://Resources/TileMaps/"
 	const SIM_RANGE = 1   # How far (chunks) world will generate 
 	const CHUNK_SIZE = 8  # Keep it 2^x (min 8,max 32 - for both performance and drawing reasons)

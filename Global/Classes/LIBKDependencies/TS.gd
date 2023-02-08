@@ -136,7 +136,7 @@ static func get_tile_names_and_IDs(tileSet:TileSet) -> Array:
 
 
 static func get_tile_on_pos(pos:Vector2) -> Vector2:
-	var x = floor( pos[0]/(DATA.Map.BASE_SCALE) )
-	var y = floor( pos[1]/(DATA.Map.BASE_SCALE) )
+	var x = floor( pos[0]/(DATA.TILEMAPS.BASE_SCALE) )
+	var y = floor( pos[1]/(DATA.TILEMAPS.BASE_SCALE) )
 	
 	return Vector2(x,y)

@@ -53,13 +53,13 @@ func _process(delta:float) -> void:
 		return
 	
 	if Input.is_action_pressed(DATA.INPUT.MAP["W"]):
-		move_camera(Vector2(0,-DATA.MAP.BASE_SCALE))
+		move_camera(Vector2(0,-DATA.TILEMAPS.BASE_SCALE))
 	if Input.is_action_pressed(DATA.INPUT.MAP["S"]):
-		move_camera(Vector2(0,DATA.MAP.BASE_SCALE))
+		move_camera(Vector2(0,DATA.TILEMAPS.BASE_SCALE))
 	if Input.is_action_pressed(DATA.INPUT.MAP["A"]):
-		move_camera(Vector2(-DATA.MAP.BASE_SCALE,0))
+		move_camera(Vector2(-DATA.TILEMAPS.BASE_SCALE,0))
 	if Input.is_action_pressed(DATA.INPUT.MAP["D"]):
-		move_camera(Vector2(DATA.MAP.BASE_SCALE,0))
+		move_camera(Vector2(DATA.TILEMAPS.BASE_SCALE,0))
 
 
 func _input(event: InputEvent) -> void:

@@ -20,7 +20,7 @@ var LoadedChunks:Array = [] # [ Vector3, ... ]
 ### ----------------------------------------------------
 
 func _enter_tree() -> void:
-	for packed in LibK.Files.get_file_list_at_dir(DATA.MAP.TILEMAPS_DIR):
+	for packed in LibK.Files.get_file_list_at_dir(DATA.TILEMAPS.TILEMAPS_DIR):
 		var filePath:String = packed[0]
 		var fileName:String = packed[1]
 		var TMScene:PackedScene = load(filePath + "/" + fileName + ".tscn")
@@ -52,7 +52,7 @@ func update_visable_map(ChunksToLoad:Array) -> void:
 # Loading chunks
 ### ----------------------------------------------------
 func _load_chunk_to_tilemap(chunkV3:Vector3):
-	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.MAP.CHUNK_SIZE):
+	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.TILEMAPS.CHUNK_SIZE):
 		_load_tiles_on_position(posV3)
 	LoadedChunks.append(chunkV3)
 
@@ -61,7 +61,7 @@ func _load_chunk_to_tilemap(chunkV3:Vector3):
 func _load_tiles_on_position(posV3:Vector3):
 	for tileMap in TileMaps:
 		var TMName = tileMap.get_name()
-		var tileData:TileData = SAVE.CurrentMap.get_tile_on(TMName, posV3)
+		var tileData:TileData = SaveManager.get_TileData_on(TMName, posV3)
 		tileMap.set_cellv(LibK.Vectors.vec3_vec2(posV3), tileData.tileID)
 ### ----------------------------------------------------
 
@@ -70,7 +70,7 @@ func _load_tiles_on_position(posV3:Vector3):
 # Unloading chunks
 ### ----------------------------------------------------
 func _unload_chunk_from_tilemap(chunkV3:Vector3):
-	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.MAP.CHUNK_SIZE):
+	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.TILEMAPS.CHUNK_SIZE):
 		for tileMap in TileMaps:
 			tileMap.set_cellv(LibK.Vectors.vec3_vec2(posV3), -1)
 ### ----------------------------------------------------
@@ -80,7 +80,7 @@ func _unload_chunk_from_tilemap(chunkV3:Vector3):
 # Update map
 ### ----------------------------------------------------
 func refresh_tile(posV3:Vector3):
-	var chunkV3:Vector3 = LibK.Vectors.scale_down_vec3(posV3, DATA.MAP.CHUNK_SIZE)
+	var chunkV3:Vector3 = LibK.Vectors.scale_down_vec3(posV3, DATA.TILEMAPS.CHUNK_SIZE)
 	if not chunkV3 in LoadedChunks:
 		Logger.logErr(["Tried to refresh unloaded tile: ", posV3],get_stack())
 		return
@@ -91,7 +91,7 @@ func refresh_chunk(chunkV3:Vector3):
 	if not chunkV3 in LoadedChunks:
 		Logger.logErr(["Tried to refresh unloaded chunk: ", chunkV3],get_stack())
 		return
-	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.MAP.CHUNK_SIZE):
+	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.TILEMAPS.CHUNK_SIZE):
 		_load_tiles_on_position(posV3)
 
 
