@@ -64,7 +64,7 @@ func _load_MapTemplate(TileMaps:Array) -> bool:
 		Logger.logErr(["MapSaveData path doesnt exist: ", mapPath], get_stack())
 		return false
 
-	var TempRef = ResourceLoader.load(mapPath)
+	var TempRef = ResourceLoader.load(mapPath, "", true)
 	if(not TempRef is MapSaveData):
 		Logger.logErr(["Tried to load resource of invalid type: ", mapPath], get_stack())
 		return false
@@ -73,8 +73,11 @@ func _load_MapTemplate(TileMaps:Array) -> bool:
 		Logger.logErr(["Failed to load MapSaveData, tilemaps incopatible: ", mapPath], get_stack())
 		return false
 	
-	_MapTemplate = null
 	_MapTemplate = TempRef
 	
 	Logger.logMS(["Loaded MapTemplate successfully: ", MapName])
 	return true
+
+
+func _to_string() -> String:
+	return "Res: GameSave, MapName: " + var2str(MapName) + ", SaveName: " + var2str(SaveName) + ", GameVersion: " + var2str(GameVersion)

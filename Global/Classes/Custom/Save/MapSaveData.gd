@@ -117,3 +117,6 @@ func remove_tile_on(TSName:String, posV3:Vector3) -> bool:
 	TSData[TSName].erase(str(posV3))
 	return true
 ### ----------------------------------------------------
+
+func _to_string() -> String:
+	return "Res: MapSaveData, MapName: " + var2str(MapName) + ", GameVersion: " + var2str(GameVersion)

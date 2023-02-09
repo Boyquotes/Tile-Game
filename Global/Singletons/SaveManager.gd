@@ -15,7 +15,13 @@ const MAP_FOLDER_DIR := "res://Resources/SavedMaps/"
 const SAV_FOLDER_DIR := "res://Temp/"
 
 # Currently loaded save
-var _CurrentSave
+var _CurrentSave setget _set_CurrentSave
+func _set_CurrentSave(TempRef) -> bool:
+	if(TempRef is GameSave or TempRef is MapSaveData):
+		_CurrentSave = TempRef
+		Logger.logMS(["Changed _CurrentSave: " + str(TempRef)])
+		return true
+	return false
 
 ### ----------------------------------------------------
 # FUNCTIONS
@@ -27,8 +33,7 @@ var _CurrentSave
 func set_new_CurrentSave(TileMaps:Array, mapName:String, saveName:String) -> bool:
 	var TempRef := GameSave.new()
 	if(not TempRef.create_new_save(TileMaps, mapName, saveName)): return false
-	_CurrentSave = null
-	_CurrentSave = TempRef
+	_CurrentSave = _set_CurrentSave(TempRef)
 	return true
 
 # Loads CurrentSave from save directory
@@ -39,8 +44,7 @@ func load_CurrentSave(TileMaps:Array, saveName:String) -> bool:
 	if(not TempRef == null): 
 		Logger.logErr(["failed to load CurrentSave: ", saveName, " ", savePath], get_stack())
 		return false
-	_CurrentSave = null
-	_CurrentSave= TempRef
+	_CurrentSave = _set_CurrentSave(TempRef)
 	return true
 
 # Saves CurrentSave to save directory

@@ -247,14 +247,10 @@ func _on_SaveEdit_text_entered(mapName:String) -> void:
 func _on_LoadEdit_text_entered(mapName: String) -> void:
 	var loadPath = SaveManager.MAP_FOLDER_DIR + mapName + ".res"
 	var TempRef = LibCustom.load_MapSaveData_resource(loadPath, TileSelect.allTileMaps)
-	printt("ya", TempRef, SaveManager._CurrentSave)
 	if (TempRef == null):
 		Logger.logErr(["Failed to load save: ", mapName], get_stack())
 		return
-	
-	SaveManager._CurrentSave = null
 	SaveManager._CurrentSave = TempRef
-	printt("ya", TempRef, SaveManager._CurrentSave)
 	
 	update_MapManager_chunks()
 	$MapManager.refresh_all_chunks()

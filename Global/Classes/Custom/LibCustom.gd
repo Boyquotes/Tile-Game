@@ -16,7 +16,7 @@ static func load_MapSaveData_resource(mapPath:String, TileMaps:Array) -> MapSave
 		Logger.logErr(["MapSaveData path doesnt exist: ", mapPath], get_stack())
 		return null
 
-	var TempRef = ResourceLoader.load(mapPath)
+	var TempRef = ResourceLoader.load(mapPath, "", true)
 	if(not TempRef is MapSaveData):
 		Logger.logErr(["Tried to load resource of invalid type: ", mapPath], get_stack())
 		return null
@@ -45,7 +45,7 @@ static func load_GameSave_resource(savePath:String, TileMaps:Array) -> GameSave:
 		Logger.logErr(["GameSave doesnt exist: ", savePath], get_stack())
 		return null
 	
-	var TempRef = ResourceLoader.load(savePath)
+	var TempRef = ResourceLoader.load(savePath, "", true)
 	if(not TempRef is GameSave):
 		Logger.logErr(["Tried to load resource of invalid type: ", savePath], get_stack())
 		return null
