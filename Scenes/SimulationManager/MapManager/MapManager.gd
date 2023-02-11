@@ -61,8 +61,8 @@ func _load_chunk_to_tilemap(chunkV3:Vector3):
 func _load_tiles_on_position(posV3:Vector3):
 	for tileMap in TileMaps:
 		var TMName = tileMap.get_name()
-		var tileData:TileData = SaveManager.get_TileData_on(TMName, posV3)
-		tileMap.set_cellv(LibK.Vectors.vec3_vec2(posV3), tileData.tileID)
+		# var tileData:TileData = SaveManager.get_TileData_on(TMName, posV3)
+		# tileMap.set_cellv(LibK.Vectors.vec3_vec2(posV3), tileData.tileID)
 ### ----------------------------------------------------
 
 

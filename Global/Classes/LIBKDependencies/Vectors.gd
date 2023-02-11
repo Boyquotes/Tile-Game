@@ -86,3 +86,4 @@ static func vec3_get_pos_in_chunk(chunkV:Vector3, chunkSize:int) -> Array:
 				int(chunkV[1]*chunkSize + y), chunkV[2]))
 	return packedPositions
 ### ----------------------------------------------------
+

@@ -19,11 +19,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Global/Classes/Custom/Entities/GameEntity.gd"
 }, {
-"base": "MapSaveData",
-"class": "GameSave",
-"language": "GDScript",
-"path": "res://Global/Classes/Custom/Save/GameSave.gd"
-}, {
 "base": "Reference",
 "class": "GutHookScript",
 "language": "GDScript",
@@ -40,19 +35,19 @@ _global_script_classes=[ {
 "path": "res://DevTools/UnitTesting/GutTestLOG.gd"
 }, {
 "base": "Script",
-"class": "LibCustom",
-"language": "GDScript",
-"path": "res://Global/Classes/Custom/LibCustom.gd"
-}, {
-"base": "Script",
 "class": "LibK",
 "language": "GDScript",
 "path": "res://Global/Classes/LibK.gd"
 }, {
-"base": "Resource",
-"class": "MapSaveData",
+"base": "Node2D",
+"class": "SQLSave",
 "language": "GDScript",
-"path": "res://Global/Classes/Custom/Save/MapSaveData.gd"
+"path": "res://Global/Classes/Custom/Save/SQLSave.gd"
+}, {
+"base": "Reference",
+"class": "SQLiteWrapper",
+"language": "GDScript",
+"path": "res://addons/godot-sqlite/godot-sqlite-wrapper.gd"
 }, {
 "base": "DataType",
 "class": "TileData",
@@ -62,13 +57,12 @@ _global_script_classes=[ {
 _global_script_class_icons={
 "DataType": "",
 "GameEntity": "",
-"GameSave": "",
 "GutHookScript": "",
 "GutTest": "",
 "GutTestLOG": "",
-"LibCustom": "",
 "LibK": "",
-"MapSaveData": "",
+"SQLSave": "",
+"SQLiteWrapper": "",
 "TileData": ""
 }
 
@@ -81,11 +75,10 @@ config/name="Remaster"
 DATA="*res://Global/Singletons/DATA.gd"
 TILES="*res://Global/Singletons/TILES.gd"
 Logger="*res://Global/Singletons/Logger.gd"
-SaveManager="*res://Global/Singletons/SaveManager.gd"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/UpdateTileMaps/plugin.cfg", "res://addons/gut/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/UpdateTileMaps/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/gut/plugin.cfg" )
 
 [gui]
 
