@@ -18,3 +18,4 @@ const TS:Script =           preload("res://Global/Classes/LIBKDependencies/TS.gd
 const Saving:Script =       preload("res://Global/Classes/LIBKDependencies/Saving.gd")
 const UI:Script =           preload("res://Global/Classes/LIBKDependencies/UI.gd")
 const ScriptGen:Script =    preload("res://Global/Classes/LIBKDependencies/ScriptGen.gd")
+const Compression:Script =  preload("res://Global/Classes/LIBKDependencies/Compression.gd")

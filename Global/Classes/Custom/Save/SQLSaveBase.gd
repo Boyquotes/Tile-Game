@@ -15,23 +15,20 @@ var SQL_DB_GLOBAL:SQLite  # SQLite object assigned to SaveManager
 var SAVE_PATH:String      # Database path
 var beVerbose:bool        # For debug purposes
 
-const SQL_DB_CHUNK_SIZE = 64
+const MAPDATA_CHUNK_SIZE = 64 # Size of SQLite data chunk
+const MAPDATA_UNLOAD_DS = 2   # Decides when to unload chunk
 
 # Names of all tables that need to be created
-enum TABLE_NAMES {METADATA_TABLE, TSDATA_TABLE}
-const TABLES_DATA = {
-    # Stores general data that doesnt need to be compressed
-    TABLE_NAMES.METADATA_TABLE: {
-        "DataName":{"primary_key":true,"data_type":"text", "not_null": true},
-        "Data":{"data_type":"text", "not_null": true},
-    },
-    # Stores compressed chunk data
-    TABLE_NAMES.TSDATA_TABLE: { 
-        "ChunkPos":{"primary_key":true, "data_type":"text", "not_null": true},
-        "CompressedData":{"data_type":"text", "not_null": true},
-        "DecompressedSize":{"data_type":"int", "not_null": true},
-    },
+enum TABLE_NAMES {METADATA_TABLE, MAPDATA_TABLE}
+# Content of all tables
+const TABLE_CONTENT = { 
+    "Key":{"primary_key":true,"data_type":"text", "not_null": true},
+    "CData":{"data_type":"text", "not_null": true},
+    "DCSize":{"data_type":"int", "not_null": true},
 }
+
+# Names of keys stored in mapdata sql chunk
+enum MAPDATA_KEYS {TSData}
 
 ### ----------------------------------------------------
 # FUNCTIONS
@@ -59,34 +56,28 @@ func fill_METADATA_TABLE(TileMaps:Array) -> bool:
         for index in range(tileNamesIDs.size()):
             TSControlTemp[TSName][tileNamesIDs[index][1]] = tileNamesIDs[index][0]
     
-    SQL_DB_GLOBAL.open_db()
-    isOK = SQL_DB_GLOBAL.insert_row(TABLE_NAMES.keys()[TABLE_NAMES.METADATA_TABLE],
-            {"DataName":"TS_CONTROL", "Data":var2str(TSControlTemp).replace(" ", "")}) and isOK
-    SQL_DB_GLOBAL.close_db()
+    sql_save_compressed(var2str(TSControlTemp).replace(" ", ""), 
+        TABLE_NAMES.keys()[TABLE_NAMES.METADATA_TABLE], "TS_CONTROL")
 
     if(not isOK): Logger.logErr(["Failed to fill TSControl table"], get_stack())
     return isOK
 
-# Compresses and saves data regarding a chunk
+# Compresses and saves data in sqlite db
 # Designed to compress big data chunks
-func save_chunk_sql(chunkPos:Vector3, Str:String) -> void:
-    var B64Str := Marshalls.utf8_to_base64(Str)
-    var B64C := Marshalls.raw_to_base64(Marshalls.base64_to_raw(B64Str).compress(SQLCOMPRESSION))
-    var values:String = "'" + str(chunkPos) + "','" + B64C + "','" + str(Str.length()) + "'"
+func sql_save_compressed(Str:String, tableName:String, KeyVar) -> void:
+    var B64C := LibK.Compression.compress_str(Str, SQLCOMPRESSION)
+    var values:String = "'" + str(KeyVar) + "','" + B64C + "','" + str(Str.length()) + "'"
+    do_query("REPLACE INTO "+tableName+" (Key,CData,DCSize) VALUES("+values+");")
 
-    do_query("REPLACE INTO TSDATA_TABLE (ChunkPos,CompressedData,DecompressedSize) VALUES("+values+");")
-    if(beVerbose): Logger.logMS(["Saved chunk to SQLite: ", chunkPos])
+    if(beVerbose): Logger.logMS(["Saved CData to SQLite: ", tableName, " ", KeyVar])
 
 # Loads chunk from save, returns empty string if position not saved
-func load_chunk_sql(chunkPos:Vector3) -> String:
-    if (not row_exists("TSDATA_TABLE", "ChunkPos", str(chunkPos))): return ""
-    var queryResult := get_query_result("SELECT CompressedData,DecompressedSize FROM TSDATA_TABLE WHERE ChunkPos='" + str(chunkPos) + "';")
-    
-    var B64C:String = queryResult[0]["CompressedData"]
-    var DCSize:int = queryResult[0]["DecompressedSize"]
-    var B64DC := Marshalls.raw_to_base64(Marshalls.base64_to_raw(B64C).decompress(DCSize,SQLCOMPRESSION))
-    if(beVerbose): Logger.logMS(["Loaded chunk from SQLite: ", chunkPos])
-    return Marshalls.base64_to_utf8(B64DC)
+func sql_load_compressed(tableName:String, KeyVar) -> String:
+    if (not row_exists(tableName, "Key", str(KeyVar))): return ""
+    var queryResult := get_query_result("SELECT CData,DCSize FROM "+tableName+" WHERE Key='"+str(KeyVar)+"';")
+
+    if(beVerbose): Logger.logMS(["Saved CData from SQLite: ", tableName, " ", KeyVar])
+    return LibK.Compression.decompress_str(queryResult[0]["CData"], SQLCOMPRESSION, queryResult[0]["DCSize"])
 
 ### ----------------------------------------------------
 # Queries, these are not meant to be used where speed matters (open and close db in every function which is slow)

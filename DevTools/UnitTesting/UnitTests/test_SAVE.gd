@@ -41,11 +41,11 @@ func test_save_and_load():
 	LOG_GUT("save and load test")
 	assert_true(SAVE.CM_save_current(SAVE_NAME),
 		"Saving failed.")
-	var TSDATA_TABLEHash:int = SAVE.CurrentMap.TSDATA_TABLE.hash()
+	var MAPDATA_TABLEHash:int = SAVE.CurrentMap.MAPDATA_TABLE.hash()
 	SAVE.CurrentMap = null
 	assert_true(SAVE.CM_load_current(SAVE_NAME), 
 		"Loading failed.")
-	assert_true(TSDATA_TABLEHash == SAVE.CurrentMap.TSDATA_TABLE.hash(),
+	assert_true(MAPDATA_TABLEHash == SAVE.CurrentMap.MAPDATA_TABLE.hash(),
 		"Content of saved data doesnt match.")
 	assert_true(SAVE.CM_delete(SAVE_NAME),
 		"Deleting failed.")
