@@ -1,22 +1,23 @@
 ### ----------------------------------------------------
-### Decorator for my unit tests
-### ----------------------------------------------------
-extends GutTest
-class_name GutTestLOG
-
-### ----------------------------------------------------
-# VARIABLES
+### One time use util timer
 ### ----------------------------------------------------
 
+extends Reference
+class_name STimer
+
 ### ----------------------------------------------------
-# FUNCTIONS
+### VARIABLES
 ### ----------------------------------------------------
 
-func LOG_GUT(input:Array, nl:bool = false):
-	var text := ""
-	for i in input: text += str(i)
+var startTime:int
 
-	if nl: gut.p("\n")
-	gut.p("-----------------------------------------")
-	gut.p(text.to_upper())
-	gut.p("-----------------------------------------")
+### ----------------------------------------------------
+### FUNCTIONS
+### ----------------------------------------------------
+
+func _init(sTime:int) -> void:
+	startTime = sTime
+
+
+func get_result():
+	return (Time.get_ticks_msec() - startTime)

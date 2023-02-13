@@ -3,7 +3,7 @@
 ### Allows for easy data saving
 ### ----------------------------------------------------
 
-extends Node2D
+extends Reference
 class_name DataType
 
 ### ----------------------------------------------------

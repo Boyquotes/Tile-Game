@@ -111,4 +111,9 @@ func get_tilemaps() -> Array:
 	var TM:Array = []
 	for node in get_children(): if node is TileMap: TM.append(node)
 	return TM
+
+func get_TMNames() -> Array:
+	var TMNames:Array = []
+	for node in get_children(): if node is TileMap: TMNames.append(node.get_name())
+	return TMNames
 ### ----------------------------------------------------

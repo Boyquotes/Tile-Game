@@ -14,7 +14,7 @@ class_name SQLSave
 var SQLLoadedChunks := Array() # [ChunkPos, ChunkPos ...]
 
 # Holds TileSet data (not meant to be editet directly!)
-# {MAPDATA_KEYS.TSData: { TSName:{PackedPos:TileData} } }
+# {MAPDATA_KEYS.TSData: { [TSName,PackedPos]:TileData} } }
 var MapData := Dictionary() 
 
 # Holds TileSet data
@@ -25,7 +25,7 @@ var TS_CONTROL := Dictionary() # { TSName:{tileID:tileName} }
 ### ----------------------------------------------------
 
 func _init(savePath:String, verbose:bool = false).(savePath, verbose) -> void:
-	pass
+	Logger.logMS(["Created new SQLSave Object for: ", SAVE_PATH])
 
 # Should be called after init before trying to acess data from save
 # Loads all metadata to cache variables
@@ -37,15 +37,16 @@ func initialize() -> bool:
 	# Initialize TS_CONTROL
 	var tempArr = str2var(sql_load_compressed(TABLE_NAMES.keys()[TABLE_NAMES.METADATA_TABLE], "TS_CONTROL"))
 	if(not tempArr is Dictionary):
-		Logger.logErr(["Failed do access TS_CONTROL from SQL save, str2var is not Dictionary: ", SAVE_PATH], get_stack())
+		Logger.logErr(["Failed do initialize TS_CONTROL from SQL save, str2var is not Dictionary: ", SAVE_PATH], get_stack())
 		return false
 	
 	TS_CONTROL = tempArr
 
 	# Initialize MapData
-	for key in MAPDATA_KEYS:
-		MapData[key] = {}
+	for val in MAPDATA_KEYS.values():
+		MapData[val] = {}
 
+	if(beVerbose): Logger.logMS(["Initialized save: ", SAVE_PATH])
 	return true
 	
 # If save already exists, create a new one and put old one in trash
@@ -100,6 +101,13 @@ func check_compatible(TileMaps:Array) -> bool:
 				continue
 	return isOK
 
+# Save everything
+func save_to_sqlDB() -> void:
+	for SQLChunkPos in SQLLoadedChunks:
+		_unload_SQLChunk(SQLChunkPos)
+	do_query("VACUUM;") # Vacuum save to reduce its size
+	Logger.logMS(["Saved SQLSave: ", SAVE_PATH])
+
 ### ----------------------------------------------------
 # Map - Set / Get / Remove
 ### ----------------------------------------------------
@@ -107,34 +115,30 @@ func check_compatible(TileMaps:Array) -> bool:
 
 # Sets TileData on a given position
 func set_tile_on(TSName:String, posV3:Vector3, tileData:TileData) -> bool:
-	if not TS_CONTROL.has(TSName):
+	if(not TS_CONTROL.has(TSName)):
 		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
 		return false
 	
-	if not TS_CONTROL[TSName].has(tileData.tileID):
+	if(not TS_CONTROL[TSName].has(tileData.tileID)):
 		Logger.logErr(["tileID doesnt exist in available TileSets: " + str(tileData.tileID)], get_stack())
 		return false
 	
-	if not MapData[MAPDATA_KEYS.TSData].has(TSName): MapData[MAPDATA_KEYS.TSData][TSName] = {}
-
-	MapData[MAPDATA_KEYS.TSData][TSName][str(posV3)] = str(tileData)
+	_update_SQLLoadedChunks(posV3)
+	MapData[MAPDATA_KEYS.TSData][str([TSName,posV3])] = str(tileData)
 	return true
 
 # Returns tile on a given position, returns a new empty tiledata on fail
 func get_tile_on(TSName:String, posV3:Vector3) -> TileData:
-	if not TS_CONTROL.has(TSName):
+	if(not TS_CONTROL.has(TSName)):
 		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
 		return TileData.new()
 	
-	if not MapData[MAPDATA_KEYS.TSData].has(TSName):
-		Logger.logErr(["TSName doesnt exist in TSData: " + TSName], get_stack())
-		return TileData.new()
-	
-	if not MapData[MAPDATA_KEYS.TSData][TSName].has(str(posV3)):
+	_update_SQLLoadedChunks(posV3)
+	if(not MapData[MAPDATA_KEYS.TSData].has(str([TSName,posV3]))):
 		return TileData.new()
 	
 	var tileData := TileData.new()
-	return tileData.from_str(MapData[MAPDATA_KEYS.TSData][TSName][str(posV3)])
+	return tileData.from_str(MapData[MAPDATA_KEYS.TSData][str([TSName,posV3])])
 
 # Removes TileData on a given position
 func remove_tile_on(TSName:String, posV3:Vector3) -> bool:
@@ -142,11 +146,8 @@ func remove_tile_on(TSName:String, posV3:Vector3) -> bool:
 		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
 		return false
 	
-	if not MapData[MAPDATA_KEYS.TSData].has(TSName):
-		Logger.logErr(["TSName doesnt exist in TSData: " + TSName], get_stack())
-		return false
-	
-	MapData[MAPDATA_KEYS.TSData][TSName].erase(str(posV3))
+	_update_SQLLoadedChunks(posV3)
+	MapData[MAPDATA_KEYS.TSData].erase(str([TSName,posV3]))
 	return true
 
 ### ----------------------------------------------------
@@ -160,26 +161,28 @@ func _load_SQLChunk(SQLChunkPos:Vector3) -> void:
 	if(not converted is Dictionary):
 		if(converted == ""): SQLLoadedChunks.append(SQLChunkPos)
 		Logger.logErr(["Converted loaded sql chunk is not a Dictionary! Pos: ", SQLChunkPos], get_stack())
-		return
+		return 
 	
-	for key in MAPDATA_KEYS:
-		if(not converted.has(key)):
-			Logger.logErr(["Converted loaded sql chunk is missing MAPDATA_KEYS key! Pos: ", SQLChunkPos, ", key: ", key], get_stack())
+	# Merge data for every stored MapData key
+	for val in MAPDATA_KEYS.values():
+		if(not converted.has(val)):
+			Logger.logErr(["Converted loaded sql chunk is missing MAPDATA_KEYS val! Pos: ", SQLChunkPos, ", val: ", val], get_stack())
 			continue
-		MapData[key].merge(converted[key])
+		MapData[val].merge(converted[val])
+		
 	SQLLoadedChunks.append(SQLChunkPos)
 
 # Load data from MapData to SQLChunk
 func _unload_SQLChunk(SQLChunkPos:Vector3) -> void:
 	var PosToUnload = LibK.Vectors.vec3_get_pos_in_chunk(SQLChunkPos, MAPDATA_CHUNK_SIZE)
 	var DictToSave = {}
-	for key in MAPDATA_KEYS:
-		DictToSave[key] = {}
-		for posV3 in PosToUnload:
-			if(not DictToSave[key].has(posV3)): continue
-			DictToSave[key][posV3] = MapData[key][posV3]
-			MapData[key].erase(posV3)
-	
+	for val in MAPDATA_KEYS.values():
+		DictToSave[val] = {}
+		for TSName in TS_CONTROL:
+			for posV3 in PosToUnload:
+				if(not MapData[val].has(str([TSName,posV3]))): continue
+				DictToSave[val][str([TSName,posV3])] = MapData[val][str([TSName, posV3])]
+
 	sql_save_compressed(var2str(DictToSave), TABLE_NAMES.keys()[TABLE_NAMES.MAPDATA_TABLE], SQLChunkPos)
 	SQLLoadedChunks.erase(SQLChunkPos)
 
@@ -190,15 +193,9 @@ func _update_SQLLoadedChunks(posV3:Vector3) -> void:
 	if(SQLLoadedChunks.has(SQLChunkPos)): return # Chunk already loaded from sql
 	
 	_load_SQLChunk(SQLChunkPos)
+
 	# Unload old chunks that are not in range (iterate backwards)
 	for i in range(SQLLoadedChunks.size() - 1, -1, -1):
 		if(SQLLoadedChunks[i].distance_to(SQLChunkPos)>MAPDATA_UNLOAD_DS):
 			_unload_SQLChunk(SQLLoadedChunks[i])
-
 	
-
-
-
-
-
-

@@ -23,7 +23,7 @@ func before_each():
 ### ----------------------------------------------------
 
 func test_MapManager_functions():
-	LOG_GUT("update_visable_map test")
+	LOG_GUT(["update_visable_map test"])
 	var PositionsV3 = LibK.Vectors.vec3_get_square(Vector3(0,0,0), 1, true)
 	MapManager.update_visable_map(PositionsV3)
 	

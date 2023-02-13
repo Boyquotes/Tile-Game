@@ -1,8 +1,0 @@
-SQLSaveManager [create_new_db, get_chunk_db, set_chunk_db]
-    SaveManager [save_game, load_game, create_new_save, create_new_map]
-
-
-Save.db (Stores data regarding map / save)
-    [key - val] PlayerData
-    [pos - val] TileData
-    [pos - val] EntityData
