@@ -12,10 +12,16 @@ extends "res://DevTools/MapEditor/MapEditorInput.gd"
 func _ready() -> void:
 	VisualServer.set_default_clear_color(Color.darkslateblue)
 	TileSelect.allTileMaps = $MapManager.get_tilemaps()
-
-	var TempRef = MapSaveData.new()
-	TempRef.create_new(TileSelect.allTileMaps)
-	SaveManager._CurrentSave = TempRef
+	
+	if(not SaveManager._create_empty_save("MapEditorDefault", SaveManager.MAP_FOLDER, TileSelect.allTileMaps)):
+		push_error("Failed to init MapEditor")
+		get_tree().quit()
+	if(not SaveManager._create_empty_save("MapEditorDefault", SaveManager.SAV_FOLDER, TileSelect.allTileMaps)):
+		push_error("Failed to init MapEditor")
+		get_tree().quit()
+	if(not SaveManager.load_sav("MapEditorDefault", "MapEditorDefault", TileSelect.allTileMaps)):
+		push_error("Failed to init MapEditor")
+		get_tree().quit()
 	
 	_init_TM_selection()
 	_init_tile_select()

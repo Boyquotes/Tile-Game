@@ -12,7 +12,9 @@ const SQLite := preload("res://addons/godot-sqlite/bin/gdsqlite.gdns")
 const SQLCOMPRESSION = 2  # Compression mode, https://docs.godotengine.org/en/stable/classes/class_file.html#enum-file-compressionmode
 
 var SQL_DB_GLOBAL:SQLite  # SQLite object assigned to SaveManager
-var SAVE_PATH:String      # Database path
+var DEST_PATH:String      # Source of save
+var FILE_NAME:String	  # Database name
+var FILE_DIR:String       # Database dir
 var beVerbose:bool        # For debug purposes
 
 const MAPDATA_CHUNK_SIZE = 64 # Size of SQLite data chunk
@@ -36,11 +38,14 @@ enum MAPDATA_KEYS {TSData}
 
 
 # Class requires instancing for convinience and performance
-func _init(savePath:String, verbose = false) -> void:
+func _init(fileName:String, fileDir:String, verbose = false) -> void:
 	beVerbose = verbose
-	SAVE_PATH = savePath
+	FILE_DIR = fileDir
+	FILE_NAME = fileName
+	DEST_PATH = FILE_DIR + FILE_NAME +".db"
+
 	SQL_DB_GLOBAL = SQLite.new()
-	SQL_DB_GLOBAL.path = SAVE_PATH
+	SQL_DB_GLOBAL.path = FILE_DIR + FILE_NAME +"_TEMP.db"
 	SQL_DB_GLOBAL.verbosity_level = 0
 
 # Called when creating new save to have a template of tileset tiles

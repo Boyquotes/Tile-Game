@@ -41,11 +41,11 @@ class MATERIALS:
 		return isOK
 
 
-# Stores data about what key translates to what action in input map
-# Hardcode a key input when needed
+
 class INPUT:
 
-	# Input map for physical keys
+	# Stores data about what key translates to what action in input map
+	# Hardcode a key input when needed
 	const MAP = {
 		"W" : "Up",
 		"A" : "Left",

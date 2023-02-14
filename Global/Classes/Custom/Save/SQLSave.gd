@@ -35,20 +35,25 @@ var TS_CONTROL := Dictionary() # { TSName:{tileID:tileName} }
 # FUNCTIONS
 ### ----------------------------------------------------
 
-func _init(savePath:String, verbose:bool = false).(savePath, verbose) -> void:
-	Logger.logMS(["Created new SQLSave Object for: ", SAVE_PATH])
+func _init(fileName:String, fileDir:String, verbose = false).(fileName, fileDir, verbose) -> void:
+	Logger.logMS(["Created new SQLSave Object: ", FILE_DIR, " ", FILE_NAME])
 
 # Should be called after init before trying to acess data from save
-# Loads all metadata to cache variables
+# Loads all metadata to cache variables, copies save to temp
 func initialize() -> bool:
-	if(not LibK.Files.file_exist(SAVE_PATH)):
-		Logger.logErr(["Unable to initialize save, file doesnt exist: ", SAVE_PATH], get_stack())
+	if(not LibK.Files.file_exist(DEST_PATH)):
+		Logger.logErr(["Unable to initialize save, file doesnt exist: ", DEST_PATH], get_stack())
+		return false
+	
+	var result := LibK.Files.copy_file(DEST_PATH, SQL_DB_GLOBAL.path)
+	if(not result == OK):
+		Logger.logErr(["Failed to copy db from temp to save: ", DEST_PATH, " -> ", SQL_DB_GLOBAL.path], get_stack())
 		return false
 	
 	# Initialize TS_CONTROL
 	var tempArr = str2var(sql_load_compressed(TABLE_NAMES.keys()[TABLE_NAMES.METADATA_TABLE], "TS_CONTROL"))
 	if(not tempArr is Dictionary):
-		Logger.logErr(["Failed do initialize TS_CONTROL from SQL save, str2var is not Dictionary: ", SAVE_PATH], get_stack())
+		Logger.logErr(["Failed do initialize TS_CONTROL from SQL save, str2var is not Dictionary: ", SQL_DB_GLOBAL.path], get_stack())
 		return false
 	
 	TS_CONTROL = tempArr
@@ -57,31 +62,33 @@ func initialize() -> bool:
 	for val in MAPDATA_KEYS.values():
 		MapData[val] = {}
 
-	if(beVerbose): Logger.logMS(["Initialized save: ", SAVE_PATH])
+	if(beVerbose): Logger.logMS(["Initialized save: ", DEST_PATH, " -> ", SQL_DB_GLOBAL.path])
 	return true
 	
-# If save already exists, create a new one and put old one in trash
+# If save already exists, create a new one and put old one in the trash
 func create_new_save(TileMaps:Array) -> bool:
-	if(LibK.Files.file_exist(SAVE_PATH)):
-		if(OS.move_to_trash(ProjectSettings.globalize_path(SAVE_PATH)) != OK):
-			Logger.logErr(["Unable to delete save file: ", SAVE_PATH], get_stack())
+	if(LibK.Files.file_exist(DEST_PATH)):
+		if(OS.move_to_trash(ProjectSettings.globalize_path(DEST_PATH)) != OK):
+			Logger.logErr(["Unable to delete save file: ", DEST_PATH], get_stack())
 			return false
-	
-	var result := LibK.Files.create_empty_file(SAVE_PATH)
-	if(result != OK):
-		Logger.logErr(["Unable to create empty save file: ", SAVE_PATH, ", err: ", result], get_stack())
-		return false
 
+	var result := LibK.Files.create_empty_file(DEST_PATH)
+	if(result != OK):
+		Logger.logErr(["Unable to create empty save file: ", DEST_PATH, ", err: ", result], get_stack())
+		return false
+	
+	SQL_DB_GLOBAL.path = DEST_PATH
 	var isOK := true
 	for TID in TABLE_NAMES.values():
 		var tableName:String = TABLE_NAMES.keys()[TID]
 		isOK = isOK and add_table(tableName, TABLE_CONTENT)
 	isOK = isOK and fill_METADATA_TABLE(TileMaps)
+	SQL_DB_GLOBAL.path = FILE_DIR + FILE_NAME +"_TEMP.db"
 	
 	if(not isOK):
-		Logger.logErr(["Failed to create tables: ", SAVE_PATH], get_stack())
+		Logger.logErr(["Failed to create tables: ", DEST_PATH], get_stack())
 		return isOK
-	Logger.logMS(["Created DataBase at: ", SAVE_PATH])
+	Logger.logMS(["Created DataBase at: ", DEST_PATH])
 	return isOK
 
 # Check if the current tilemaps are compatible with TS_CONTROL tilemaps
@@ -112,13 +119,25 @@ func check_compatible(TileMaps:Array) -> bool:
 				continue
 	return isOK
 
-# Save everything
-func save_to_sqlDB() -> void:
+# Save everything, leave savePath empty if you want to overwrite save
+func save_to_sqlDB(savePath:String = "") -> bool:
+	if(savePath == ""): savePath = DEST_PATH
+	if(LibK.Files.file_exist(savePath)):
+		if(OS.move_to_trash(ProjectSettings.globalize_path(savePath)) != OK):
+			Logger.logErr(["Unable to delete save file: ", savePath], get_stack())
+			return false
+	
 	for i in range(SQLLoadedChunks.size() - 1, -1, -1):
 		_unload_SQLChunk(SQLLoadedChunks[i])
-		
 	do_query("VACUUM;") # Vacuum save to reduce its size
-	Logger.logMS(["Saved SQLSave: ", SAVE_PATH])
+
+	var result := LibK.Files.copy_file(SQL_DB_GLOBAL.path, savePath)
+	if(not result == OK):
+		Logger.logErr(["Failed to copy db from temp to save: ", SQL_DB_GLOBAL.path, " -> ", savePath, ", result: ", result], get_stack())
+		return false
+	
+	Logger.logMS(["Saved SQLSave: ", savePath])
+	return true
 
 ### ----------------------------------------------------
 # Map - Set / Get / Remove

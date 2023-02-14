@@ -20,7 +20,7 @@ const FILE_TAB = "\t"
 ### ----------------------------------------------------
 
 # Saving resource from string
-static func save_res_str(content:String,path:String):
+static func save_res_str(content:String,path:String) -> void:
 	var file = File.new()
 	file.open(path, File.WRITE)
 	file.store_string(content)
@@ -34,23 +34,23 @@ static func load_res_str(path:String) -> String:
 	var content = file.get_as_text()
 	file.close()
 	return content
-### ----------------------------------------------------
-
 
 ### ----------------------------------------------------
 # Directory / Files
 ### ----------------------------------------------------
+
+
+static func copy_file(from:String, to:String) -> int:
+	return Directory.new().copy(from,to)
+
 static func create_empty_file(path:String) -> int:
 	var file := File.new()
 	var result := file.open(path, File.WRITE)
 	file.close()
 	return result
 
-
 static func delete_file(path:String) -> int:
-	var dir = Directory.new()
-	return dir.remove(path)
-
+	return Directory.new().remove(path)
 
 # Returns [ [filepath, filename], ... ]
 static func get_file_list_at_dir(path:String) -> Array:
@@ -72,30 +72,22 @@ static func get_file_list_at_dir(path:String) -> Array:
 	
 	return fileList
 
-
 static func file_exist(filePath:String) -> bool:
-	var directory = Directory.new();
-	return directory.file_exists(filePath)
-
+	return Directory.new().file_exists(filePath)
 
 static func dir_exist(dirPath:String) -> bool:
-	var directory = Directory.new();
-	return directory.dir_exists(dirPath)
-### ----------------------------------------------------
+	return Directory.new().dir_exists(dirPath)
 
 
 ### ----------------------------------------------------
 # MISC
 ### ----------------------------------------------------
 
+
 # Returns image size as array [width,height]
 static func get_png_size(path:String) -> Array:
-	var image = Image.new()
-	image.load(path)
-	
-	var size = [image.get_width(),image.get_height()]
-	return size
-
+	var image = Image.new().load(path)
+	return [image.get_width(),image.get_height()]
 
 # Returns a part of string from a given startString (included),
 # to endString (included)
@@ -108,6 +100,5 @@ static func get_string_fromEnd_toStart(source:String,startStr:String,endStr:Stri
 	var result = source.substr(startIndex,span)
 	
 	return result
-### ----------------------------------------------------
 
 

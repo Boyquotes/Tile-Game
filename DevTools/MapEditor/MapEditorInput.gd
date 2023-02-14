@@ -7,6 +7,7 @@
 ### 	Ctrl    - Save current map
 ### 	F       - Add filter to listed tiles
 ### ----------------------------------------------------
+
 extends Node2D
 
 ### ----------------------------------------------------
@@ -169,13 +170,13 @@ func set_selected_tile(tileID:int):
 	var TMName = tileMap.get_name()
 	
 	if tileID == -1:
-		if not SaveManager.remove_TileData_on(TMName,posV3):
+		if(not SaveManager._CurrentMap.remove_tile_on(TMName,posV3)):
 			Logger.logErr(["Failed to remove tile."],get_stack())
 		$MapManager.refresh_tile(posV3)
 		return
 	
 	var tileData = TileData.new(tileID)
-	if not SaveManager.set_TileData_on(TMName,posV3,tileData):
+	if(not SaveManager._CurrentMap.set_tile_on(TMName,posV3,tileData)):
 		Logger.logErr(["Failed to set tile: ",TMName, posV3, tileData], get_stack())
 	$MapManager.refresh_tile(posV3)
 
@@ -239,18 +240,13 @@ func _load_input(event:InputEvent) -> void:
 		_hide_lineEdit("isLoading", UIElement.LoadEdit)
 
 func _on_SaveEdit_text_entered(mapName:String) -> void:
-	var savePath = SaveManager.MAP_FOLDER_DIR + mapName + ".res"
-	if (not LibCustom.save_custom_resource(SaveManager._CurrentSave, savePath, "MapDataRes")):
+	if (not SaveManager._save_map(mapName)):
 		Logger.logErr(["Failed to save: ", mapName], get_stack())
 	_hide_lineEdit("isSaving", UIElement.SaveEdit)
 
 func _on_LoadEdit_text_entered(mapName: String) -> void:
-	var loadPath = SaveManager.MAP_FOLDER_DIR + mapName + ".res"
-	var TempRef = LibCustom.load_MapSaveData_resource(loadPath, TileSelect.allTileMaps)
-	if (TempRef == null):
-		Logger.logErr(["Failed to load save: ", mapName], get_stack())
-		return
-	SaveManager._CurrentSave = TempRef
+	if (not SaveManager._load_map(mapName, TileSelect.allTileMaps)):
+		Logger.logErr(["Failed to load: ", mapName], get_stack())
 	
 	update_MapManager_chunks()
 	$MapManager.refresh_all_chunks()

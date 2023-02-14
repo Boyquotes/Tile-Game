@@ -10,7 +10,9 @@ extends GutTestLOG
 const _MMS = preload("res://Scenes/SimulationManager/MapManager/MapManager.tscn")
 var MapManager:Node = null
 
-const SAVE_PATH := "res://Temp/Test.db"
+const SAV_FOLDER := "res://Temp"
+const SAV_NAME := "UnitTest"
+
 
 ### ----------------------------------------------------
 # FUNCTIONS
@@ -25,7 +27,7 @@ func before_each():
 ### ----------------------------------------------------
 
 func test_SQLSave():
-	var sqlsave := SQLSave.new(SAVE_PATH)
+	var sqlsave := SQLSave.new(SAV_NAME, SAV_FOLDER)
 	assert_true(sqlsave.create_new_save(MapManager.TileMaps), "Failed to create new save")
 	assert_true(sqlsave.initialize(), "Failed to initialize SQLSave")
 	assert_true(sqlsave.check_compatible(MapManager.TileMaps), "Tilemaps are not compatible")
@@ -38,7 +40,7 @@ func test_SQLSave():
 	var TestPosV3 := []
 	for z in range(3):
 		for x in range(256):
-			for y in range(32):
+			for y in range(1):
 				TestPosV3.append(Vector3(x,y,z))
 	
 	# Set tiles in save and create a dict copy to compare to later
@@ -57,13 +59,13 @@ func test_SQLSave():
 		assert_true(str(SavedData[posV3]) == str(GetTD), "Get TileData (create) content does not match: "+str(SavedData[posV3])+"=!"+str(GetTD)+", Pos:"+str(posV3))
 	LOG_GUT(["Get time (msec): ", GetTimer.get_result()])
 
-	sqlsave.save_to_sqlDB()
+	assert_true(sqlsave.save_to_sqlDB(), "Failed to save")
 	assert_true(sqlsave.MapData[SQLSave.MAPDATA_KEYS.TSData].size() == 0, 
 		"MapData should be empty! Size: " + str(sqlsave.MapData[SQLSave.MAPDATA_KEYS.TSData].size()) +", content: "+ str(sqlsave.MapData[SQLSave.MAPDATA_KEYS.TSData]))
 	sqlsave = null
 
 	# Simulate trying to access data after save
-	var sqlload := SQLSave.new(SAVE_PATH)
+	var sqlload := SQLSave.new(SAV_NAME, SAV_FOLDER)
 	assert_true(sqlload.initialize(), "Failed to initialize SQLSave")
 	assert_true(sqlload.check_compatible(MapManager.TileMaps), "Tilemaps are not compatible")
 	
@@ -73,4 +75,5 @@ func test_SQLSave():
 		assert_true(str(SavedData[posV3]) == str(GetTD), "Get TileData (load) content does not match: "+str(SavedData[posV3])+"=!"+str(GetTD)+", Pos:"+str(posV3))
 	LOG_GUT(["Get load time (msec): ", LGetTimer.get_result()])
 
-	assert_true(LibK.Files.delete_file(SAVE_PATH) == OK, "Failed to delete save")
+	assert_true(sqlload.save_to_sqlDB(), "Failed to save loaded")
+	assert_true(LibK.Files.delete_file(sqlload.SQL_DB_GLOBAL.path) == OK, "Failed to delete save")

@@ -1,5 +1,5 @@
 ### ----------------------------------------------------
-### Function handles all logging procedures
+### Singleton handles all logging procedures
 ### ----------------------------------------------------
 
 extends Node
