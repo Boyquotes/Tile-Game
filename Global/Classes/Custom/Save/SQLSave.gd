@@ -1,6 +1,16 @@
-
 ### ----------------------------------------------------
-# Manages sql save
+# Manages SQLite
+#
+# Data is saved to chunks of size MAPDATA_CHUNK_SIZE which are compressed
+# Data is loaded whenever data from a given chunk is requested
+# This system will not work well if data is requested from multiple chunks alternately
+# because it would cause the system to load and unload the same data from sql db
+#
+# To setup a save use create_new_save() and initialize()
+# To load save use only initialize()
+#
+# Before saving use save_to_sqlDB() to unload all data from cache (MapData variable)
+#
 ### ----------------------------------------------------
 
 extends "res://Global/Classes/Custom/Save/SQLSaveBase.gd"
@@ -13,6 +23,7 @@ class_name SQLSave
 # List of loaded chunks from sql to cache variables
 var SQLLoadedChunks := Array() # [ChunkPos, ChunkPos ...]
 
+# Cache of all loaded data from sql
 # Holds TileSet data (not meant to be editet directly!)
 # {MAPDATA_KEYS.TSData: { [TSName,PackedPos]:TileData} } }
 var MapData := Dictionary() 
@@ -103,8 +114,9 @@ func check_compatible(TileMaps:Array) -> bool:
 
 # Save everything
 func save_to_sqlDB() -> void:
-	for SQLChunkPos in SQLLoadedChunks:
-		_unload_SQLChunk(SQLChunkPos)
+	for i in range(SQLLoadedChunks.size() - 1, -1, -1):
+		_unload_SQLChunk(SQLLoadedChunks[i])
+		
 	do_query("VACUUM;") # Vacuum save to reduce its size
 	Logger.logMS(["Saved SQLSave: ", SAVE_PATH])
 
@@ -117,10 +129,6 @@ func save_to_sqlDB() -> void:
 func set_tile_on(TSName:String, posV3:Vector3, tileData:TileData) -> bool:
 	if(not TS_CONTROL.has(TSName)):
 		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
-		return false
-	
-	if(not TS_CONTROL[TSName].has(tileData.tileID)):
-		Logger.logErr(["tileID doesnt exist in available TileSets: " + str(tileData.tileID)], get_stack())
 		return false
 	
 	_update_SQLLoadedChunks(posV3)
@@ -158,18 +166,17 @@ func remove_tile_on(TSName:String, posV3:Vector3) -> bool:
 # Load data from SQLChunk to MapData
 func _load_SQLChunk(SQLChunkPos:Vector3) -> void:
 	var converted = str2var(sql_load_compressed(TABLE_NAMES.keys()[TABLE_NAMES.MAPDATA_TABLE], SQLChunkPos))
-	if(not converted is Dictionary):
-		if(converted == ""): SQLLoadedChunks.append(SQLChunkPos)
-		Logger.logErr(["Converted loaded sql chunk is not a Dictionary! Pos: ", SQLChunkPos], get_stack())
-		return 
 	
 	# Merge data for every stored MapData key
-	for val in MAPDATA_KEYS.values():
-		if(not converted.has(val)):
-			Logger.logErr(["Converted loaded sql chunk is missing MAPDATA_KEYS val! Pos: ", SQLChunkPos, ", val: ", val], get_stack())
-			continue
-		MapData[val].merge(converted[val])
-		
+	if(converted is Dictionary):
+		for val in MAPDATA_KEYS.values():
+			if(not converted.has(val)):
+				Logger.logErr(["Converted loaded sql chunk is missing MAPDATA_KEYS val! Pos: ", SQLChunkPos, ", val: ", val], get_stack())
+				continue
+			MapData[val].merge(converted[val])
+	elif(not converted is String): 
+		Logger.logErr(["Converted loaded sql chunk is not a Dictionary or String! Pos: ", SQLChunkPos], get_stack())
+	
 	SQLLoadedChunks.append(SQLChunkPos)
 
 # Load data from MapData to SQLChunk
@@ -180,8 +187,10 @@ func _unload_SQLChunk(SQLChunkPos:Vector3) -> void:
 		DictToSave[val] = {}
 		for TSName in TS_CONTROL:
 			for posV3 in PosToUnload:
-				if(not MapData[val].has(str([TSName,posV3]))): continue
-				DictToSave[val][str([TSName,posV3])] = MapData[val][str([TSName, posV3])]
+				var key := str([TSName,posV3])
+				if(not MapData[val].has(key)): continue
+				DictToSave[val][key] = MapData[val][key]
+				MapData[val].erase(key)
 
 	sql_save_compressed(var2str(DictToSave), TABLE_NAMES.keys()[TABLE_NAMES.MAPDATA_TABLE], SQLChunkPos)
 	SQLLoadedChunks.erase(SQLChunkPos)
@@ -198,4 +207,3 @@ func _update_SQLLoadedChunks(posV3:Vector3) -> void:
 	for i in range(SQLLoadedChunks.size() - 1, -1, -1):
 		if(SQLLoadedChunks[i].distance_to(SQLChunkPos)>MAPDATA_UNLOAD_DS):
 			_unload_SQLChunk(SQLLoadedChunks[i])
-	

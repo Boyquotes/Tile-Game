@@ -16,7 +16,7 @@ var SAVE_PATH:String      # Database path
 var beVerbose:bool        # For debug purposes
 
 const MAPDATA_CHUNK_SIZE = 64 # Size of SQLite data chunk
-const MAPDATA_UNLOAD_DS = 2   # Decides when to unload chunk (distance from last request)
+const MAPDATA_UNLOAD_DS = 3   # Decides when to unload chunk (distance from last request)
 
 # Names of all tables that need to be created
 enum TABLE_NAMES {METADATA_TABLE, MAPDATA_TABLE}

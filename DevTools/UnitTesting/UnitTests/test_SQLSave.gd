@@ -10,7 +10,7 @@ extends GutTestLOG
 const _MMS = preload("res://Scenes/SimulationManager/MapManager/MapManager.tscn")
 var MapManager:Node = null
 
-const SAVE_PATH := "res://Temp/Test"
+const SAVE_PATH := "res://Temp/Test.db"
 
 ### ----------------------------------------------------
 # FUNCTIONS
@@ -36,9 +36,9 @@ func test_SQLSave():
 	
 	# Create a block of tiles to save
 	var TestPosV3 := []
-	for x in range(32):
-		for y in range(1):
-			for z in range(1):
+	for z in range(3):
+		for x in range(256):
+			for y in range(32):
 				TestPosV3.append(Vector3(x,y,z))
 	
 	# Set tiles in save and create a dict copy to compare to later
@@ -54,21 +54,23 @@ func test_SQLSave():
 	var GetTimer = STimer.new(Time.get_ticks_msec())
 	for posV3 in TestPosV3:
 		var GetTD := sqlsave.get_tile_on(RTileMapName, posV3)
-		assert_true(str(SavedData[posV3]) == str(GetTD), "Set TileData content does not match: "+str(SavedData[posV3])+"=!"+str(GetTD))
+		assert_true(str(SavedData[posV3]) == str(GetTD), "Get TileData (create) content does not match: "+str(SavedData[posV3])+"=!"+str(GetTD)+", Pos:"+str(posV3))
 	LOG_GUT(["Get time (msec): ", GetTimer.get_result()])
 
 	sqlsave.save_to_sqlDB()
+	assert_true(sqlsave.MapData[SQLSave.MAPDATA_KEYS.TSData].size() == 0, 
+		"MapData should be empty! Size: " + str(sqlsave.MapData[SQLSave.MAPDATA_KEYS.TSData].size()) +", content: "+ str(sqlsave.MapData[SQLSave.MAPDATA_KEYS.TSData]))
 	sqlsave = null
 
 	# Simulate trying to access data after save
-	var sqlload := SQLSave.new(SAVE_PATH, true)
+	var sqlload := SQLSave.new(SAVE_PATH)
 	assert_true(sqlload.initialize(), "Failed to initialize SQLSave")
 	assert_true(sqlload.check_compatible(MapManager.TileMaps), "Tilemaps are not compatible")
 	
 	var LGetTimer = STimer.new(Time.get_ticks_msec())
 	for posV3 in TestPosV3:
 		var GetTD := sqlload.get_tile_on(RTileMapName, posV3)
-		assert_true(str(SavedData[posV3]) == str(GetTD), "Set TileData content does not match: "+str(SavedData[posV3])+"=!"+str(GetTD))
+		assert_true(str(SavedData[posV3]) == str(GetTD), "Get TileData (load) content does not match: "+str(SavedData[posV3])+"=!"+str(GetTD)+", Pos:"+str(posV3))
 	LOG_GUT(["Get load time (msec): ", LGetTimer.get_result()])
 
 	assert_true(LibK.Files.delete_file(SAVE_PATH) == OK, "Failed to delete save")
