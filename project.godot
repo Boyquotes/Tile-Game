@@ -83,9 +83,17 @@ TILES="*res://Global/Singletons/TILES.gd"
 Logger="*res://Global/Singletons/Logger.gd"
 SaveManager="*res://Global/Singletons/SaveManager.gd"
 
+[debug]
+
+gdscript/warnings/integer_division=false
+
 [editor_plugins]
 
 enabled=PoolStringArray( "res://addons/UpdateTileMaps/plugin.cfg", "res://addons/godot-sqlite/plugin.cfg", "res://addons/gut/plugin.cfg" )
+
+[global]
+
+inte=false
 
 [gui]
 

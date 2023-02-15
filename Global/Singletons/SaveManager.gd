@@ -75,3 +75,11 @@ func get_TileData_on(TSName:String, posV3:Vector3) -> TileData:
 # Wrapper function, remove tile in _CurrentSav
 func remove_TileData_on(TSName:String, posV3:Vector3) -> bool:
     return _CurrentSav.remove_tile_on(TSName, posV3)
+
+# Wrapper function, checks if tile was edited in _CurrentSav, if not get tile from _CurrentMap
+func get_TileData_on_chunk(TSName:String, chunkPosV3:Vector3, chunkSize:int) -> Dictionary:
+    var savResult := _CurrentSav.get_tiles_on_chunk(TSName, chunkPosV3, chunkSize)
+    var mapResult := _CurrentMap.get_tiles_on_chunk(TSName, chunkPosV3, chunkSize)
+    for posV3 in savResult:
+        if(savResult[posV3].tileID == -1): savResult[posV3] = mapResult[posV3]
+    return savResult

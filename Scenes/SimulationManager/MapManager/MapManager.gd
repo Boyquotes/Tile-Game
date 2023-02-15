@@ -54,11 +54,13 @@ func update_visable_map(ChunksToLoad:Array) -> void:
 
 
 func _load_chunk_to_tilemap(chunkV3:Vector3):
-	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkV3, DATA.TILEMAPS.CHUNK_SIZE):
-		_load_tiles_on_position(posV3)
+	for tileMap in TileMaps:
+		var TMName = tileMap.get_name()
+		var DataDict := SaveManager.get_TileData_on_chunk(TMName, chunkV3, DATA.TILEMAPS.CHUNK_SIZE)
+		for posV3 in DataDict:
+			tileMap.set_cellv(LibK.Vectors.vec3_vec2(posV3), DataDict[posV3].tileID)
 	LoadedChunks.append(chunkV3)
-
-
+	
 # Loads tiles from every TileMap on position
 func _load_tiles_on_position(posV3:Vector3):
 	for tileMap in TileMaps:
