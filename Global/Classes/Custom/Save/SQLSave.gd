@@ -21,12 +21,12 @@ class_name SQLSave
 ### ----------------------------------------------------
 
 # List of loaded chunks from sql to cache variables
-var SQLLoadedChunks := Array() # [ChunkPos, ChunkPos ...]
+var SQLLoadedChunks := Array() # [ChunkPos, ChunkPos, ...]
 
 # Cache of all loaded data from sql
-# Holds TileSet data (not meant to be editet directly!)
-# {MAPDATA_KEYS.TSData: { [TSName,PackedPos]:TileData} } }
-var MapData := Dictionary() 
+# Holds map data (not meant to be editet directly!)
+# { PackedPos:TileData }
+var MapData := Dictionary()
 
 # Holds TileSet data
 var TS_CONTROL := Dictionary() # { TSName:{tileID:tileName} }
@@ -57,10 +57,6 @@ func initialize() -> bool:
 		return false
 	
 	TS_CONTROL = tempArr
-
-	# Initialize MapData
-	for val in MAPDATA_KEYS.values():
-		MapData[val] = {}
 
 	if(beVerbose): Logger.logMS(["Initialized save: ", DEST_PATH, " -> ", SQL_DB_GLOBAL.path])
 	return true
@@ -145,42 +141,31 @@ func save_to_sqlDB(savePath:String = "") -> bool:
 
 
 # Sets TileData on a given position
-func set_tile_on(TSName:String, posV3:Vector3, tileData:TileData) -> bool:
-	if(not TS_CONTROL.has(TSName)):
-		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
-		return false
-	
-	_update_SQLLoadedChunks(LibK.Vectors.scale_down_vec3(posV3, MAPDATA_CHUNK_SIZE))
-	MapData[MAPDATA_KEYS.TSData][str([TSName,posV3])] = str(tileData)
+func set_TileData_on(posV3:Vector3, tileData:TileData) -> bool:
+	# No need to call _update_SQLLoadedChunks (its called in get_TileData_on())
+	if(not tileData.check_IDDict_compatible(TS_CONTROL)): return false
+	tileData.IDDict.merge(get_TileData_on(posV3).IDDict) 
+	MapData[posV3] = str(tileData)
 	return true
 
 # Returns tile on a given position, returns a new empty tiledata on fail
-func get_tile_on(TSName:String, posV3:Vector3) -> TileData:
-	if(not TS_CONTROL.has(TSName)):
-		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
-		return TileData.new()
-	
+func get_TileData_on(posV3:Vector3) -> TileData:
 	_update_SQLLoadedChunks(LibK.Vectors.scale_down_vec3(posV3, MAPDATA_CHUNK_SIZE))
-	if(not MapData[MAPDATA_KEYS.TSData].has(str([TSName,posV3]))):
-		return TileData.new()
-	
-	return TileData.new().from_str(MapData[MAPDATA_KEYS.TSData][str([TSName,posV3])])
+	if(not MapData.has(posV3)): return TileData.new()
+	return TileData.new().from_str(MapData[posV3])
 
-# Removes TileData on a given position
-func remove_tile_on(TSName:String, posV3:Vector3) -> bool:
-	if not TS_CONTROL.has(TSName):
-		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
-		return false
-	
-	_update_SQLLoadedChunks(LibK.Vectors.scale_down_vec3(posV3, MAPDATA_CHUNK_SIZE))
-	MapData[MAPDATA_KEYS.TSData].erase(str([TSName,posV3]))
-	return true
+# Removes TSName from TileData IDDict
+# Returns false when data was not erased
+# Returns true when data was erased
+func remove_TileData_on(TSName:String, posV3:Vector3) -> bool:
+	var editedTD := get_TileData_on(posV3)
+	if(editedTD.IDDict.empty()): return false
+	var erased := editedTD.erase_from_IDDict(TSName)
+	MapData[posV3] = str(editedTD)
+	return erased
 
 # Get positions in chunk, better optimized for getting a lot of data (no check for every tile)
-func get_tiles_on_chunk(TSName:String, chunkPosV3:Vector3, chunkSize:int) -> Dictionary:
-	if(not TS_CONTROL.has(TSName)):
-		Logger.logErr(["TSName doesnt exist in available TileSets: " + TSName], get_stack())
-		return {}
+func get_TileData_on_chunk(chunkPosV3:Vector3, chunkSize:int) -> Dictionary:
 	if(not MAPDATA_CHUNK_SIZE%chunkSize == 0):
 		Logger.logErr(["MAPDATA_CHUNK_SIZE%chunkSize must be 0: ",chunkSize, " ", MAPDATA_CHUNK_SIZE], get_stack())
 		return {}
@@ -191,10 +176,10 @@ func get_tiles_on_chunk(TSName:String, chunkPosV3:Vector3, chunkSize:int) -> Dic
 	var resultDict := {}
 	_update_SQLLoadedChunks(LibK.Vectors.scale_down_vec3(chunkPosV3, MAPDATA_CHUNK_SIZE/chunkSize))
 	for posV3 in LibK.Vectors.vec3_get_pos_in_chunk(chunkPosV3,chunkSize):
-		if(not MapData[MAPDATA_KEYS.TSData].has(str([TSName,posV3]))): 
+		if(not MapData.has(posV3)): 
 			resultDict[posV3] = TileData.new()
 			continue
-		resultDict[posV3] = TileData.new().from_str(MapData[MAPDATA_KEYS.TSData][str([TSName,posV3])])
+		resultDict[posV3] = TileData.new().from_str(MapData[posV3])
 	return resultDict
 
 ### ----------------------------------------------------
@@ -208,30 +193,22 @@ func _load_SQLChunk(SQLChunkPos:Vector3) -> void:
 	
 	# Merge data for every stored MapData key
 	if(converted is Dictionary):
-		for val in MAPDATA_KEYS.values():
-			if(not converted.has(val)):
-				Logger.logErr(["Converted loaded sql chunk is missing MAPDATA_KEYS val! Pos: ", SQLChunkPos, ", val: ", val], get_stack())
-				continue
-			MapData[val].merge(converted[val])
+		MapData.merge(converted)	
 	elif(not converted is String): 
 		Logger.logErr(["Converted loaded sql chunk is not a Dictionary or String! Pos: ", SQLChunkPos], get_stack())
 	
 	SQLLoadedChunks.append(SQLChunkPos)
 
-# TODO: This is very slow
 # Load data from MapData to SQLChunk
 func _unload_SQLChunk(SQLChunkPos:Vector3) -> void:
 	var PosToUnload = LibK.Vectors.vec3_get_pos_in_chunk(SQLChunkPos, MAPDATA_CHUNK_SIZE)
 	var DictToSave = {}
-	for val in MAPDATA_KEYS.values():
-		DictToSave[val] = {}
-		for TSName in TS_CONTROL:
-			for posV3 in PosToUnload:
-				var key := str([TSName,posV3])
-				if(not MapData[val].has(key)): continue
-				DictToSave[val][key] = MapData[val][key]
-				MapData[val].erase(key)
-
+	
+	for posV3 in PosToUnload:
+		if(not MapData.has(posV3)): continue
+		DictToSave[posV3] = MapData[posV3]
+		MapData.erase(posV3)
+	
 	sql_save_compressed(var2str(DictToSave), TABLE_NAMES.keys()[TABLE_NAMES.MAPDATA_TABLE], SQLChunkPos)
 	SQLLoadedChunks.erase(SQLChunkPos)
 

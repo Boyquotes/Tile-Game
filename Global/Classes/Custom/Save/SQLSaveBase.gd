@@ -29,13 +29,9 @@ const TABLE_CONTENT = {
 	"DCSize":{"data_type":"int", "not_null": true},
 }
 
-# Names of keys stored in mapdata sql chunk
-enum MAPDATA_KEYS {TSData}
-
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
-
 
 # Class requires instancing for convinience and performance
 func _init(fileName:String, fileDir:String, verbose = false) -> void:

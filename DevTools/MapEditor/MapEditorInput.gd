@@ -170,14 +170,14 @@ func set_selected_tile(tileID:int):
 	var TMName = tileMap.get_name()
 	
 	if tileID == -1:
-		if(not SaveManager._CurrentMap.remove_tile_on(TMName,posV3)):
-			Logger.logErr(["Failed to remove tile."],get_stack())
+		var _r = SaveManager._CurrentMap.remove_TileData_on(TMName,posV3)
 		$MapManager.refresh_tile(posV3)
 		return
 	
-	var tileData = TileData.new(tileID)
-	if(not SaveManager._CurrentMap.set_tile_on(TMName,posV3,tileData)):
-		Logger.logErr(["Failed to set tile: ",TMName, posV3, tileData], get_stack())
+	var tileData = TileData.new()
+	tileData.add_to_IDDict(TMName, tileID)
+	if(not SaveManager._CurrentMap.set_TileData_on(posV3,tileData)):
+		Logger.logErr(["Failed to set tile: ", posV3," ", tileData], get_stack())
 	$MapManager.refresh_tile(posV3)
 
 ### ----------------------------------------------------

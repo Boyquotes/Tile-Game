@@ -13,7 +13,6 @@ var MapManager:Node = null
 const SAV_FOLDER := "res://Temp"
 const SAV_NAME := "UnitTest"
 
-
 ### ----------------------------------------------------
 # FUNCTIONS
 ### ----------------------------------------------------
@@ -22,21 +21,17 @@ func before_each():
 	MapManager = autoqfree(_MMS.instance())
 	add_child(MapManager)
 
-### ----------------------------------------------------
-# UnitTests
-### ----------------------------------------------------
-
-func get_regular(sqlsave:SQLSave, TestPosV3:Array, SavedData:Dictionary, RTileMapName:String) -> void:
+func get_regular(sqlsave:SQLSave, TestPosV3:Array, SavedData:Dictionary) -> void:
 	var GetTimer = STimer.new(Time.get_ticks_msec())
 	for posV3 in TestPosV3:
-		var GetTD := sqlsave.get_tile_on(RTileMapName, posV3)
+		var GetTD := sqlsave.get_TileData_on(posV3)
 		assert_true(str(SavedData[posV3]) == str(GetTD), "Get TileData (create) content does not match: "+str(SavedData[posV3])+"=!"+str(GetTD)+", Pos:"+str(posV3))
 	LOG_GUT(["Get time (msec) (regular): ", GetTimer.get_result()])
 
-func get_bulk(sqlsave:SQLSave, TestChunks:Array, SavedData:Dictionary, RTileMapName:String) -> void:
+func get_bulk(sqlsave:SQLSave, TestChunks:Array, SavedData:Dictionary) -> void:
 	var GetTimer = STimer.new(Time.get_ticks_msec())
 	for chunkPosV3 in TestChunks:
-		var ChunkData := sqlsave.get_tiles_on_chunk(RTileMapName, chunkPosV3, SQLSave.MAPDATA_CHUNK_SIZE)
+		var ChunkData := sqlsave.get_TileData_on_chunk(chunkPosV3, SQLSave.MAPDATA_CHUNK_SIZE)
 		for posV3 in ChunkData:
 			assert_true(str(SavedData[posV3]) == str(ChunkData[posV3]), "Get TileData (create) content does not match: "+str(SavedData[posV3])+"=!"+str(ChunkData[posV3])+", Pos:"+str(posV3))
 	LOG_GUT(["Get time (msec) (bulk): ", GetTimer.get_result()])
@@ -50,7 +45,7 @@ func test_SQLSave():
 	var RTileMap:TileMap = MapManager.TileMaps[randi()%MapManager.TileMaps.size()]
 	var RTileMapName:String = RTileMap.get_name()
 	var TileIds:Array = RTileMap.tile_set.get_tiles_ids()
-	
+
 	# Create a block of tiles to save
 	var TestPosV3 := []
 	var TestChunks := []
@@ -65,21 +60,20 @@ func test_SQLSave():
 	var SavedData := {}
 	var SetTimer = STimer.new(Time.get_ticks_msec())
 	for posV3 in TestPosV3:
-		var rID:int = TileIds[randi()%TileIds.size()]
-		var RTD := TileData.new(rID)
-		assert_true(sqlsave.set_tile_on(RTileMapName, posV3, RTD), "Failed to set tile on position: "+str(posV3))
-		SavedData[posV3] = TileData.new(rID)
+		var RTD := TileData.new({RTileMapName:TileIds[0]})
+		assert_true(sqlsave.set_TileData_on(posV3, RTD), "Failed to set tile on position: "+str(posV3))
+		SavedData[posV3] = TileData.new({RTileMapName:TileIds[0]})
 	LOG_GUT(["Set time (msec): ", SetTimer.get_result()])
 	
+	
 	# Get tiles from save
-	get_regular(sqlsave, TestPosV3, SavedData, RTileMapName)
-	get_bulk(sqlsave, TestChunks, SavedData, RTileMapName)
-
+	get_regular(sqlsave, TestPosV3, SavedData)
+	get_bulk(sqlsave, TestChunks, SavedData)
+	
 	assert_true(sqlsave.save_to_sqlDB(), "Failed to save")
-	assert_true(sqlsave.MapData[SQLSave.MAPDATA_KEYS.TSData].size() == 0, 
-		"MapData should be empty! Size: " + str(sqlsave.MapData[SQLSave.MAPDATA_KEYS.TSData].size()) +", content: "+ str(sqlsave.MapData[SQLSave.MAPDATA_KEYS.TSData]))
+	assert_true(sqlsave.MapData.size() == 0, "MapData should be empty! Size: " + str(sqlsave.MapData.size()))
 	sqlsave = null
-
+	
 	# Simulate trying to access data after save
 	var sqlload := SQLSave.new(SAV_NAME, SAV_FOLDER)
 	assert_true(sqlload.initialize(), "Failed to initialize SQLSave")
@@ -88,7 +82,7 @@ func test_SQLSave():
 	# Get tiles from save
 	var LGetTimer = STimer.new(Time.get_ticks_msec())
 	for posV3 in TestPosV3:
-		var GetTD := sqlload.get_tile_on(RTileMapName, posV3)
+		var GetTD := sqlload.get_TileData_on(posV3)
 		assert_true(str(SavedData[posV3]) == str(GetTD), "Get TileData (load) content does not match: "+str(SavedData[posV3])+"=!"+str(GetTD)+", Pos:"+str(posV3))
 	LOG_GUT(["Get load time (msec): ", LGetTimer.get_result()])
 
