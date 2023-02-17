@@ -12,7 +12,7 @@ System Overview
 
 Game is designed to have one general world map (read only) and multiple save files on a given world map. This allows to only require saves to save data regarding edited state of the map. 
 
-This system is handled via aquiring map data by first accessing save file information and if not present aquiring it from static map save.
+This system is handled via acquiring map data by first accessing save file information and if not present acquiring it from static map save.
 
 Data is saved using [SQLite wrapper](https://github.com/2shady4u/godot-sqlite) which is handled with a chunk system (64 x 64 tiles), every chunk is loaded or saved depending on data being accessed. Chunks are compressed and saved as string in Base64. 
 
