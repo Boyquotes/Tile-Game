@@ -1,8 +1,6 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://addons/UpdateTileMaps/Panel/Panel.gd" type="Script" id=1]
-[ext_resource path="res://addons/UpdateTileMaps/Panel/UpdateTileMaps/UpdateTileMaps.gd" type="Script" id=2]
-[ext_resource path="res://addons/UpdateTileMaps/Panel/UpdateTileMaps/ScriptsGenerator.gd" type="Script" id=3]
 
 [node name="Panel" type="VBoxContainer"]
 anchor_right = 1.0
@@ -15,12 +13,6 @@ script = ExtResource( 1 )
 margin_right = 1024.0
 margin_bottom = 20.0
 text = "Update"
-
-[node name="UpdateTileMaps" type="Node" parent="."]
-script = ExtResource( 2 )
-
-[node name="ScriptsGenerator" type="Node" parent="UpdateTileMaps"]
-script = ExtResource( 3 )
 
 [node name="Output" type="RichTextLabel" parent="."]
 margin_top = 24.0

@@ -7,6 +7,7 @@ extends Script
 # FUNCTIONS
 ### ----------------------------------------------------
 
+
 # Used for stuff like deciding tile type depending on noise
 # IN: {Tile: percent,Tile2: percent}
 # OUT: [tile,tile, ..., tile2]
@@ -27,7 +28,6 @@ static func range_to_array(sourceDict:Dictionary) -> Array:
 		currentIndex += percent
 	
 	return keyArray
-
 
 # Used with range_to_array function
 # IN: 0.64

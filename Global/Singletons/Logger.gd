@@ -48,20 +48,22 @@ func logMS(message:Array, logIndicator = true):
 	if logTime: message.push_front(get_time())
 	
 	if logIndicator: message.push_front("[LOG] ")
-	_format_LOG(message)
+	print(_format_LOG(message))
 
 
 # logErr(["This is an error message], get_stack())
-func logErr(message:Array, frame:Array):
+func logErr(message:Array, frame:Array) -> void:
 	if not frame.empty():
 		message.push_front("[L:" + str(frame[0]["line"]) + ", S:" + frame[0]["source"] + ", F:" + frame[0]["function"] +"] ")
 	if logTime: message.push_front(get_time())
 	
 	message.push_front("[ERR] ")
-	_format_LOG(message)
+	var formattedLog := _format_LOG(message)
+	print(formattedLog)
+	push_error(formattedLog)
 
 
-static func _format_LOG(message):
+static func _format_LOG(message:Array) -> String:
 	var output:String = ""
 	for part in message:
 		part = String(part)
@@ -74,5 +76,4 @@ static func _format_LOG(message):
 			part = part.replace("[TAB]","")
 			output = output.insert(5,"	")
 		output += part
-	
-	print(output)
+	return output

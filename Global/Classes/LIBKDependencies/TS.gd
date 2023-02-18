@@ -7,25 +7,22 @@ extends Script
 # FUNCTIONS
 ### ----------------------------------------------------
 
+
 # returns tile names in the same order as IDs
 static func get_tile_names(tileSet:TileSet) -> Array:
-	var tileNames = []
+	var tileNames := []
 	for id in tileSet.get_tiles_ids(): 
 		tileNames.append(tileSet.tile_get_name(id))
 	return tileNames
 
-
 # returns only autotile IDs
 static func get_autotile_ids(tileSet:TileSet) -> Array:
-	var autotileIDs = []
-	
-	var tileIDs = tileSet.get_tiles_ids()
+	var autotileIDs := []
+	var tileIDs := tileSet.get_tiles_ids()
 	for tileID in tileIDs:
 		if tileSet.tile_get_tile_mode (tileID) == TileSet.AUTO_TILE:
 			autotileIDs.append(tileID)
-	
 	return autotileIDs
-
 
 # Returns next not used ID in TileSet
 # Examples:
@@ -33,18 +30,14 @@ static func get_autotile_ids(tileSet:TileSet) -> Array:
 # OUT: 5           | OUT: 2 
 static func _get_next_id(tileIDs:Array) -> int:
 	var nextID:int = tileIDs.size()
-	
 	for id in range(tileIDs.size()):
 		if not id in tileIDs:
 			nextID = id
 			break
-	
 	return nextID
 
-
 # Adds new tile to a tileset or/and updates it
-static func _add_tile(tileSet:TileSet,tName:String, texture:Texture, tileMode:int,
-bitmask_flags:Array) -> TileSet:
+static func _add_tile(tileSet:TileSet, tName:String, texture:Texture, tileMode:int, bitmask_flags:Array) -> TileSet:
 	# Check if tile exists if not create new
 	var tileID:int = tileSet.find_tile_by_name(tName)
 	if tileID == -1:
@@ -68,7 +61,6 @@ bitmask_flags:Array) -> TileSet:
 	
 	return tileSet
 
-
 # Adds autotile to an existing TileSet
 static func add_autotile(tileSet:TileSet,texture:Texture,
 tileSize:Vector2,tileName:String,tileID:int,bitmask_flags:Array) -> TileSet:
@@ -89,10 +81,10 @@ tileSize:Vector2,tileName:String,tileID:int,bitmask_flags:Array) -> TileSet:
 
 # Adds bitmask to an existing autotile
 # NOTE: Format is the same as in the .tres file
-static func _set_autotile_bitmask(tileSet:TileSet,tileID:int,bitmask_flags:Array) -> TileSet:
+static func _set_autotile_bitmask(tileSet:TileSet, tileID:int, bitmask_flags:Array) -> TileSet:
 	var bVectors:Array = []
 	var bNums:Array = []
-	
+
 	for index in range(bitmask_flags.size()):
 		if index%2==0:
 			bVectors.append(bitmask_flags[index])
@@ -103,7 +95,6 @@ static func _set_autotile_bitmask(tileSet:TileSet,tileID:int,bitmask_flags:Array
 		tileSet.autotile_set_bitmask(tileID,bVectors[index],bNums[index])
 	
 	return tileSet
-
 
 # Gets tile texture from TileSet
 static func get_tile_texture(tileID:int, tileSet:TileSet) -> Texture:
@@ -127,16 +118,11 @@ static func get_tile_texture(tileID:int, tileSet:TileSet) -> Texture:
 	
 	return atlas_texture
 
-
 static func get_tile_names_and_IDs(tileSet:TileSet) -> Array:
 	var tileList:Array = []
 	for tileID in tileSet.get_tiles_ids():
 		tileList.append([tileSet.tile_get_name(tileID), tileID])
 	return tileList
 
-
 static func get_tile_on_pos(pos:Vector2) -> Vector2:
-	var x = floor( pos[0]/(DATA.TILEMAPS.BASE_SCALE) )
-	var y = floor( pos[1]/(DATA.TILEMAPS.BASE_SCALE) )
-	
-	return Vector2(x,y)
+	return Vector2(floor( pos[0]/(DATA.TILEMAPS.BASE_SCALE) ), floor( pos[1]/(DATA.TILEMAPS.BASE_SCALE) ))
